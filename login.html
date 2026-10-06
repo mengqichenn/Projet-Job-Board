@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
+    <link rel="stylesheet" href="style.css">
+
+    <title>Connexion - JobBoard</title>
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <a class="jobboard" href="main.html">job<span>board</span></a>
+            <nav class="navbar">
+
+                <li><a href="main.html" aria-current="page">Offres</a></li>
+                <li data-role="visitor"><a class="btn btn-sm" href="login.html">Se connecter</a></li>
+                <li data-role="visitor"><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
+                <li data-role="candidate" hidden><a href="candidat/dashboard.html">Mes candidatures</a></li>
+                <li data-role="candidate company admin" hidden><a href="profile.html">Mon compte</a></li>
+                
+                <li data-role="company" hidden><a href="company/dashboard.html">Mes offres</a></li>
+
+                <li data-role="admin" hidden><a href="admin.html">Admin</a></li>
+            </nav>
+        </div>
+    </header>
+
+
+
+    <main class="auth">
+        <div class="card">
+            <h1>Connexion</h1>
+
+<!-- autocomplete à reconfirmer -->
+ <!--API pour les liens -->
+
+            <form id="login-form">
+                <div class="field"><label for="email">Adresse mail</label>
+                    <input id="email" type="email" name="email" autocomplete="email" required>
+                </div>
+                <div class="field"><label for="password">Mot de passe</label>
+                    <input id="password" type="password" name="password" autocomplete="current-password" required>
+                </div>
+                <p class="notice"> <a href="#">Mot de passe oublié ?</a></p>
+                <p class="notice">Pas encore de compte ? <a href="account.html?mode=create">Créer un compte</a></p>
+                <button class="btn" type="submit">Se connecter</button>
+            </form>
+        </div>
+
+
+
+
+    </main>   
+</body>
+</html>
