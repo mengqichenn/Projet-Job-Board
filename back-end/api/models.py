@@ -25,6 +25,9 @@ class UserManager(BaseUserManager):
 
 # Users table
 class User(AbstractUser):
+
+    ROLE_CHOICES = [("candidate", "Candidate"), ("recruiter", "Recruiter"), ("admin", "Admin")]
+    
     username = None
 
     #first_name, last_name, password, created_at déjà inclus
@@ -32,19 +35,18 @@ class User(AbstractUser):
     email = models.EmailField(max_length=150, unique=True)
     telephone = models.CharField(max_length=30, blank=True)
 
-    ROLE_CHOICES = [
-        ("candidate", "Candidate"),
-        ("recruiter", "Recruiter"),
-        ("admin", "Admin"),
-    ]
-
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="candidate")
+    city = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=10)
     company = models.ForeignKey("Company", on_delete=models.SET_NULL, null=True, blank=True)  # => premary key de la Company table
     modified_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     objects = UserManager()
+
+    cv = models.FileField(upload_to="cv/", blank=True, null=True)      
+    # le fichier .pdf stocké dans fichier cv/ et le path enregistré dans la base de donnée
 
     def __str__(self):
         return self.email
@@ -56,8 +58,9 @@ class Company(models.Model):        # Django crée automatiquement les IDs
     siret = models.CharField(max_length=14, validators=[MinLengthValidator(14)], unique=True)        # length fixe
     description = models.TextField(blank=True)
     website = models.URLField(max_length=255, blank=True)
-    city = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100)
     postal_code = models.CharField(max_length=10)
+
     created_at = models.DateTimeField(auto_now_add=True)        # se remplisse automatiquement lors de la création
     modified_at = models.DateTimeField(auto_now=True)
 
@@ -92,6 +95,7 @@ class Ad(models.Model):
     full_description = models.TextField()
     city = models.CharField(max_length=100, blank=True)
     postal_code = models.CharField(max_length=10, blank=True)
+
     contract_type = models.CharField(max_length=20, choices=CONTRACT_CHOICES)
     monthly_salary_min = models.PositiveIntegerField(null=True, blank=True)
     monthly_salary_max = models.PositiveIntegerField(null=True, blank=True)

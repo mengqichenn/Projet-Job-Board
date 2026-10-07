@@ -1,7 +1,10 @@
 from django.urls import path
-from .views import hello
+from . import views
 
 
 urlpatterns = [
-    path("hello/", hello),          # URLs retourne du JSON
+    path("auth/register", views.RegisterView.as_view()),
+    path("auth/login", views.LoginView.as_view()),          # URLs retourne du JSON
+    path("auth/me", views.MeView.as_view()),
+    path("auth/logout", views.LogoutView.as_view()),
 ]
