@@ -4,7 +4,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, AdSerializer
+from .models import Ad
 
 
 # Create your views here.
@@ -15,6 +16,16 @@ def user_payload(user):
         "role": user.role,
         "name": f"{user.first_name} {user.last_name}".strip() or user.email,
     }
+
+# View pour Ad
+class AdListView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        ads = Ad.objects.filter(status="open")
+        serializer = AdSerializer(ads, many=True)
+        return Response(serializer.data)
 
 # View pour inscription 
 class RegisterView(APIView):

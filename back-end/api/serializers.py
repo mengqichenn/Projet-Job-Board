@@ -1,7 +1,8 @@
 from django.db import transaction
 from rest_framework import serializers
-from .models import User, Company
+from .models import User, Company, Ad
 import requests
+
 
 class RegisterSerializer(serializers.Serializer):
 
@@ -104,7 +105,20 @@ class RegisterSerializer(serializers.Serializer):
             city=city, postal_code=postal_code, company=company,
             cv=d.get("cv") if d["role"] == "candidate" else None,   # CV ne peut qu'être déposé par les candidats
         )
-
+    
+class AdSerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(source="company.name", read_only=True)
+    category_name = serializers.CharField(source="category.name", read_only=True)
+    class Meta:
+        model = Ad
+        fields = [
+            "id", "title", "short_description", "full_description",
+            "city", "postal_code", "contract_type",
+            "monthly_salary_min", "monthly_salary_max", "working_time",
+            "education_level", "experience", "start_time", "work_mode",
+            "status", "created_at", "company_name", "category_name",
+        ]
+        
         
 
     
