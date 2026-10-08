@@ -49,9 +49,11 @@ class MeView(APIView):
         return Response(user_payload(request.user))
 
 
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         request.auth.delete()
         return Response(status=204)
+    
