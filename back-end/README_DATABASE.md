@@ -50,7 +50,7 @@ sudo mysql
     exit;
 
 
-# 8. Appliquer les migrations
+# 8. Appliquer les migrations pour migrer dans ta base de données locale
 python manage.py makemigrations
 python manage.py migrate
 
@@ -62,14 +62,16 @@ python manage.py check
 # 10. Lancer le serveur
 python manage.py runserver
 
-# 11. Accéder la base de donnée
+# 11. Accéder la base de données
 mysql -u jobboard_user -p
 
-# Voir les tables dedans
+# Visualiser les tables dedans
 # </>SQL
     USE jobboard_db;
 
     SHOW TABLES;
+
+    DESCRIBE nom_de_la_table;
 
 
 

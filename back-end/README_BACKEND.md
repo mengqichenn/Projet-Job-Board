@@ -1,8 +1,10 @@
 # ========= Lancer le serveur ==============
+# Dans ton environement virtuel
 python manage.py runserver
 
 # ========Accéder au serveur admin============
 # créer ton compte admin (local)
+python manage.py migrate
 python manage.py createsuperuser
 # créer avec l'exemple suivant
 # Email: admin@example.com 
