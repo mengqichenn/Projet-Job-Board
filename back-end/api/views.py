@@ -30,6 +30,15 @@ class AdListView(APIView):
         contract_type = request.GET.get("contract_type")
         if contract_type:
             ads = ads.filter(contract_type=contract_type)
+        education_level = request.GET.get("education_level")
+        if education_level:
+            ads = ads.filter(education_level=education_level)
+        experience = request.GET.get("experience")
+        if experience:
+            ads = ads.filter(experience=experience)
+        work_mode = request.GET.get("work_mode")
+        if work_mode:
+            ads = ads.filter(work_mode=work_mode)
         serializer = AdSerializer(ads, many=True)
         return Response(serializer.data)
 
