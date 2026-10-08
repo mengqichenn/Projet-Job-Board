@@ -2,9 +2,13 @@
 python manage.py runserver
 
 # ========Accéder au serveur admin============
-# dans le navigateur : http://127.0.0.1:8000/admin/
+# créer ton compte admin (local)
+python manage.py createsuperuser
+# créer avec l'exemple suivant
 # Email: admin@example.com 
 # Password: jobboardadmin
+# Puis dans le navigateur : http://127.0.0.1:8000/admin/
+
 
 # ====== TEST => l'inscription d'un compte =========
 
