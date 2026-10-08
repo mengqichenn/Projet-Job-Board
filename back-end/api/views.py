@@ -24,6 +24,12 @@ class AdListView(APIView):
 
     def get(self, request):
         ads = Ad.objects.filter(status="open")
+        city = request.GET.get("city")
+        if city:
+            ads = ads.filter(city__icontains=city)
+        contract_type = request.GET.get("contract_type")
+        if contract_type:
+            ads = ads.filter(contract_type=contract_type)
         serializer = AdSerializer(ads, many=True)
         return Response(serializer.data)
 
