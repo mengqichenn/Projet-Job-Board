@@ -51,6 +51,7 @@ class RegisterSerializer(serializers.Serializer):
 
 
     # def pour vérifier si l'entreprise est bien enregistré dans la DB du gouvernement
+    @staticmethod 
     def siret_exists(siret):
         try:
             r = requests.get("https://recherche-entreprises.api.gouv.fr/search",
@@ -78,7 +79,7 @@ class RegisterSerializer(serializers.Serializer):
                 raise serializers.ValidationError({"siret": "Le numéro SIRET doit contenir 14 chiffres."})
             if Company.objects.filter(siret=siret).exists():
                 raise serializers.ValidationError({"siret": "Cette entreprise est déjà inscrite."})
-            if siret_exists(siret) is False:
+            if self.siret_exists(siret) is False:
                 raise serializers.ValidationError({"siret": "Ce numéro SIRET n'existe pas dans la base officielle."})
         return data
 
