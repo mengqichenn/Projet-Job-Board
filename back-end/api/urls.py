@@ -8,4 +8,5 @@ urlpatterns = [
     path("auth/me", views.MeView.as_view()),
     path("auth/logout", views.LogoutView.as_view()),
     path("ads", views.AdListView.as_view()),
+    path("ads/<int:pk>", views.AdDetailView.as_view()),
 ]

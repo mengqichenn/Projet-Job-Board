@@ -41,6 +41,17 @@ class AdListView(APIView):
             ads = ads.filter(work_mode=work_mode)
         serializer = AdSerializer(ads, many=True)
         return Response(serializer.data)
+# View pour AdDetail
+class AdDetailView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        ad = Ad.objects.filter(pk=pk, status="open").first()
+        if ad is None:
+            return Response({"message": "Annonce introuvable"}, status=404)
+        serializer = AdSerializer(ad)
+        return Response(serializer.data)
 
 # View pour inscription 
 class RegisterView(APIView):
