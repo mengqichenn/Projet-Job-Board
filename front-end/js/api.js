@@ -53,6 +53,7 @@ async function initPage() {
             redirectOn401: false
         });
         applyRole(user.role);
+        if (typeof initMenu === "function") initMenu(user);
         return user;
 
     } catch(err) {
