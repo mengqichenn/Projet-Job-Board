@@ -31,6 +31,8 @@ services:
       db:
         condition: service_healthy
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./back-end:/app
 
 volumes:
   db-data:
