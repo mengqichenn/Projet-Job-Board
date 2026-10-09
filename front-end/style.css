@@ -35,6 +35,9 @@ h1{font-size:clamp(1.6rem,4vw,2.4rem)}
 .btn-danger {background:var(--danger)}
 .btn-sm {padding:.3rem .65rem;font-size:.875rem}
 
+[hidden] {
+    display: none !important;
+}
 
 /*===========================================================================
     main page      BODY    
@@ -63,9 +66,9 @@ textarea::placeholder {
 .filters summary{font-weight:800;cursor:pointer;margin-bottom:.5rem}
 .filters fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:.9rem 0 .4rem}
 .filters legend{font-weight:600;font-size:.9rem;padding:0 .4rem 0 0}
-.check{display:flex;align-items:center;gap:.5rem;padding:.15rem 0;cursor:pointer}
-.check input{width:auto;margin:0}
-.filters select{margin-top:.3rem}
+.check {display:flex;align-items:center;gap:.5rem;padding:.15rem 0; cursor:pointer}
+.check input {width:auto;margin:0}
+.filters select {margin-top:.3rem}
 
 /*media*/
 @media (min-width:900px){
@@ -82,7 +85,7 @@ textarea::placeholder {
 
 /*form*/
 .field {display: flex; flex-direction: column; gap: 1.2rem; margin-bottom: 1rem;}
-.field label{font-weight:600;font-size:1rem; text-indent: 10px;}
+.field label{font-weight:600;font-size:1rem; text-indent: 10px; margin-top: 10px;}
 
 /*form input*/
 input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);text-indent: 0.5rem; padding:.6rem .75rem;width:95%; margin: 0 auto}
@@ -123,4 +126,4 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);bo
 
 .has-notice {position:relative; margin-bottom:2.5rem}
 .notice2 {position:absolute; top:100%; left:0; margin:.25rem 0 0;
-         color:var(--muted); font-size:.85rem; text-indent: 20px;}
+         color:var(--muted); font-size:.85rem; text-indent: 20px; padding-bottom: 5px;}

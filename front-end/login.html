@@ -5,26 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="icon.ico" type="image/x-icon">
 
-    <title>Connexion - JobBoard</title>
+    <title>Connexion - Talentis</title>
 </head>
 
 <body>
 
     <header class="site-header">
         <div class="container">
-            <a class="jobboard" href="main.html">job<span>board</span></a>
+            <a class="jobboard" href="main.html"><span>Talentis</span></a>
             <nav class="navbar">
+
+                <!--header avec différents data-role-->
 
                 <li><a href="main.html" aria-current="page">Offres</a></li>
                 <li data-role="visitor"><a class="btn btn-sm" href="login.html">Se connecter</a></li>
                 <li data-role="visitor"><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
-                <li data-role="candidate" hidden><a href="candidat/dashboard.html">Mes candidatures</a></li>
-                <li data-role="candidate company admin" hidden><a href="profile.html">Mon compte</a></li>
-                
-                <li data-role="company" hidden><a href="company/dashboard.html">Mes offres</a></li>
-
-                <li data-role="admin" hidden><a href="admin.html">Admin</a></li>
+                <li data-role="candidate" hidden><a href="dashboard-candidate.html">Mon compte</a></li>
+                <li data-role="recruiter" hidden><a href="dashboard-recruiter.html">Mon compte</a></li>
             </nav>
         </div>
     </header>
@@ -54,6 +53,43 @@
 
 
 
-    </main>   
+    </main>
+    
+    <script src="js/api.js"></script>
+    <script>
+        initPage();
+
+        const form = document.getElementById("login-form");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const data = await api("/auth/login", {
+                    method: "POST",
+                    body: {
+                        email: email,
+                        password: password
+                    },
+                    redirectOn401: false
+                });
+
+                localStorage.setItem("token", data.token);
+                location.href = "main.html";
+
+            } catch(err) {
+                
+                if (err.status === 401) {
+                    alert("Adresse mail ou mot de passe incorrect.");
+                } else {
+                    alert("Une erreur est survenue lors de la connexion.")
+                }
+                
+            }
+        });
+    </script>
 </body>
 </html>

@@ -5,26 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" href="icon.ico" type="image/x-icon">
 
-
-    <title>Offres d'emploi - JobBoard</title>
+    <title>Offres d'emploi - Talentis</title>
 </head>
 
 
 <body>
     <header class="site-header">
         <div class="container">
-            <a class="jobboard" href="main.html">job<span>board</span></a>
+            <a class="jobboard" href="main.html"><span>Talentis</span></a>
             <nav class="navbar">
 
-                <li><a href="main.html" aria-current="page">Offres</a></li>
-                <li data-role="visitor"><a class="btn btn-sm" href="login.html">Se connecter</a></li>
-                <li data-role="candidate" hidden><a href="candidat/dashboard.html">Mes candidatures</a></li>
-                <li data-role="candidate company admin" hidden><a href="#">Mon compte</a></li>
-                
-                <li data-role="company" hidden><a href="company/dashboard.html">Mes offres</a></li>
+                <!--header avec différents data-role-->
 
-                <li data-role="admin" hidden><a href="admin.html">Admin</a></li>
+                <li><a href="main.html" aria-current="page">Offres</a></li>
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="login.html">Se connecter</a></li>
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
+                <li data-role="candidate" hidden><a href="dashboard-candidate.html">Mon compte</a></li>              
+                <li data-role="recruiter" hidden><a href="dashboard-recruiter.html">Mon compte</a></li>
             </nav>
         </div>
     </header>
@@ -37,7 +36,7 @@
             <h1>Chercher une offre</h1>
             <form class="search" id="search-form" role="search">
                 <input type="search" name="search" placeholder="Métier, mot-clé" aria-label="Mot-clé">
-                <input type="text" name="location" placeholder="Ville" aria-label="Ville">
+                <input type="text" name="city" placeholder="Ville" aria-label="Ville">
                 <select name="category" id="category" aria-label="Catégorie de métier">
                     <option value="">Tous les categories</option>
                     <option value="tech">Informatique et numérique</option>
@@ -56,7 +55,6 @@
                     <option value="juridique">Juridique et droit</option>
                     <option value="creation">Creation et design</option>
                     <option value="autres">Autres</option>
-
                 </select>
                 <button class="btn" type="submit">Rechercher</button>
             </form>
@@ -80,10 +78,10 @@
 
                         <fieldset>
                             <legend>Niveau d'étude</legend>
-                            <label class="check"><input type="radio" name="education" value="bac">BAC / BAC Pro</label>
-                            <label class="check"><input type="radio" name="education" value="bac2">BAC+2</label>
-                            <label class="check"><input type="radio" name="education" value="bac3">BAC+3, Licence, Bachelor</label>
-                            <label class="check"><input type="radio" name="education" value="bac5">BAC+5, Master, Grande Ecole</label>
+                            <label class="check"><input type="radio" name="education_level" value="bac">BAC / BAC Pro</label>
+                            <label class="check"><input type="radio" name="education_level" value="bac_2">BAC+2</label>
+                            <label class="check"><input type="radio" name="education_level" value="bac_3">BAC+3, Licence, Bachelor</label>
+                            <label class="check"><input type="radio" name="education_level" value="bac_5">BAC+5, Master, Grande Ecole</label>
                         </fieldset>
 
                         <fieldset>
@@ -96,16 +94,16 @@
 
                         <fieldset>
                             <legend>Date de début</legend>
-                            <label class="check"><input type="checkbox" name="startdate[]" value="ASAP">Dès que possible</label>
-                            <label class="check"><input type="checkbox" name="startdate[]" value="3months">Dans moins de 3 mois</label>
-                            <label class="check"><input type="checkbox" name="startdate[]" value="moremonths">Dans plus de 3 mois</label>
+                            <label class="check"><input type="checkbox" name="start_time[]" value="ASAP">Dès que possible</label>
+                            <label class="check"><input type="checkbox" name="start_time[]" value="3months">Dans moins de 3 mois</label>
+                            <label class="check"><input type="checkbox" name="start_time[]" value="moremonths">Dans plus de 3 mois</label>
                         </fieldset>
 
                         <fieldset>
                             <legend>Mode de travail</legend>
-                            <label class="check"><input type="checkbox" name="mode_travail[]" value="remote">Télétravail</label>
-                            <label class="check"><input type="checkbox" name="mode_travail[]" value="hybrid">Hybride</label>
-                            <label class="check"><input type="checkbox" name="mode_travail[]" value="noremote">Sur site</label>
+                            <label class="check"><input type="checkbox" name="work_mode[]" value="remote">Télétravail</label>
+                            <label class="check"><input type="checkbox" name="work_mode[]" value="hybrid">Hybride</label>
+                            <label class="check"><input type="checkbox" name="work_mode[]" value="noremote">Sur site</label>
                         </fieldset>
                     </form>
                 </details>
@@ -116,5 +114,16 @@
         </div>
 
     </main>
+
+    <script src="js/api.js"></script>
+    <script>
+        async function start() {
+        const user = await initPage();
+
+        console.log("Utilisateur connecté :", user);
+        }
+
+        start();
+    </script>
 </body>
 </html>
