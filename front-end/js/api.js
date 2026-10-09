@@ -52,7 +52,6 @@ async function initPage() {
         const user = await api("/auth/me", {
             redirectOn401: false
         });
-
         applyRole(user.role);
         return user;
 
@@ -62,12 +61,11 @@ async function initPage() {
         if (err.status === 401) {
             localStorage.removeItem("token");
         }
-
         applyRole(null);
         return null;
     }
-    
 }
+
 
 
 async function logout() {
