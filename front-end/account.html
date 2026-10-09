@@ -16,13 +16,53 @@
             <a class="jobboard" href="main.html"><span>Talentis</span></a>
             <nav class="navbar">
 
-                <!--header avec différents data-role    à modifier encore -->
+                <!--header avec différents data-role -->
 
                 <li><a href="main.html" aria-current="page">Offres</a></li>
-                <li data-role="visitor"><a class="btn btn-sm" href="login.html">Se connecter</a></li>
-                <li data-role="visitor"><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
-                <li data-role="candidate" hidden><a href="dashboard-candidate.html">Mon compte</a></li>
-                <li data-role="recruiter" hidden><a href="dashboard-recruiter.html">Mon compte</a></li>
+
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="login.html">Se connecter</a></li>
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
+
+
+                <!--Menu déroulant pour candidat-->
+                <li class="menu" data-role="candidate" hidden>
+                    <details>
+                        <summary class="menu-toggle" aria-label="Menu du compte">
+                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                        </summary>
+                        <div class="menu-panel">
+                            <a class="menu-profile" href="account.html">
+                                <span class="avatar menu-initials">MC</span>
+                                <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
+                            </a>
+                            <hr>
+                            <a href="dashboard-candidate.html">Mon dashboard</a>
+                            <hr>
+                            <button type="button" data-logout>Déconnexion</button>
+                        </div>
+                    </details>
+                </li>
+                
+                <!--Menu déroulant pour recruteur-->
+
+                <li class="menu" data-role="recruiter" hidden>
+                    <details>
+                        <summary class="menu-toggle" aria-label="Menu du compte">
+                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                        </summary>
+
+                        <div class="menu-panel">
+                            <a class="menu-profile" href="account.html">
+                                <span class="avatar menu-initials">MC</span>
+                                <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
+                            </a>
+                            <hr>
+                            <a href="dashboard-recruiter.html">Mon dashboard</a>
+                            <hr>
+                            <button type="button" data-logout>Déconnexion</button>
+                        </div>
+                    </details>
+                </li>
             </nav>
         </div>
     </header>
@@ -58,9 +98,8 @@
                     <div class="field has-notice"><label for="password">Mot de passe*</label>
                         <input id="password" name="password" type="password" autocomplete="new-password" required minlength="12">
                         <p class="notice2">Votre mot de passe doit contenir au moins 12 caractères, et être composé de lettres et chiffres.</p></div>
+            
                 
-
-                <!--formulaire d'inscription candidat (par défaut)-->
                     <div class="field"><label for="first_name">Prénom*</label>
                         <input id="first_name" name="first_name" required></div>
 
@@ -71,6 +110,7 @@
                             <label for="telephone">Téléphone</label>
                             <input id="telephone" name="telephone" type="tel"></div>
                 </div>
+                <!--formulaire d'inscription candidat (par défaut)-->
 
                 <fieldset id="fs-candidate" style="border:0;padding:0;margin:0">
                     <div class="form-row">
@@ -141,6 +181,7 @@
     </main>
 
     <script src="js/api.js"></script>
+    <script src="js/menu.js"></script>
     <script>
         initPage();
         const form = document.getElementById("account-form");
