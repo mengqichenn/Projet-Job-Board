@@ -1,8 +1,4 @@
-// menu.js : complète le menu HTML/CSS (à charger après api.js).
-// L'ouverture et la fermeture au clic sur le bouton marchent sans JS (balise <details>).
-// Ici : nom et initiales, fermeture au clic ailleurs ou avec Échap, déconnexion.
-
-// Appelée par initPage() (api.js) avec l'utilisateur connecté
+// Tirer les initial depuis "name" que API renvoie
 function initMenu(me) {
   if (!me) return;
   const name = me.name || 'Mon compte';
@@ -27,3 +23,7 @@ document.addEventListener('click', async e => {
   localStorage.removeItem('token');
   location.href = 'main.html';
 });
+
+applyRole(user,role);
+if (typeof initMenu === "function") initMenu(user);
+return user;
