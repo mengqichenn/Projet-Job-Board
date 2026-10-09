@@ -34,5 +34,12 @@ services:
     volumes:
       - ./back-end:/app
 
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "5500:80"
+    volumes:
+      - ./front-end:/usr/share/nginx/html:ro
+
 volumes:
   db-data:
