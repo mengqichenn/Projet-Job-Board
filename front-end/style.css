@@ -1,0 +1,129 @@
+/*root*/
+:root{--bg:#eef2f1;--surface:#fff;--ink:#15212b;--muted:#5d6b76;--line:#d9e1e0;
+--primary:#106679a0;--primary-dark:#0a4452;--accent:#f2b84b;--danger:#b3261e;--ok:#1b7a4b;--r:10px}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Figtree",system-ui,-apple-system,"Segoe UI",sans-serif}
+
+a {color:var(--primary)}
+h1,h2,h3{line-height:1.2;margin:1em 0 .5em}
+h1{font-size:clamp(1.6rem,4vw,2.4rem)}
+
+.container{width:min(1100px,100% - 2rem);margin-inline:auto}
+
+/* =========================================================================
+            HEADER (same for all pages)
+=============================================================================*/
+.site-header {background:var(--surface); border-bottom:1px solid var(--line); position:sticky; top:0; z-index:10; width: 100%}
+
+.site-header .container {display:grid; grid-template-columns: 2fr 3fr; justify-items: center; align-items: center; gap:1rem; min-height:60px; flex-wrap:wrap}
+
+.jobboard {font-weight:800;font-size:1.25rem;color:var(--ink);text-decoration:none; justify-items: center;}
+.jobboard span {color:var(--primary)}
+
+/*nav*/
+.navbar {display:flex; gap:.5rem; align-items:center; flex-wrap:wrap}
+.navbar li {list-style:none}
+
+.navbar a {padding:.4rem .7rem;border-radius:var(--r);text-decoration:none;color:var(--ink)}
+.navbar a:hover,.navbar a[aria-current=page]{background:var(--bg)}
+
+.btn {display:inline-block;border:0;border-radius:var(--r);padding:.65rem 1.1rem;font:inherit;font-weight:600;cursor:pointer;background:var(--primary);color:#fff;text-decoration:none}
+.btn:hover {background:var(--primary-dark)}
+.btn-ghost {background:transparent;color:var(--primary);border:1px solid var(--line)}
+.btn-ghost:hover {background:var(--bg)}
+.btn-danger {background:var(--danger)}
+.btn-sm {padding:.3rem .65rem;font-size:.875rem}
+
+[hidden] {
+    display: none !important;
+}
+
+/*===========================================================================
+    main page      BODY    
+==============================================================================*/
+/*search box*/
+.searchbar {padding:2.5rem 0 1.5rem}
+
+.search{display:grid;gap:.75rem;grid-template-columns:2fr 1.2fr 1.6fr auto;background:var(--surface);padding:1rem;border:1px solid var(--line);border-radius:var(--r)}
+
+input::placeholder,
+textarea::placeholder {
+  font-family: "Figtree", sans-serif;
+  font-size: .95rem;
+  color: var(--muted);
+  opacity: 1;}
+
+
+/*filters and ads*/
+.adcontainer {display:grid;gap:1.5rem;grid-template-columns:1fr;align-items:start;margin-bottom:2rem}
+@media (min-width:900px){
+  .side{position:sticky;top:76px}
+}
+
+.card {background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.25rem;}
+
+.filters summary{font-weight:800;cursor:pointer;margin-bottom:.5rem}
+.filters fieldset{border:0;border-top:1px solid var(--line);margin:0;padding:.9rem 0 .4rem}
+.filters legend{font-weight:600;font-size:.9rem;padding:0 .4rem 0 0}
+.check {display:flex;align-items:center;gap:.5rem;padding:.15rem 0; cursor:pointer}
+.check input {width:auto;margin:0}
+.filters select {margin-top:.3rem}
+
+/*media*/
+@media (min-width:900px){
+  .adcontainer{grid-template-columns:230px minmax(0,1fr) 260px}
+}
+
+
+
+/*==========================================================================
+        login page  BODY
+============================================================================*/
+.auth {min-height: calc(100vh - 60px); display: grid; place-items: center}
+.auth .card {width: min(600px, 100%); padding:3rem;}
+
+/*form*/
+.field {display: flex; flex-direction: column; gap: 1.2rem; margin-bottom: 1rem;}
+.field label{font-weight:600;font-size:1rem; text-indent: 10px; margin-top: 10px;}
+
+/*form input*/
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);text-indent: 0.5rem; padding:.6rem .75rem;width:95%; margin: 0 auto}
+
+.notice {color:var(--muted); text-indent: 10px;}
+
+
+/*media pour petit écran à rajouter !*/
+
+
+
+
+/*==============================================================================
+        account page  BODY
+===============================================================================*/
+
+.accountcontainer {width: min(800px, 100%); place-items: center; margin: 5rem auto;}
+
+.accountform {background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-top:2rem; padding:2rem;}
+
+.role-choice {display:grid;gap:.75rem;grid-template-columns:1fr 1fr}
+.role-choice legend{font-weight:600;font-size:.9rem;margin-bottom:.5rem;padding:0}
+
+.role-card{position:relative;display:block;}
+.role-card input{position:absolute; opacity:0; justify-items: center;}
+
+.role-box{display:block;padding:1rem;border:2px solid var(--line);border-radius:var(--r);
+          background:var(--surface);cursor:pointer;transition:border-color .15s,background .15s}
+.role-box strong{display:block}
+.role-box small{color:var(--muted)}
+
+/* effet brodure + fond sur le bloc choisi*/
+.role-card input:checked + .role-box {border-color: var(--primary); background: color-mix(in srgb, var(--primary) 12%, var(--surface));}
+
+.role-card input:focus-visible + .role-box {outline: 3px solid var(--accent); outline-offset: 2px;}
+
+.form-row {display:grid;gap:1rem;grid-template-columns:1fr}
+
+.has-notice {position:relative; margin-bottom:2.5rem}
+.notice2 {position:absolute; top:100%; left:0; margin:.25rem 0 0;
+         color:var(--muted); font-size:.85rem; text-indent: 20px; padding-bottom: 5px;}

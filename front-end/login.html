@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="icon.ico" type="image/x-icon">
+
+    <title>Connexion - Talentis</title>
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="container">
+            <a class="jobboard" href="main.html"><span>Talentis</span></a>
+            <nav class="navbar">
+
+                <!--header avec différents data-role-->
+
+                <li><a href="main.html" aria-current="page">Offres</a></li>
+                <li data-role="visitor"><a class="btn btn-sm" href="login.html">Se connecter</a></li>
+                <li data-role="visitor"><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
+                <li data-role="candidate" hidden><a href="dashboard-candidate.html">Mon compte</a></li>
+                <li data-role="recruiter" hidden><a href="dashboard-recruiter.html">Mon compte</a></li>
+            </nav>
+        </div>
+    </header>
+
+
+
+    <main class="auth">
+        <div class="card">
+            <h1>Connexion</h1>
+
+<!-- autocomplete à reconfirmer -->
+ <!--API pour les liens -->
+
+            <form id="login-form">
+                <div class="field"><label for="email">Adresse mail</label>
+                    <input id="email" type="email" name="email" autocomplete="email" required>
+                </div>
+                <div class="field"><label for="password">Mot de passe</label>
+                    <input id="password" type="password" name="password" autocomplete="current-password" required>
+                </div>
+                <p class="notice"> <a href="#">Mot de passe oublié ?</a></p>
+                <p class="notice">Pas encore de compte ? <a href="account.html?mode=create">Créer un compte</a></p>
+                <button class="btn" type="submit">Se connecter</button>
+            </form>
+        </div>
+
+
+
+
+    </main>
+    
+    <script src="js/api.js"></script>
+    <script>
+        initPage();
+
+        const form = document.getElementById("login-form");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const data = await api("/auth/login", {
+                    method: "POST",
+                    body: {
+                        email: email,
+                        password: password
+                    },
+                    redirectOn401: false
+                });
+
+                localStorage.setItem("token", data.token);
+                location.href = "main.html";
+
+            } catch(err) {
+                
+                if (err.status === 401) {
+                    alert("Adresse mail ou mot de passe incorrect.");
+                } else {
+                    alert("Une erreur est survenue lors de la connexion.")
+                }
+                
+            }
+        });
+    </script>
+</body>
+</html>
