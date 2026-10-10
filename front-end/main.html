@@ -295,11 +295,13 @@
         console.log("Utilisateur connecté :", user);
         }
 
-        start();
+        start();    
     </script>
 
 
     <script>
+
+        // click sur boutons "En savoir plus" et "postuler" pour afficher les contenus cachés
         document.addEventListener("click", e => {
             const btn = e.target.closest('[data-more], [data-apply], [data-cancel]');
             if (!btn) return;
@@ -319,10 +321,37 @@
             const trigger = card.querySelector(action === "detail" ? '[data-more]' : '[data-apply]');
             trigger.setAttribute('aria-expanded', !panel.hidden);
         });
-        document.addEventListener("submit", e => { 
-            if (!e.target.matches('.ad-apply')) return;
+        
+        // submit pour envoyer la candidature
+        document.addEventListener("submit", async e => { 
+            if (!e.target.matches(".ad-apply")) return;
             e.preventDefault(); 
-            alert("Error : votre candidature n'a pas pu être envoyé.");
+            const form = e.target;
+            const adID = form.closest(".ad").dataset.id;
+            const button = form.querySelector('[type="submit"]');
+            const body = Object.fromEntries(new FormData(form));
+
+            button.disabled = true;
+
+            try {
+                await api(`/ads/${adId}/apply`, {
+                    method: "POST",
+                    body,
+                    redirectOn401: false
+                });
+
+                alert("Votre candidature a bien été envoyée.");
+                form.reset();
+            } catch (err) {
+                alert(
+                    err.status === 401 
+                        ? "Connectez-vous pour postuler."
+                        : err.message
+                );
+            } finally {
+                button.disabled = false;
+            }
+            
         });
         
     </script>
