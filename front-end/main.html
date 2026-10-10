@@ -327,7 +327,7 @@
             if (!e.target.matches(".ad-apply")) return;
             e.preventDefault(); 
             const form = e.target;
-            const adID = form.closest(".ad").dataset.id;
+            const adId = form.closest(".ad").dataset.id;
             const button = form.querySelector('[type="submit"]');
             const body = Object.fromEntries(new FormData(form));
 
