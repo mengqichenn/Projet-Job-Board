@@ -98,11 +98,13 @@
                 </select>
                 <button class="btn" type="submit">Rechercher</button>
             </form>
-
-
         </section>
 
+
+
         <div class="adcontainer">
+
+            <!--============== Partie filtre ===============-->
             <aside class="side">
                 <details class="card filters" id="filters" open>
                     <summary>Filtres</summary>
@@ -115,6 +117,14 @@
                             <label class="check"><input type="checkbox" name="contract" value="Alternance">Alternance</label>
                             <label class="check"><input type="checkbox" name="contract" value="Interim">Intérim</label>
                         </fieldset>
+
+                        <fieldset>
+                            <legend>Temps de travail</legend>
+                            <label class="check"><input type="radio" name="working_time" value="full_time">Temps plein</label>
+                            <label class="check"><input type="radio" name="working_time" value="part_time">Temps partiel</label>
+
+                        </fieldset>
+
 
                         <fieldset>
                             <legend>Niveau d'étude</legend>
@@ -150,13 +160,134 @@
             </aside>
 
 
+            <!--=========== Partie annonces ==========-->
+            <div>
+                <h2>Offres</h2>
+                <div class="ad-list">
+
+                    <!-- First Ad -->
+                    <article class="ad ad-row" data-id="1">
+                        <div class="ad-content">
+                            <h3 class="ad-title">Ad title 1<span class="ad-new">Nouveau</span></h3>
+                            <p class="ad-meta">company_name · city (postal_code)</p>
+                            <p class="ad-desc">short_description</p>
+                            <ul class="ad-tags"><li class="is-contract">contract_type</li><li>working_time</li><li>work_mode</li><li>experience</li></ul>
+                        </div>
+
+                        <button type="button" class="save-btn" aria-pressed="true" aria-label="Enregistrer l'offre"></button>
+
+                        <div class="ad-side">
+                            
+                            <p class="ad-salary">2 800 à 3 400 € <small>/ mois</small></p>
+                            <time class="ad-date" name="created_at" datetime="2026-10-10T08:00">il y a 2 heures</time>
+                        </div>
+
+                        <div class="ad-actions">
+                            <button type="button" class="btn btn-ghost btn-sm" data-more aria-expanded="false">En savoir plus</button>
+                            <button type="button" class="btn btn-sm" data-apply aria-expanded="false">Postuler</button>
+                        </div>
+                    </article>
+
+                    <!-- Second Ad -->
+                    <article class="ad ad-row" data-id="2">
+                        <div class="ad-content">
+                            <h3 class="ad-title">Ad title 2</h3>
+                            <p class="ad-meta">company_name · city (postal_code)</p>
+                            <p class="ad-desc">short_description</p>
+                            <ul class="ad-tags"><li class="is-contract">contract_type</li><li>working_time</li><li>work_mode</li><li>experience</li></ul>
+                        </div>
+
+                        <button type="button" class="save-btn" aria-pressed="false" aria-label="Retirer des offres enregistrées"></button>
+
+                        <div class="ad-side">
+                            
+                            <p class="ad-salary"><small>Salaire non précisé</small></p>
+                            <time class="ad-date" name="created_at" datetime="2026-10-08T10:00">il y a 2 jours</time>
+                        </div>
+
+                        <div class="ad-actions">
+                            <button type="button" class="btn btn-ghost btn-sm" data-more aria-expanded="false">En savoir plus</button>
+                            <button type="button" class="btn btn-sm" data-apply aria-expanded="false">Postuler</button>
+                        </div>
+                    </article>
+
+                    <!-- Third Ad -->
+                    <article class="ad ad-row" data-id="3">
+                        <div class="ad-content">
+                            <h3 class="ad-title">Ad title 3</h3>
+                            <p class="ad-meta">company_name · city (postal_code)</p>
+                            <p class="ad-desc">short_description</p>
+                            <ul class="ad-tags"><li class="is-contract">contract_type</li><li>working_time</li><li>work_mode</li><li>experience</li></ul>
+                        </div>
+
+                        <button type="button" class="save-btn" aria-pressed="false" aria-label="Retirer des offres enregistrées"></button>
+
+                        <div class="ad-side">
+                            
+                            <p class="ad-salary"><small>Salaire non précisé</small></p>
+                            <time class="ad-date" name="created_at" datetime="2026-10-08T10:00">il y a 2 jours</time>
+                        </div>
+
+                        <div class="ad-actions">
+                            <button type="button" class="btn btn-ghost btn-sm" data-more aria-expanded="false">En savoir plus</button>
+                            <button type="button" class="btn btn-sm" data-apply aria-expanded="false">Postuler</button>
+                        </div>
+
+                    </article>
+                </div>
+            </div>
 
         </div>
 
     </main>
 
+
+    <!-- Panneau "En savoir plus" -->
+    <template id="template-detail">
+        <section class="ad-detail">
+            <h4>Détail du poste</h4>
+
+            <dl>
+                <dt>Catégorie</dt><dd>category</dd>
+                <dt>Entreprise</dt><dd>company_name</dd>
+                <dt>Lieu</dt><dd>city (postal_code)</dd>
+                <dt>Salaire</dt><dd>monthly_salary_min à monthly_salary_max € par mois</dd>
+                <dt>Contrat</dt><dd>contract_type</dd>
+                <dt>Temps de travail</dt><dd>working_time</dd>
+                <dt>Mode de travail</dt><dd>work_mode</dd>
+                <dt>Expérience</dt><dd>experience</dd>
+                <dt>Niveau d'études</dt><dd>education_level</dd>
+                <dt>Début</dt><dd>start_time</dd>
+            </dl>
+
+            <p class="ad-full">full_description</p>
+        </section>
+    </template>
+
+    <!-- Formulaire "Postuler" -->
+    <template id="template-apply">
+        <form class="ad-apply">
+            <h4>Postuler à cette annonce</h4>
+            <div class="ad-fields">
+            <div class="field"><label>Prénom</label><input name="first_name" autocomplete="given-name" required></div>
+            <div class="field"><label>Nom</label><input name="last_name" autocomplete="family-name" required></div>
+            <div class="field"><label>Adresse e-mail</label><input name="email" type="email" autocomplete="email" required></div>
+            <div class="field"><label>Téléphone</label><input name="telephone" type="tel" autocomplete="tel"></div>
+            <div class="field wide"><label>Message au recruteur</label><textarea name="message" required></textarea></div>
+            </div>
+            <div class="ad-actions">
+            <button type="submit" class="btn btn-sm">Envoyer ma candidature</button>
+            <button type="button" class="btn btn-ghost btn-sm" data-cancel>Annuler</button>
+            </div>
+        </form>
+    </template>
+
+
+
+
     <script src="js/api.js"></script>
     <script src="js/menu.js"></script>
+
     <script>
         async function start() {
         const user = await initPage();
@@ -166,5 +297,33 @@
 
         start();
     </script>
+
+
+    <script>
+        document.addEventListener("click", e => {
+            const btn = e.target.closest('[data-more], [data-apply], [data-cancel]');
+            if (!btn) return;
+            const card = btn.closest('.ad');
+            const action = btn.hasAttribute('data-more') ? 'detail' : 'apply';
+            const cls = '.ad-' + action;
+            let panel = card.querySelector(cls)
+            
+            if (btn.hasAttribute('data-cancel')) {
+                panel.hidden = true;
+            } else if (!panel) {
+                card.append(document.getElementById('template-' + action).content.cloneNode(true));
+                panel = card.querySelector(cls);
+            } else {
+                panel.hidden = !panel.hidden;
+            }
+            const trigger = card.querySelector(action === "detail" ? '[data-more]' : '[data-apply]');
+            trigger.setAttribute('aria-expanded', !panel.hidden);
+        });
+        document.addEventListener("submit", e => { 
+            e.preventDefault(); alert("Maquette : rien n'est envoyé.");
+        })
+        
+    </script>
+
 </body>
 </html>
