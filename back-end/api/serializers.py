@@ -1,7 +1,10 @@
 from django.db import transaction
 from rest_framework import serializers
-from .models import User, Company
+from .models import User, Company, Ad, Application, Message, Category
 import requests
+
+
+# Serializer pour l'inscription
 
 class RegisterSerializer(serializers.Serializer):
 
@@ -105,6 +108,42 @@ class RegisterSerializer(serializers.Serializer):
             cv=d.get("cv") if d["role"] == "candidate" else None,   # CV ne peut qu'être déposé par les candidats
         )
 
+# Serializer pour annonces
+
+class AdSerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(source="company.name", read_only=True)
+    category_name = serializers.CharField(source="category.name", read_only=True)
+    class Meta:
+        model = Ad
+        fields = [
+            "id", "title", "short_description", "full_description",
+            "city", "postal_code", "contract_type",
+            "monthly_salary_min", "monthly_salary_max", "working_time",
+            "education_level", "experience", "start_time", "work_mode",
+            "status", "created_at", "company_name", "category_name",
+        ]
+
+
+
+
+# Serializer pour candidature
+
+class ApplicationSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(max_length=150)
+    last_name = serializers.CharField(max_length=150)
+    email = serializers.EmailField(max_length=150) 
+
+    ad_title = serializers.CharField(source="ad.title", read_only=True)
+
+    class Meta:
+        model = Application
+        fields = [
+            "id", "ad", "ad_title","first_name", "last_name", "email", 
+            "telephone", "message", "status", "created_at",
+        ]
+        read_only_fields = ["id", "ad", "status", "created_at"]
+
+        
         
 
     
