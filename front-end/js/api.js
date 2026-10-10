@@ -28,9 +28,24 @@ async function api(path, { method = "GET", body, redirectOn401 = true} = {}) {
 
     // reçoit la réponse du backend en JSON
     const data = res.status === 204 ? null : await res.json().catch(() => null);
-    if (!res.ok) throw { status: res.status, data };
+    if (!res.ok) { 
+        const err = new Error(errorMessage(data));
+        err.status = res.status;
+        err.data = data;
+        err.errors = data && !data.detail && !data.message ? data : undefined;
+        throw err;
+    }
     return data;
 }
+
+function errorMessage(data) {
+    if (!data) return "Impossible de joindre le serveur.";
+    if (data.detail || data.message) return data.detail || data.message;
+    return Object.values(data).flat().join(" ");     // ex. { siret: ["..."] }
+}
+
+
+
 
 // récuppér les sections qui ont un "data-role", masquer les pour les visiteurs
 function applyRole(role) {

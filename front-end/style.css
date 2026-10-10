@@ -81,11 +81,7 @@ textarea::placeholder {
 /*filters and ads*/
 .adcontainer {display:grid; gap:2rem; grid-template-columns:1fr;align-items:start;margin-bottom:2rem}
 
-
-@media (min-width:900px){
-  .side{position:sticky;top:70px; max-height:calc(100vh - 90px);overflow-y:auto}
-}
-
+.side { max-height:calc(100vh - 90px); overflow-y:auto; margin-top: 25px;}
 
 .card {background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.25rem;}
 
@@ -148,7 +144,7 @@ textarea::placeholder {
 .ad-full {white-space:pre-line;margin:0 0 1rem}
 
 /* templetes "en savoir plus" + "postuler" */
-.ad-fields{display:grid;gap:.75rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.ad-fields {display:grid; gap:2rem; grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
 .ad-fields .wide{grid-column:1 / -1}
 .ad-apply .field{margin:0}
 .ad-apply textarea{min-height:7rem;resize:vertical}

@@ -260,7 +260,7 @@
                 <dt>Début</dt><dd>start_time</dd>
             </dl>
 
-            <p class="ad-full">full_description</p>
+            <p class="ad-full">Description : full_description</p>
         </section>
     </template>
 
@@ -269,15 +269,15 @@
         <form class="ad-apply">
             <h4>Postuler à cette annonce</h4>
             <div class="ad-fields">
-            <div class="field"><label>Prénom</label><input name="first_name" autocomplete="given-name" required></div>
-            <div class="field"><label>Nom</label><input name="last_name" autocomplete="family-name" required></div>
-            <div class="field"><label>Adresse e-mail</label><input name="email" type="email" autocomplete="email" required></div>
-            <div class="field"><label>Téléphone</label><input name="telephone" type="tel" autocomplete="tel"></div>
-            <div class="field wide"><label>Message au recruteur</label><textarea name="message" required></textarea></div>
+                <div class="field"><label>Prénom*</label><input name="first_name" autocomplete="given-name" required></div>
+                <div class="field"><label>Nom*</label><input name="last_name" autocomplete="family-name" required></div>
+                <div class="field"><label>Adresse mail*</label><input name="email" type="email" autocomplete="email" required></div>
+                <div class="field"><label>Téléphone</label><input name="telephone" type="tel" autocomplete="tel"></div>
+                <div class="field wide"><label>Message au recruteur</label><textarea name="message" required></textarea></div>
             </div>
             <div class="ad-actions">
-            <button type="submit" class="btn btn-sm">Envoyer ma candidature</button>
-            <button type="button" class="btn btn-ghost btn-sm" data-cancel>Annuler</button>
+                <button type="submit" class="btn btn-sm">Envoyer ma candidature</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-cancel>Annuler</button>
             </div>
         </form>
     </template>
@@ -320,8 +320,10 @@
             trigger.setAttribute('aria-expanded', !panel.hidden);
         });
         document.addEventListener("submit", e => { 
-            e.preventDefault(); alert("Maquette : rien n'est envoyé.");
-        })
+            if (!e.target.matches('.ad-apply')) return;
+            e.preventDefault(); 
+            alert("Error : votre candidature n'a pas pu être envoyé.");
+        });
         
     </script>
 
