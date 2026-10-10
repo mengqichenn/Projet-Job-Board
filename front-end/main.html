@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" href="icon.ico" type="image/x-icon">
+
+    <title>Offres d'emploi - Talentis</title>
+</head>
+
+
+<body>
+    <header class="site-header">
+        <div class="container">
+            <a class="jobboard" href="main.html"><span>Talentis</span></a>
+            <nav class="navbar">
+
+                <!--header avec différents data-role-->
+
+                <li><a href="main.html" aria-current="page">Offres</a></li>
+
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="login.html">Se connecter</a></li>
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
+
+
+                <!--Menu déroulant pour candidat-->
+                <li class="menu" data-role="candidate" hidden>
+                    <details>
+                        <summary class="menu-toggle" aria-label="Menu du compte">
+                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                        </summary>
+                        <div class="menu-panel">
+                            <a class="menu-profile" href="account.html">
+                                <span class="avatar menu-initials">MC</span>
+                                <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
+                            </a>
+                            <hr>
+                            <a href="dashboard-candidate.html">Mon dashboard</a>
+                            <hr>
+                            <button type="button" data-logout>Déconnexion</button>
+                        </div>
+                    </details>
+                </li>
+                
+                <!--Menu déroulant pour recruteur-->
+
+                <li class="menu" data-role="recruiter" hidden>
+                    <details>
+                        <summary class="menu-toggle" aria-label="Menu du compte">
+                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                        </summary>
+
+                        <div class="menu-panel">
+                            <a class="menu-profile" href="account.html">
+                                <span class="avatar menu-initials">MC</span>
+                                <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
+                            </a>
+                            <hr>
+                            <a href="dashboard-recruiter.html">Mon dashboard</a>
+                            <hr>
+                            <button type="button" data-logout>Déconnexion</button>
+                        </div>
+                    </details>
+                </li>
+            </nav>
+        </div>
+    </header>
+
+
+<!-- les noms ou ids à modifier en fonction de la base de donnée -->
+
+    <main class="container">
+        <section class="searchbar">
+            <h1>Chercher une offre</h1>
+            <form class="search" id="search-form" role="search">
+                <input type="search" name="search" placeholder="Métier, mot-clé" aria-label="Mot-clé">
+                <input type="text" name="city" placeholder="Ville" aria-label="Ville">
+                <select name="category" id="category" aria-label="Catégorie de métier">
+                    <option value="">Tous les categories</option>
+                    <option value="tech">Informatique et numérique</option>
+                    <option value="administration">Administration et gestion</option>
+                    <option value="commerce">Commerce et vente</option>
+                    <option value="marketing">Marketing et communication</option>
+                    <option value="finance">Finance, banque et comptabilité</option>
+                    <option value="rh">Ressources humaines</option>
+                    <option value="sante">Santé et services sociaux</option>
+                    <option value="education">Éducation et formation</option>
+                    <option value="industrie">Industrie et production</option>
+                    <option value="logistique">Logistique et transport</option>
+                    <option value="tourisme">Tourisme et hôtellerie</option>
+                    <option value="agri">Agriculture</option>
+                    <option value="btp">BTP et construction</option>
+                    <option value="juridique">Juridique et droit</option>
+                    <option value="creation">Creation et design</option>
+                    <option value="autres">Autres</option>
+                </select>
+                <button class="btn" type="submit">Rechercher</button>
+            </form>
+
+
+        </section>
+
+        <div class="adcontainer">
+            <aside class="side">
+                <details class="card filters" id="filters" open>
+                    <summary>Filtres</summary>
+                    <form id="filters-form">
+                        <fieldset>
+                            <legend>Type de contrat</legend>
+                            <label class="check"><input type="checkbox" name="contract" value="CDI">CDI</label>
+                            <label class="check"><input type="checkbox" name="contract" value="CDD">CDD</label>
+                            <label class="check"><input type="checkbox" name="contract" value="Stage">Stage</label>
+                            <label class="check"><input type="checkbox" name="contract" value="Alternance">Alternance</label>
+                            <label class="check"><input type="checkbox" name="contract" value="Interim">Intérim</label>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Niveau d'étude</legend>
+                            <label class="check"><input type="radio" name="education_level" value="bac">BAC / BAC Pro</label>
+                            <label class="check"><input type="radio" name="education_level" value="bac_2">BAC+2</label>
+                            <label class="check"><input type="radio" name="education_level" value="bac_3">BAC+3, Licence, Bachelor</label>
+                            <label class="check"><input type="radio" name="education_level" value="bac_5">BAC+5, Master, Grande Ecole</label>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Expérience</legend>
+                            <label class="check"><input type="radio" name="experience" value="debutant"> < 1 an</label>
+                            <label class="check"><input type="radio" name="experience" value="junior">1 à 3 ans</label>
+                            <label class="check"><input type="radio" name="experience" value="confirme"> 3 à 5 ans</label>
+                            <label class="check"><input type="radio" name="experience" value="senior"> > 5 ans </label>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Date de début</legend>
+                            <label class="check"><input type="checkbox" name="start_time" value="ASAP">Dès que possible</label>
+                            <label class="check"><input type="checkbox" name="start_time" value="3months">Dans moins de 3 mois</label>
+                            <label class="check"><input type="checkbox" name="start_time" value="moremonths">Dans plus de 3 mois</label>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>Mode de travail</legend>
+                            <label class="check"><input type="checkbox" name="work_mode" value="remote">Télétravail</label>
+                            <label class="check"><input type="checkbox" name="work_mode" value="hybrid">Hybride</label>
+                            <label class="check"><input type="checkbox" name="work_mode" value="noremote">Sur site</label>
+                        </fieldset>
+                    </form>
+                </details>
+            </aside>
+
+
+
+        </div>
+
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/menu.js"></script>
+    <script>
+        async function start() {
+        const user = await initPage();
+
+        console.log("Utilisateur connecté :", user);
+        }
+
+        start();
+    </script>
+</body>
+</html>
