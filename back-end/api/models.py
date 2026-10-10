@@ -129,13 +129,22 @@ class Application(models.Model):
 
     candidate = models.ForeignKey(User, on_delete=models.CASCADE, related_name="applications")
     ad = models.ForeignKey(Ad, on_delete=models.CASCADE, related_name="applications")
+    first_name = models.CharField(max_length=150, default="")
+    last_name = models.CharField(max_length=150, default="")
+    email = models.EmailField(max_length=150, default="")
+    telephone = models.CharField(max_length=30, blank=True, default="")
     message = models.TextField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="sent")
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # contraints pour empêcher que le candidat postule à la même offre
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["candidate", "ad"], name="one_application_per_ad")]
-
+        constraints = [
+            models.UniqueConstraint(
+            fields=["candidate", "ad"],
+            name="unique_candidate_ad"
+            )
+        ]
 
 # Message table
 class Message(models.Model):
