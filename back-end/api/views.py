@@ -161,7 +161,7 @@ class RecruiterApplicationsView(APIView):
             )
 
         applications = (
-            Application.objects.filter(ad_recruiter = request.user)
+            Application.objects.filter(ad__recruiter=request.user)
             .select_related("ad")
             .order_by("-created_at")
         )
