@@ -260,7 +260,7 @@
                 <dt>Début</dt><dd>start_time</dd>
             </dl>
 
-            <p class="ad-full">full_description</p>
+            <p class="ad-full">Description : full_description</p>
         </section>
     </template>
 
@@ -269,15 +269,15 @@
         <form class="ad-apply">
             <h4>Postuler à cette annonce</h4>
             <div class="ad-fields">
-            <div class="field"><label>Prénom</label><input name="first_name" autocomplete="given-name" required></div>
-            <div class="field"><label>Nom</label><input name="last_name" autocomplete="family-name" required></div>
-            <div class="field"><label>Adresse e-mail</label><input name="email" type="email" autocomplete="email" required></div>
-            <div class="field"><label>Téléphone</label><input name="telephone" type="tel" autocomplete="tel"></div>
-            <div class="field wide"><label>Message au recruteur</label><textarea name="message" required></textarea></div>
+                <div class="field"><label>Prénom*</label><input name="first_name" autocomplete="given-name" required></div>
+                <div class="field"><label>Nom*</label><input name="last_name" autocomplete="family-name" required></div>
+                <div class="field"><label>Adresse mail*</label><input name="email" type="email" autocomplete="email" required></div>
+                <div class="field"><label>Téléphone</label><input name="telephone" type="tel" autocomplete="tel"></div>
+                <div class="field wide"><label>Message au recruteur</label><textarea name="message" required></textarea></div>
             </div>
             <div class="ad-actions">
-            <button type="submit" class="btn btn-sm">Envoyer ma candidature</button>
-            <button type="button" class="btn btn-ghost btn-sm" data-cancel>Annuler</button>
+                <button type="submit" class="btn btn-sm">Envoyer ma candidature</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-cancel>Annuler</button>
             </div>
         </form>
     </template>
@@ -295,11 +295,13 @@
         console.log("Utilisateur connecté :", user);
         }
 
-        start();
+        start();    
     </script>
 
 
     <script>
+
+        // click sur boutons "En savoir plus" et "postuler" pour afficher les contenus cachés
         document.addEventListener("click", e => {
             const btn = e.target.closest('[data-more], [data-apply], [data-cancel]');
             if (!btn) return;
@@ -319,9 +321,38 @@
             const trigger = card.querySelector(action === "detail" ? '[data-more]' : '[data-apply]');
             trigger.setAttribute('aria-expanded', !panel.hidden);
         });
-        document.addEventListener("submit", e => { 
-            e.preventDefault(); alert("Maquette : rien n'est envoyé.");
-        })
+        
+        // submit pour envoyer la candidature
+        document.addEventListener("submit", async e => { 
+            if (!e.target.matches(".ad-apply")) return;
+            e.preventDefault(); 
+            const form = e.target;
+            const adID = form.closest(".ad").dataset.id;
+            const button = form.querySelector('[type="submit"]');
+            const body = Object.fromEntries(new FormData(form));
+
+            button.disabled = true;
+
+            try {
+                await api(`/ads/${adId}/apply`, {
+                    method: "POST",
+                    body,
+                    redirectOn401: false
+                });
+
+                alert("Votre candidature a bien été envoyée.");
+                form.reset();
+            } catch (err) {
+                alert(
+                    err.status === 401 
+                        ? "Connectez-vous pour postuler."
+                        : err.message
+                );
+            } finally {
+                button.disabled = false;
+            }
+            
+        });
         
     </script>
 
