@@ -5,8 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RegisterSerializer, AdSerializer, CategorySerializer, ApplicationSerializer, AdCreateSerializer, MessageCreateSerializer
-from .models import Ad, Category, Application
+from .serializers import RegisterSerializer, AdSerializer, CategorySerializer, ApplicationSerializer, AdCreateSerializer, MessageCreateSerializer, MessageSerializer
+from .models import Ad, Category, Application, Message
 
 
 # Create your views here.
@@ -244,3 +244,19 @@ class MessageCreateView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save(candidate=request.user, ad=ad, status="unread")
         return Response(serializer.data, status=201)
+
+    def get(self, request, ad_id):
+        ad = Ad.objects.filter(pk=ad_id).first()
+        if ad is None: 
+            return Response({"message":"Annonce introuvable"}, status=404)
+        if request.user.role == "recruiter":
+            if ad.recruiter != request.user:
+                return Response(
+                    {"detail": "Vous n'avez pas accès à ces messages."},
+                    status=403,
+                )
+            messages = Message.objects.filter(ad=ad)
+        else:
+            messages = Message.objects.filter(ad=ad, candidate=request.user)
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
