@@ -49,7 +49,6 @@ class AdListView(APIView):
 
 # View pour AdDetail
 class AdDetailView(APIView):
-    authentication_classes = []
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
@@ -60,6 +59,32 @@ class AdDetailView(APIView):
         serializer = AdSerializer(ad)
         return Response(serializer.data)
 
+    def patch(self, request, pk):
+        ad = Ad.objects.filter(pk=pk).first()
+        if ad is None: 
+            return Response({"message":"Annonce introuvable"}, status=404)
+        if not request.user.is_authenticated or ad.recruiter != request.user:
+            return Response(
+                {"detail":"Vous n'avez pas le droit de modifier cette annonce."},
+                status=403,
+            )
+        serializer = AdCreateSerializer(ad, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    def delete(self, request, pk):
+        ad = Ad.objects.filter(pk=pk).first()
+        if ad is None:
+            return Response({"message": "Annonce introuvable"}, status=404)
+        if not request.user.is_authenticated or ad.recruiter != request.user:
+            return Response(
+                {"detail": "Vous n'avez pas le droit de supprimer cette annonce."},
+                status=403,
+            )
+
+        ad.delete()
+        return Response(status=204)
 
 # View pour inscription 
 class RegisterView(APIView):
