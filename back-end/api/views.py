@@ -1,11 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.db import IntegrityError, transaction
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RegisterSerializer, AdSerializer, CategorySerializer
-from .models import Ad, Category
+from .serializers import RegisterSerializer, AdSerializer, CategorySerializer, ApplicationSerializer
+from .models import Ad, Category, Application
 
 
 # Create your views here.
@@ -52,11 +53,13 @@ class AdDetailView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
+
         ad = Ad.objects.filter(pk=pk, status="open").first()
         if ad is None:
             return Response({"message": "Annonce introuvable"}, status=404)
         serializer = AdSerializer(ad)
         return Response(serializer.data)
+
 
 # View pour inscription 
 class RegisterView(APIView):
@@ -69,6 +72,7 @@ class RegisterView(APIView):
         user = s.save()
         token, _ = Token.objects.get_or_create(user=user)
         return Response({"token": token.key, "user": user_payload(user)}, status=201)
+
 
 # View pour connection 
 class LoginView(APIView):
@@ -106,3 +110,73 @@ class CategoryListView(APIView):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
+
+
+# View pour candidature qui postule
+class ApplyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, ad_id):
+        if request.user.role != "candidate":
+            return Response(
+                {"detail": "Connectez-vous pour postuler."},
+                status=403,
+            )
+
+        ad = get_object_or_404(Ad, pk=ad_id)    #pk = primary key
+
+        if ad.status != "open":
+            return Response(
+                {"detail": "Cette offre n'est plus disponible."},
+                status=400,
+            )
+
+        # vérifier qu'un candidat n'a pas postulé 2 fois
+
+        if Application.objects.filter(
+            candidate = request.user, ad=ad     
+            # filter() vérifie si les 2 conditions existent : candidat (dans Application) = utilisateur actuel && sa candidature concerne l'annonce
+        ).exists():
+            return Response(
+                {"detail": "Vous avez déjà postulé à cette offre."},
+                status=400,
+            )
+
+        serializer = ApplicationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            with transaction.atomic():      # enregistre les données du candidat
+                serializer.save(candidate=request.user, ad=ad)
+        except IntegrityError:      
+            if Application.objects.filter(
+                candidate = request.user, ad=ad
+            ).exists():
+                return Response(
+                    {"detail": "Vous avez déjà postulé à cette offre."},
+                    status=400,
+                )
+            raise
+        return Response(serializer.data, status=201)
+
+
+# view pour recruteur qui reçoit des candidatures
+class RecruiterApplicationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != "recruiter":
+            return Response(
+                {"detail": "Accès réservé aux recruteurs."},
+                status=403,
+            )
+
+        applications = (
+            Application.objects.filter(ad__recruiter=request.user)
+            .select_related("ad")
+            .order_by("-created_at")
+        )
+
+        serializer = ApplicationSerializer(applications, many=True)
+        return Response(serializer.data)
+
