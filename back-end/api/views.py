@@ -260,3 +260,22 @@ class MessageCreateView(APIView):
             messages = Message.objects.filter(ad=ad, candidate=request.user)
         serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
+
+# View pour candidat qui voit ses propres candidatures
+class CandidateApplicationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != "candidate":
+            return Response(
+                {"detail": "Accès réservé aux candidats."},
+                status=403,
+            )
+        applications = (
+        Application.objects.filter(candidate=request.user)
+        .select_related("ad")
+        .order_by("-created_at")
+        )
+
+        serializer = ApplicationSerializer(applications, many=True)
+        return Response(serializer.data)
