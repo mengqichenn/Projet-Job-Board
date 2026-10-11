@@ -132,7 +132,7 @@ class LogoutView(APIView):
 
 
 
-# View pour candidature qui postule                                                                 ================rajouté================
+# View pour candidature qui postule                                                             ================rajouté================
 class ApplyView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -185,7 +185,7 @@ class ApplyView(APIView):
 
 
 
-# view pour recruteur qui reçoit des candidatures                                                   ================rajouté================
+# view pour recruteur qui reçoit des candidatures                                               ================rajouté================
 class RecruiterApplicationsView(APIView):
     permission_classes = [IsAuthenticated]
 
