@@ -9,6 +9,10 @@ urlpatterns = [
     path("auth/logout", views.LogoutView.as_view()),
     path("ads", views.AdListView.as_view()),
     path("ads/<int:pk>", views.AdDetailView.as_view()),
+    path("categories", views.CategoryListView.as_view()),
     path("ads/<int:ad_id>/apply", views.ApplyView.as_view()),
     path("recruiter/applications", views.RecruiterApplicationsView.as_view()),
+    path("ads/create", views.AdCreateView.as_view()),
+    path("ads/<int:ad_id>/messages", views.MessageCreateView.as_view()),
+    path("candidate/applications", views.CandidateApplicationsView.as_view()),
 ]

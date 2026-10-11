@@ -57,6 +57,9 @@ class AdListView(APIView):
         work_mode = request.GET.get("work_mode")
         if work_mode:
             ads = ads.filter(work_mode=work_mode)
+        category = request.GET.get("category")
+        if category:
+            ads = ads.filter(category_id=category)
         serializer = AdSerializer(ads, many=True)
         return Response(serializer.data)
 
@@ -76,7 +79,6 @@ class AdListView(APIView):
     
 # View pour AdDetail
 class AdDetailView(APIView):
-    authentication_classes = []
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
@@ -87,7 +89,32 @@ class AdDetailView(APIView):
         serializer = AdSerializer(ad)
         return Response(serializer.data)
 
+    def patch(self, request, pk):
+        ad = Ad.objects.filter(pk=pk).first()
+        if ad is None: 
+            return Response({"message":"Annonce introuvable"}, status=404)
+        if not request.user.is_authenticated or ad.recruiter != request.user:
+            return Response(
+                {"detail":"Vous n'avez pas le droit de modifier cette annonce."},
+                status=403,
+            )
+        serializer = AdCreateSerializer(ad, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+    
+    def delete(self, request, pk):
+        ad = Ad.objects.filter(pk=pk).first()
+        if ad is None:
+            return Response({"message": "Annonce introuvable"}, status=404)
+        if not request.user.is_authenticated or ad.recruiter != request.user:
+            return Response(
+                {"detail": "Vous n'avez pas le droit de supprimer cette annonce."},
+                status=403,
+            )
 
+        ad.delete()
+        return Response(status=204)
 
 # View pour inscription 
 class RegisterView(APIView):
@@ -131,6 +158,14 @@ class LogoutView(APIView):
         request.auth.delete()
         return Response(status=204)
 
+class CategoryListView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
 
 
 # View pour candidature qui postule                                                             ================rajouté================
@@ -206,7 +241,80 @@ class RecruiterApplicationsView(APIView):
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
 
+# View pour créer une annonce (recruteur uniquement)
+class AdCreateView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        if request.user.role != "recruiter":
+            return Response(
+                {"detail": "Seuls les recruteurs peuvent créer une annonce."},
+                status=403,
+            )
+        if request.user.company is None:
+            return Response(
+                {"detail": "Vous devez être rattaché à une entreprise."},
+                status=400,
+            )   
+        serializer = AdCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(recruiter=request.user, company=request.user.company)
+        return Response(serializer.data, status=201)
+
+#View pour envoyer un message (candidat uniquement)
+
+class MessageCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, ad_id):
+        if request.user.role != "candidate":
+            return Response(
+                {"detail": "Seuls les candidats peuvent envoyer un message."},
+                status=403,
+            )
+
+        ad = Ad.objects.filter(pk=ad_id).first()
+        if ad is None:
+            return Response({"message": "Annonce introuvable"}, status=404)
+        serializer = MessageCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(candidate=request.user, ad=ad, status="unread")
+        return Response(serializer.data, status=201)
+
+    def get(self, request, ad_id):
+        ad = Ad.objects.filter(pk=ad_id).first()
+        if ad is None: 
+            return Response({"message":"Annonce introuvable"}, status=404)
+        if request.user.role == "recruiter":
+            if ad.recruiter != request.user:
+                return Response(
+                    {"detail": "Vous n'avez pas accès à ces messages."},
+                    status=403,
+                )
+            messages = Message.objects.filter(ad=ad)
+        else:
+            messages = Message.objects.filter(ad=ad, candidate=request.user)
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+
+# View pour candidat qui voit ses propres candidatures
+class CandidateApplicationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != "candidate":
+            return Response(
+                {"detail": "Accès réservé aux candidats."},
+                status=403,
+            )
+        applications = (
+        Application.objects.filter(candidate=request.user)
+        .select_related("ad")
+        .order_by("-created_at")
+        )
+
+        serializer = ApplicationSerializer(applications, many=True)
+        return Response(serializer.data)
 
 class AdViewSet(viewsets.ModelViewSet):                                                         #================rajouté================
     serializer_class = AdSerializer

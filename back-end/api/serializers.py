@@ -171,10 +171,29 @@ class ApplicationSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "ad", "status", "created_at"]
 
         
-        
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ["id", "name"]       
 
-    
+class AdCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ad
+        fields = [
+            "title", "short_description", "full_description",
+            "city", "postal_code", "contract_type",
+            "monthly_salary_min", "monthly_salary_max", "working_time",
+            "education_level", "experience", "start_time", "work_mode",
+            "category"
+        ]    
 
-
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ["id", "candidate", "ad", "object", "content", "sent_at", "status"]
+class MessageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ["object", "content"]
 
 
