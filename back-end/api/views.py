@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RegisterSerializer, AdSerializer, CategorySerializer, ApplicationSerializer
+from .serializers import RegisterSerializer, AdSerializer, CategorySerializer, ApplicationSerializer, AdCreateSerializer
 from .models import Ad, Category, Application
 
 
@@ -180,3 +180,22 @@ class RecruiterApplicationsView(APIView):
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
 
+# View pour créer une annonce (recruteur uniquement)
+class AdCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if request.user.role != "recruiter":
+            return Response(
+                {"detail": "Seuls les recruteurs peuvent créer une annonce."},
+                status=403,
+            )
+        if request.user.company is None:
+            return Response(
+                {"detail": "Vous devez être rattaché à une entreprise."},
+                status=400,
+            )   
+        serializer = AdCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(recruiter=request.user, company=request.user.company)
+        return Response(serializer.data, status=201)

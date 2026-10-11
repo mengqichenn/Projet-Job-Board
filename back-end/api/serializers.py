@@ -149,7 +149,16 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ["id", "name"]       
 
-    
+class AdCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Ad
+        fields = [
+            "title", "short_description", "full_description",
+            "city", "postal_code", "contract_type",
+            "monthly_salary_min", "monthly_salary_max", "working_time",
+            "education_level", "experience", "start_time", "work_mode",
+            "category"
+        ]    
 
 
 
