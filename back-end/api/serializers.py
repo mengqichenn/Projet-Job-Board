@@ -1,6 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
-from .models import User, Company, Ad
+from .models import User, Company, Ad, Category
 import requests
 
 
@@ -119,7 +119,10 @@ class AdSerializer(serializers.ModelSerializer):
             "status", "created_at", "company_name", "category_name",
         ]
         
-        
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ["id", "name"]       
 
     
 

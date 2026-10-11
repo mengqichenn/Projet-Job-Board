@@ -4,8 +4,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RegisterSerializer, AdSerializer
-from .models import Ad
+from .serializers import RegisterSerializer, AdSerializer, CategorySerializer
+from .models import Ad, Category
 
 
 # Create your views here.
@@ -92,3 +92,12 @@ class LogoutView(APIView):
     def post(self, request):
         request.auth.delete()
         return Response(status=204)
+
+class CategoryListView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
