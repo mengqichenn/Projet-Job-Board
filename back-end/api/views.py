@@ -1,3 +1,5 @@
+from pathlib import Path
+from django.http import FileResponse, Http404
 from django.shortcuts import render, get_object_or_404
 from django.db import IntegrityError, transaction
 from django.contrib.auth import authenticate
@@ -22,6 +24,7 @@ def user_payload(user):
     return {
         "id": user.id,
         "role": user.role,
+        "cv_name": Path(user.cv.name).name if user.cv else None,
         "name": f"{user.first_name} {user.last_name}".strip() or user.email,
     }
 
@@ -201,12 +204,25 @@ class ApplyView(APIView):
                 status=400,
             )
 
-        serializer = ApplicationSerializer(data=request.data)
+        serializer = ApplicationSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
 
         try:
             with transaction.atomic():      # enregistre les données du candidat
-                serializer.save(candidate=request.user, ad=ad)
+                application = serializer.save(candidate=request.user, ad=ad)
+
+                # Add application message into Message table
+                Message.objects.create(
+                    candidate=request.user,
+                    ad=ad,
+                    object=f"Candidature : {ad.title}"[:255],
+                    content=application.message,
+                )
+
+
+                if "cv" in request.FILES:
+                    request.user.cv = application.cv.name
+                    request.user.save(update_fields=["cv", "modified_at"])
         except IntegrityError:      
             if Application.objects.filter(
                 candidate = request.user, ad=ad
@@ -354,3 +370,20 @@ class AdViewSet(viewsets.ModelViewSet):                                         
     def perform_destroy(self, instance):                     # « supprimer » = fermer l'annonce
         instance.status = "closed"
         instance.save(update_fields=["status", "modified_at"])
+
+
+class ApplicationCVView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        application = get_object_or_404(Application.objects.select_related("ad"), pk=pk)
+        if request.user.pk not in (application.candidate_id, application.ad.recruiter_id):
+            raise PermissionDenied("Vous n'avez pas accès à ce CV.")
+        if not application.cv:
+            raise Http404("Aucun CV joint.")
+        try:
+            file = application.cv.open("rb")
+        except FileNotFoundError:
+            raise Http404("CV introuvable.")
+        return FileResponse(file, as_attachment=True, filename=Path(application.cv.name).name,
+                            content_type="application/pdf")

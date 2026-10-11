@@ -79,22 +79,22 @@
                 <input type="text" name="city" placeholder="Ville" aria-label="Ville">
                 <select name="category" id="category" aria-label="Catégorie de métier">
                     <option value="">Tous les categories</option>
-                    <option value="tech">Informatique et numérique</option>
-                    <option value="administration">Administration et gestion</option>
-                    <option value="commerce">Commerce et vente</option>
-                    <option value="marketing">Marketing et communication</option>
-                    <option value="finance">Finance, banque et comptabilité</option>
-                    <option value="rh">Ressources humaines</option>
-                    <option value="sante">Santé et services sociaux</option>
-                    <option value="education">Éducation et formation</option>
-                    <option value="industrie">Industrie et production</option>
-                    <option value="logistique">Logistique et transport</option>
-                    <option value="tourisme">Tourisme et hôtellerie</option>
-                    <option value="agri">Agriculture</option>
-                    <option value="btp">BTP et construction</option>
-                    <option value="juridique">Juridique et droit</option>
-                    <option value="creation">Creation et design</option>
-                    <option value="autres">Autres</option>
+                    <option value="1">Informatique et numérique</option>
+                    <option value="2">Administration et gestion</option>
+                    <option value="3">Commerce et vente</option>
+                    <option value="4">Marketing et communication</option>
+                    <option value="5">Finance, banque et comptabilité</option>
+                    <option value="6">Ressources humaines</option>
+                    <option value="7">Santé et services sociaux</option>
+                    <option value="8">Éducation et formation</option>
+                    <option value="9">Industrie et production</option>
+                    <option value="10">Logistique et transport</option>
+                    <option value="11">Tourisme et hôtellerie</option>
+                    <option value="12">Agriculture</option>
+                    <option value="13">BTP et construction</option>
+                    <option value="14">Juridique et droit</option>
+                    <option value="15">Creation et design</option>
+                    <option value="16">Autres</option>
                 </select>
                 <button class="btn" type="submit">Rechercher</button>
             </form>
@@ -324,7 +324,7 @@
     <!-- Panneau "En savoir plus" -->
     <template id="template-detail">
         <section class="ad-detail">
-            <h4>Détail du poste</h4>
+            <h3>Détail du poste</h3>
 
             <dl>
                 <dt>Catégorie</dt><dd>category</dd>
@@ -345,8 +345,21 @@
 
     <!-- Formulaire "Postuler" -->
     <template id="template-apply">
-        <form class="ad-apply">
-            <h4>Postuler à cette annonce</h4>
+        <form class="ad-apply" enctype="multipart/form-data">
+            <h3>Postuler à cette annonce</h3>
+            <div class="field">
+                <label class="cv">CV
+                    <select class="cv-load" name="cv_choice">
+                        <option value="saved" disabled>CV enregistré (chargement…)</option>
+                        <option value="new">Ajouter un nouveau CV</option>
+                        <option value="none" selected>Continuer sans CV</option>
+                    </select>
+                </label>
+                <label class="cv-upload" hidden>Nouveau CV (PDF, 5 Mo maximum)
+                    <input class="newcv" type="file" name="cv" accept=".pdf,application/pdf" disabled>
+                </label>
+
+            </div>
             <div class="ad-fields">
                 <div class="field"><label>Prénom*</label><input name="first_name" autocomplete="given-name" required></div>
                 <div class="field"><label>Nom*</label><input name="last_name" autocomplete="family-name" required></div>
@@ -381,7 +394,7 @@
     <script>
 
         // click sur boutons "En savoir plus" et "postuler" pour afficher les contenus cachés
-        document.addEventListener("click", e => {
+        document.addEventListener("click", async e => {
             const btn = e.target.closest('[data-more], [data-apply], [data-cancel]');
             if (!btn) return;
             const card = btn.closest('.ad');
@@ -399,8 +412,32 @@
             }
             const trigger = card.querySelector(action === "detail" ? '[data-more]' : '[data-apply]');
             trigger.setAttribute('aria-expanded', !panel.hidden);
+            if (action === "apply" && !panel.hidden) {
+                try {
+                    const user = await api("/auth/me", { redirectOn401: false });
+                    const saved = panel.querySelector('option[value="saved"]');
+                    saved.disabled = !user.cv_name;
+                    saved.textContent = user.cv_name ? `Utiliser mon CV : ${user.cv_name}` : "Aucun CV enregistré";
+                    if (!panel.dataset.cvInitialized) {
+                        panel.querySelector('[name="cv_choice"]').value = user.cv_name ? "saved" : "none";
+                        panel.dataset.cvInitialized = "true";
+                    }
+                } catch (err) {
+                    panel.querySelector('option[value="saved"]').textContent = "CV enregistré indisponible";
+                }
+            }
         });
         
+        document.addEventListener("change", e => {
+            if (!e.target.matches('[name="cv_choice"]')) return;
+            const form = e.target.closest("form");
+            const upload = form.querySelector('[name="cv"]');
+            const isNew = e.target.value === "new";
+            upload.disabled = !isNew;
+            upload.required = isNew;
+            form.querySelector("label.cv-upload").hidden = !isNew;
+        });
+
         // submit pour envoyer la candidature
         document.addEventListener("submit", async e => { 
             if (!e.target.matches(".ad-apply")) return;
@@ -408,7 +445,11 @@
             const form = e.target;
             const adId = form.closest(".ad").dataset.id;
             const button = form.querySelector('[type="submit"]');
-            const body = Object.fromEntries(new FormData(form));
+            const body = new FormData(form);
+            const choice = body.get("cv_choice");
+            body.delete("cv_choice");
+            body.set("use_saved_cv", choice === "saved" ? "true" : "false");
+            if (choice !== "new") body.delete("cv");
 
             button.disabled = true;
 
@@ -421,6 +462,7 @@
 
                 alert("Votre candidature a bien été envoyée.");
                 form.reset();
+                form.querySelector('[name="cv_choice"]').dispatchEvent(new Event("change", { bubbles: true }));
             } catch (err) {
                 alert(
                     err.status === 401 
