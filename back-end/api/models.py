@@ -69,9 +69,10 @@ class Company(models.Model):        # Django crée automatiquement les IDs
 
 
 
-# Category table
+# Category table                                                                                        ===========rajouté (slug)===========
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True, null=True)
 
     class Meta:
         verbose_name_plural = "categories"

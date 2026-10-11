@@ -2,11 +2,14 @@ from django.shortcuts import render, get_object_or_404
 from django.db import IntegrityError, transaction
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission                    #(rajouté)
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import viewsets                                                     #=======rajouté===========
+from rest_framework.exceptions import PermissionDenied                                  #=======rajouté===========
 
-from .serializers import RegisterSerializer, AdSerializer, ApplicationSerializer
+
+from .serializers import RegisterSerializer, AdSerializer, ApplicationSerializer, AdCreateSerializer
 from .models import Ad, Application
 
 
@@ -19,10 +22,23 @@ def user_payload(user):
         "name": f"{user.first_name} {user.last_name}".strip() or user.email,
     }
 
-# View pour Ad
+
+
+
+# view pour recruteur                                                                  ================rajouté================
+
+class IsRecruiter(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == "recruiter"
+
+
+
+
+# View pour Ad                                    ==========MODIF=============
 class AdListView(APIView):
-    authentication_classes = []
-    permission_classes = [AllowAny]
+    def get_permissions(self):
+        return [IsRecruiter()] if self.request.method == "POST" else [AllowAny()]
+
 
     def get(self, request):
         ads = Ad.objects.filter(status="open")
@@ -44,6 +60,19 @@ class AdListView(APIView):
         serializer = AdSerializer(ads, many=True)
         return Response(serializer.data)
 
+    #================RAJOUTé (pour publier l'annonce)===============
+    def post(self, request):
+        user = request.user
+        if user.company is None:
+            raise PermissionDenied("Votre compte n'est lié à aucune entreprise.")
+        serializer = AdCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        ad = serializer.save(recruiter=user, company=user.company)    # status = "open" par défaut
+        return Response(AdSerializer(ad).data, status=201)
+
+
+
+
     
 # View pour AdDetail
 class AdDetailView(APIView):
@@ -51,11 +80,13 @@ class AdDetailView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
+
         ad = Ad.objects.filter(pk=pk, status="open").first()
         if ad is None:
             return Response({"message": "Annonce introuvable"}, status=404)
         serializer = AdSerializer(ad)
         return Response(serializer.data)
+
 
 
 # View pour inscription 
@@ -102,7 +133,7 @@ class LogoutView(APIView):
 
 
 
-# View pour candidature qui postule
+# View pour candidature qui postule                                                             ================rajouté================
 class ApplyView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -150,7 +181,12 @@ class ApplyView(APIView):
         return Response(serializer.data, status=201)
 
 
-# view pour recruteur qui reçoit des candidatures
+
+
+
+
+
+# view pour recruteur qui reçoit des candidatures                                               ================rajouté================
 class RecruiterApplicationsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -162,7 +198,7 @@ class RecruiterApplicationsView(APIView):
             )
 
         applications = (
-            Application.objects.filter(ad_recruiter = request.user)
+            Application.objects.filter(ad__recruiter=request.user)
             .select_related("ad")
             .order_by("-created_at")
         )
@@ -171,4 +207,27 @@ class RecruiterApplicationsView(APIView):
         return Response(serializer.data)
 
 
-    
+
+class AdViewSet(viewsets.ModelViewSet):                                                         #================rajouté================
+    serializer_class = AdSerializer
+ 
+    def get_permissions(self):
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]                              # tout le monde peut voir les annonces
+        return [IsRecruiter()]                               # créer, modifier, supprimer : recruteurs
+ 
+    def get_queryset(self):
+        qs = Ad.objects.select_related("company", "category")
+        if self.action in ("update", "partial_update", "destroy"):
+            return qs.filter(recruiter=self.request.user)    # un recruteur ne touche qu'à ses annonces
+        return qs.filter(status="open")                      # le public ne voit que les annonces ouvertes
+ 
+    def perform_create(self, serializer):
+        user = self.request.user
+        if user.company is None:
+            raise PermissionDenied("Votre compte n'est lié à aucune entreprise.")
+        serializer.save(recruiter=user, company=user.company)   # status = "open" par défaut
+ 
+    def perform_destroy(self, instance):                     # « supprimer » = fermer l'annonce
+        instance.status = "closed"
+        instance.save(update_fields=["status", "modified_at"])
