@@ -24,6 +24,3 @@ document.addEventListener('click', async e => {
   location.href = 'main.html';
 });
 
-applyRole(user,role);
-if (typeof initMenu === "function") initMenu(user);
-return user;
