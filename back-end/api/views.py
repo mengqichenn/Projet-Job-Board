@@ -39,8 +39,13 @@ class AdListView(APIView):
         work_mode = request.GET.get("work_mode")
         if work_mode:
             ads = ads.filter(work_mode=work_mode)
+        category = request.GET.get("category")
+        if category:
+            ads = ads.filter(category_id=category)
         serializer = AdSerializer(ads, many=True)
         return Response(serializer.data)
+       
+
 # View pour AdDetail
 class AdDetailView(APIView):
     authentication_classes = []
