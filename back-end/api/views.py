@@ -9,8 +9,11 @@ from rest_framework import viewsets                                             
 from rest_framework.exceptions import PermissionDenied                                  #=======rajouté===========
 
 
-from .serializers import RegisterSerializer, AdSerializer, ApplicationSerializer, AdCreateSerializer
-from .models import Ad, Application
+from .serializers import (
+    RegisterSerializer, AdSerializer, ApplicationSerializer, AdCreateSerializer,
+    CategorySerializer, MessageCreateSerializer, MessageSerializer,
+)
+from .models import Ad, Application, Category, Message
 
 
 # Create your views here.
@@ -328,7 +331,19 @@ class AdViewSet(viewsets.ModelViewSet):                                         
         qs = Ad.objects.select_related("company", "category")
         if self.action in ("update", "partial_update", "destroy"):
             return qs.filter(recruiter=self.request.user)    # un recruteur ne touche qu'à ses annonces
-        return qs.filter(status="open")                      # le public ne voit que les annonces ouvertes
+        qs = qs.filter(status="open")                       # le public ne voit que les annonces ouvertes
+        if self.action == "list":
+            city = self.request.query_params.get("city")
+            if city:
+                qs = qs.filter(city__icontains=city)
+            for field in ("contract_type", "education_level", "experience", "work_mode"):
+                value = self.request.query_params.get(field)
+                if value:
+                    qs = qs.filter(**{field: value})
+            category = self.request.query_params.get("category")
+            if category:
+                qs = qs.filter(category_id=category)
+        return qs
  
     def perform_create(self, serializer):
         user = self.request.user
