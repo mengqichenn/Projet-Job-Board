@@ -51,6 +51,7 @@ class AdDetailView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, pk):
+
         ad = Ad.objects.filter(pk=pk, status="open").first()
         if ad is None:
             return Response({"message": "Annonce introuvable"}, status=404)
