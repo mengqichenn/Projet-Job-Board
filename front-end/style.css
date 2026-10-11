@@ -95,7 +95,7 @@ textarea::placeholder {
 
 /* ===========ads container============*/
 
-.results-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:0 0 1rem}
+.results-header {display:flex; align-items:center; justify-content:space-between; gap:1rem;flex-wrap:wrap; margin:2rem 1rem 2rem}
 .results-header h2{margin:0}
 
 .ad-list {display:grid;gap:.75rem}
