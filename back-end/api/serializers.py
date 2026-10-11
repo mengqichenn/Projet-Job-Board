@@ -160,6 +160,13 @@ class AdCreateSerializer(serializers.ModelSerializer):
             "category"
         ]    
 
-
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ["id", "candidate", "ad", "object", "content", "sent_at", "status"]
+class MessageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = ["object", "content"]
 
 

@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RegisterSerializer, AdSerializer, CategorySerializer, ApplicationSerializer, AdCreateSerializer
+from .serializers import RegisterSerializer, AdSerializer, CategorySerializer, ApplicationSerializer, AdCreateSerializer, MessageCreateSerializer
 from .models import Ad, Category, Application
 
 
@@ -223,4 +223,24 @@ class AdCreateView(APIView):
         serializer = AdCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(recruiter=request.user, company=request.user.company)
+        return Response(serializer.data, status=201)
+
+#View pour envoyer un message (candidat uniquement)
+
+class MessageCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, ad_id):
+        if request.user.role != "candidate":
+            return Response(
+                {"detail": "Seuls les candidats peuvent envoyer un message."},
+                status=403,
+            )
+
+        ad = Ad.objects.filter(pk=ad_id).first()
+        if ad is None:
+            return Response({"message": "Annonce introuvable"}, status=404)
+        serializer = MessageCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(candidate=request.user, ad=ad, status="unread")
         return Response(serializer.data, status=201)
