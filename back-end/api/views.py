@@ -260,6 +260,27 @@ class RecruiterApplicationsView(APIView):
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
 
+# View pour que le recruteur change le statut d'une candidature
+class UpdateApplicationStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        if request.user.role != "recruiter":
+            return Response(
+                {"detail": "Accès réservé aux recruteurs."},
+                status=403,
+            )
+        application = Application.objects.filter(pk=pk, ad__recruiter=request.user).first()
+        if application is None:
+            return Response({"detail": "Candidature introuvable."}, status=404)
+        new_status = request.data.get("status")
+        valid_statuses = [choice[0] for choice in Application.STATUS_CHOICES]
+        if new_status not in valid_statuses:
+            return Response({"detail": "Statut invalide."}, status=400)
+        application.status = new_status
+        application.save(update_fields=["status"])
+        return Response(ApplicationSerializer(application).data)
+
 # View pour créer une annonce (recruteur uniquement)
 class AdCreateView(APIView):
     permission_classes = [IsAuthenticated]

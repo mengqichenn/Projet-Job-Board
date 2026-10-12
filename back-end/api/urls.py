@@ -19,4 +19,5 @@ urlpatterns = [
     path("ads/create", views.AdCreateView.as_view()),
     path("ads/<int:ad_id>/messages", views.MessageCreateView.as_view()),
     path("candidate/applications", views.CandidateApplicationsView.as_view()),
+    path("applications/<int:pk>/status", views.UpdateApplicationStatusView.as_view()),
 ]
