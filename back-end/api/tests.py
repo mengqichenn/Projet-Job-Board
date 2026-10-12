@@ -167,3 +167,45 @@ class AdSearchTests(APITestCase):
         response = self.client.get("/api/ads?search=zzzz")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [])
+
+class AdminApiTests(APITestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(email="admin@example.com", role="admin")
+        self.candidate = User.objects.create_user(email="candidate@example.com", role="candidate")
+        Company.objects.create(name="Danone", siret="11111111111111")
+        Company.objects.create(name="Ubisoft", siret="22222222222222")
+
+    def test_anonymous_is_refused(self):
+        self.assertEqual(self.client.get("/api/admin/companies").status_code, 401)
+
+    def test_non_admin_is_refused(self):
+        self.client.force_authenticate(self.candidate)
+        self.assertEqual(self.client.get("/api/admin/companies").status_code, 403)
+
+    def test_admin_lists_with_pagination(self):
+        self.client.force_authenticate(self.admin)
+        response = self.client.get("/api/admin/companies?page_size=1")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 2)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertIsNotNone(response.data["next"])
+
+    def test_admin_creates_updates_deletes(self):
+        self.client.force_authenticate(self.admin)
+        data = {"name": "Nouvelle", "siret": "33333333333333", "city": "Lyon", "postal_code": "69000"}
+        created = self.client.post("/api/admin/companies", data, format="json")
+        self.assertEqual(created.status_code, 201, created.data)
+        url = f"/api/admin/companies/{created.data['id']}"
+        self.assertEqual(self.client.patch(url, {"city": "Paris"}, format="json").status_code, 200)
+        self.assertEqual(Company.objects.get(pk=created.data["id"]).city, "Paris")
+        self.assertEqual(self.client.delete(url).status_code, 204)
+        self.assertFalse(Company.objects.filter(pk=created.data["id"]).exists())
+
+    def test_user_password_is_hidden_and_hashed(self):
+        self.client.force_authenticate(self.admin)
+        data = {"email": "new@example.com", "password": "motdepasse123", "role": "candidate",
+                "city": "Nice", "postal_code": "06000"}
+        response = self.client.post("/api/admin/users", data, format="json")
+        self.assertEqual(response.status_code, 201, response.data)
+        self.assertNotIn("password", response.data)
+        self.assertTrue(User.objects.get(email="new@example.com").check_password("motdepasse123"))
