@@ -239,3 +239,238 @@ select {
 .has-notice {position:relative; margin-bottom:2.5rem}
 .notice2 {position:absolute; top:100%; left:0; margin:.25rem 0 0;
          color:var(--muted); font-size:.85rem; text-indent: 20px; padding-bottom: 5px;}
+
+
+/* forgot password page */
+.forgot-password-page .forgot-auth {
+  min-height: calc(100vh - 75px);
+  padding: 2rem 1rem;
+  background: radial-gradient(ellipse at 12% 10%, rgba(10, 105, 126, .09), transparent 42%), var(--bg);
+}
+
+.forgot-password-page .auth .forgot-card {
+  width: min(480px, 100%);
+  padding: clamp(1.5rem, 6vw, 3rem);
+  box-shadow: 0 18px 48px rgba(21, 33, 43, .08);
+}
+
+.forgot-password-page .forgot-eyebrow {
+  margin: 0 0 .65rem;
+  color: var(--primary-dark);
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.forgot-password-page .forgot-card h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 6vw, 2.25rem);
+}
+
+.forgot-password-page .forgot-intro {
+  margin: .85rem 0 1.6rem;
+  color: var(--muted);
+}
+
+.forgot-password-page .forgot-field {
+  gap: .45rem;
+  margin-bottom: 1rem;
+}
+
+.forgot-password-page .forgot-field label {
+  margin: 0;
+  text-indent: 0;
+}
+
+.forgot-password-page .forgot-field input {
+  width: 100%;
+  min-height: 3rem;
+  margin: 0;
+  text-indent: 0;
+}
+
+.forgot-password-page .forgot-field input:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  outline-offset: 2px;
+  border-color: var(--primary);
+}
+
+.forgot-password-page .forgot-submit {
+  width: 100%;
+  min-height: 3rem;
+  transition: background-color .15s ease, transform .15s ease;
+}
+
+.forgot-password-page .forgot-submit:hover {
+  transform: translateY(-1px);
+}
+
+.forgot-password-page .forgot-submit:focus-visible,
+.forgot-password-page .forgot-back:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.forgot-password-page .form-message {
+  margin: 0 0 1rem;
+  padding: .75rem .9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  font-size: .92rem;
+}
+
+.forgot-password-page .form-message.is-error {
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--line));
+  background: #fff3f1;
+  color: var(--danger);
+}
+
+.forgot-password-page .form-message.is-success {
+  border-color: color-mix(in srgb, var(--ok) 35%, var(--line));
+  background: #edf8f1;
+  color: var(--ok);
+}
+
+.forgot-password-page .form-message.is-info {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--line));
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  color: var(--primary-dark);
+}
+
+.forgot-password-page .forgot-back {
+  display: inline-block;
+  margin-top: 1.25rem;
+  font-weight: 600;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.forgot-password-page .forgot-demo {
+  margin: 1.5rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+@media (max-width: 480px) {
+  .forgot-password-page .site-header .container {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    padding-block: .65rem;
+  }
+
+  .forgot-password-page .navbar {
+    gap: .25rem;
+  }
+
+  .forgot-password-page .navbar a {
+    padding-inline: .5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forgot-password-page .forgot-submit {
+    transition: none;
+  }
+}
+
+
+/* Dashboard candidat, dashboard recruteur et édition du profil */
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .muted {color:var(--muted)}
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) a:focus-visible,
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) button:focus-visible,
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) input:focus-visible,
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) select:focus-visible,
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) textarea:focus-visible {
+  outline:3px solid var(--accent);
+  outline-offset:2px;
+}
+
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .btn:disabled {opacity:.45;cursor:not-allowed}
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .actions-row {display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
+
+.dashboard-header .container {min-height:75px}
+.dashboard-header .navbar {margin:0;padding:0}
+
+.dash-page {max-width:900px;padding:2rem 0 4rem}
+.dash-page h1 {margin-top:0}
+.dash-page .card {margin-top:1.5rem}
+.dash-page .stats {display:flex;gap:2rem;flex-wrap:wrap}
+.dash-page .stats strong {display:block;font-size:1.5rem;line-height:1.2}
+.dash-page .list-head {display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}
+.dash-page .list-head h2 {margin:0}
+.dash-page .filter {display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.dash-page .filter select {width:auto;margin:0}
+.dash-page .list {margin-top:.5rem}
+.dash-page .app {display:grid;grid-template-columns:1fr auto;gap:.5rem 1rem;padding:1rem 0;border-top:1px solid var(--line)}
+.dash-page .list .app:first-child {border-top:0}
+.dash-page .app h3 {margin:0;font-size:1.05rem}
+.dash-page .app .actions {display:flex;gap:.5rem;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end}
+.dash-page .app .actions select {width:auto;margin:0;padding:.3rem .5rem;text-indent:0}
+.dash-page .app .letter {grid-column:1/-1;margin:0;color:var(--muted);font-size:.92rem}
+.dash-page .empty {text-align:center;padding:2rem 1rem;color:var(--muted)}
+
+.dash-page .badge {display:inline-block;margin-top:.4rem;padding:.1rem .65rem;border-radius:99px;font-size:.8rem;font-weight:600}
+.dash-page .s-attente {background:color-mix(in srgb,var(--accent) 30%,var(--surface));color:#6b4800}
+.dash-page .s-vue {background:color-mix(in srgb,var(--primary-dark) 14%,var(--surface));color:var(--primary-dark)}
+.dash-page .s-accepte,.dash-page .s-active {background:color-mix(in srgb,var(--ok) 15%,var(--surface));color:var(--ok)}
+.dash-page .s-refuse {background:color-mix(in srgb,var(--danger) 13%,var(--surface));color:var(--danger)}
+.dash-page .s-fermee {background:var(--bg);color:var(--muted)}
+
+.edit-page {margin-block:2rem 4rem;padding-inline:1rem}
+.edit-page h1 {margin-top:.5rem}
+.back-link {color:var(--muted);text-decoration:none}
+.back-link:hover {color:var(--primary-dark)}
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .accountform h2 {margin-top:0}
+.edit-profile-page .accountform.danger-zone {border-color:var(--danger)}
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .error {color:var(--danger);font-size:.85rem;text-indent:10px;min-height:1.2em;margin:.25rem 0 0}
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) input[aria-invalid="true"] {border-color:var(--danger)}
+.edit-profile-page .profile-role-fields {border:0;padding:0;margin:0}
+
+@media (min-width:600px) {
+  .edit-page .form-row.two {grid-template-columns:1fr 1fr}
+}
+
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) dialog {
+  border:1px solid var(--line);
+  border-radius:var(--r);
+  padding:1.5rem;
+  width:min(520px,92vw);
+  background:var(--surface);
+  color:var(--ink);
+}
+
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) dialog::backdrop {background:rgba(21,33,43,.5)}
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) dialog h2 {margin-top:0}
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) dialog textarea {min-height:120px;resize:vertical}
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) #toast {
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--ink);
+  color:#fff;
+  padding:.6rem 1rem;
+  border-radius:var(--r);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s;
+  z-index:30;
+}
+:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) #toast.show {opacity:1}
+
+@media (max-width:560px) {
+  .dash-page .app {grid-template-columns:1fr}
+  .dash-page .app .actions {justify-content:flex-start}
+}
+
+@media (max-width:640px) {
+  .dashboard-header .container {grid-template-columns:1fr;justify-items:start;padding-block:.65rem}
+  .dashboard-header .navbar {gap:.25rem}
+  .dashboard-header .navbar a {padding-inline:.5rem}
+}
+
+@media (prefers-reduced-motion:reduce) {
+  :is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) #toast {transition:none}
+}
