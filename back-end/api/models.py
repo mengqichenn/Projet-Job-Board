@@ -134,6 +134,7 @@ class Application(models.Model):
     last_name = models.CharField(max_length=150, default="")
     email = models.EmailField(max_length=150, default="")
     telephone = models.CharField(max_length=30, blank=True, default="")
+    cv = models.FileField(upload_to="cv/", blank=True, null=True)
     message = models.TextField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="sent")
     created_at = models.DateTimeField(auto_now_add=True)

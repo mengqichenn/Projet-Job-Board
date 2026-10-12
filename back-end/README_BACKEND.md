@@ -17,7 +17,10 @@ python manage.py createsuperuser
 # un candidat (déjà testé)
 curl -X POST http://127.0.0.1:8000/api/auth/register \
     -H "Content-Type: application/json" -H "Accept: application/json" \
-    -d '{"email":"lea@test.fr","password":"motdepasse123","role":"candidate","first_name":"Léa","last_name":"Martin", "postal_code":"34000", "city":"Paris"}'
+    -d '{"email":"lea@test.fr","password":"motdepasse123","role":"candidate","first_name":"Léa","last_name":"Michel", "postal_code":"34000", "city":"Montpellier"}'
+    -d '{"email":"chris@test.fr","password":"motdepasse123","role":"candidate","first_name":"Chris","last_name":"Malet", "postal_code":"34000", "city":"Montpellier"}'
+    -d '{"email":"lina@test.fr","password":"motdepasse123","role":"candidate","first_name":"Lina","last_name":"Marcel", "postal_code":"31007", "city":"Toulouse"}'
+    
 # token de Léa : 8ce03682c5fe6e2c88a9ce955fdf64f15f2dc305
 
 # un recruteur

@@ -2,22 +2,22 @@ from django.core.management.base import BaseCommand
 from api.models import Category
 
 CATEGORIES = [
-    "Informatique et développement",
-    "Data et IA",
-    "Cybersécurité",
-    "Réseaux et systèmes",
-    "Marketing et communication",
+    "Informatique et numérique",
+    "Administration et gestion",
     "Commerce et vente",
-    "Finance et comptabilité",
+    "Marketing et communication",
+    "Finance, banque et comptabilité",
     "Ressources humaines",
-    "Santé",
+    "Santé et services sociaux",
     "Éducation et formation",
     "Industrie et production",
     "Logistique et transport",
+    "Tourisme et hôtellerie",
+    "Agriculture",
     "BTP et construction",
-    "Hôtellerie et restauration",
-    "Juridique",
-    "Design et création",
+    "Juridique et droit",
+    "Création et design",
+    "Autres",
 ]
 
 class Command(BaseCommand):

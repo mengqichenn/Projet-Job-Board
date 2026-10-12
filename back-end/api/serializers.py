@@ -111,8 +111,9 @@ class RegisterSerializer(serializers.Serializer):
 # Serializer pour annonces                                  ============MODIF===============
 
 class AdSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(slug_field="slug", queryset=Category.objects.all())
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
     company_name = serializers.CharField(source="company.name", read_only=True)
+    category_name = serializers.CharField(source="category.name", read_only=True)
  
     class Meta:
         model = Ad
@@ -131,8 +132,8 @@ class AdSerializer(serializers.ModelSerializer):
 
 # ====================RAJOUTé=====================
 class AdCreateSerializer(serializers.ModelSerializer):
-    # le formulaire envoie le slug ("tech", "commerce"...) ; Category doit avoir un champ slug
-    category = serializers.SlugRelatedField(slug_field="slug", queryset=Category.objects.all())
+    # Le formulaire envoie l'identifiant de la catégorie.
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
  
     class Meta:
         model = Ad
@@ -156,6 +157,27 @@ class AdCreateSerializer(serializers.ModelSerializer):
 # Serializer pour candidature
 
 class ApplicationSerializer(serializers.ModelSerializer):
+    cv = serializers.FileField(required=False, write_only=True)
+    use_saved_cv = serializers.BooleanField(default=False, write_only=True)
+    cv_download_url = serializers.SerializerMethodField()
+
+    def get_cv_download_url(self, obj):
+        return f"/api/applications/{obj.pk}/cv" if obj.cv else None
+
+    def validate_cv(self, value):
+        return RegisterSerializer().validate_cv(value)
+
+    def validate(self, data):
+        use_saved = data.pop("use_saved_cv", False)
+        if use_saved and data.get("cv"):
+            raise serializers.ValidationError({"cv": "Choisissez le CV enregistré ou un nouveau fichier."})
+        if use_saved:
+            user = self.context["request"].user
+            if not user.cv or not user.cv.storage.exists(user.cv.name):
+                raise serializers.ValidationError({"cv": "Aucun CV enregistré disponible. Ajoutez un PDF."})
+            data["cv"] = user.cv.name
+        return data
+
     first_name = serializers.CharField(max_length=150)
     last_name = serializers.CharField(max_length=150)
     email = serializers.EmailField(max_length=150) 
@@ -167,6 +189,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
         fields = [
             "id", "ad", "ad_title","first_name", "last_name", "email", 
             "telephone", "message", "status", "created_at",
+            "cv", "use_saved_cv", "cv_download_url",
         ]
         read_only_fields = ["id", "ad", "status", "created_at"]
 
@@ -176,16 +199,7 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ["id", "name"]       
 
-class AdCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ad
-        fields = [
-            "title", "short_description", "full_description",
-            "city", "postal_code", "contract_type",
-            "monthly_salary_min", "monthly_salary_max", "working_time",
-            "education_level", "experience", "start_time", "work_mode",
-            "category"
-        ]    
+ 
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -195,5 +209,4 @@ class MessageCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ["object", "content"]
-
 
