@@ -355,6 +355,22 @@ class CandidateApplicationsView(APIView):
 
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
+# View pour que le recruteur marque un message comme lu 
+class MessageMarkReadView(APIView): 
+    permission_classes =[IsAuthenticated]
+    def patch(self, request, pk):
+        if request.user.role != "recruiter":
+            return Response(
+                {"detail": "Accès réservé aux recruteurs."},
+                status=403,
+            )
+
+        message = Message.objects.filter(pk=pk, ad__recruiter=request.user).first()
+        if message is None:
+            return Response({"detail": "Message introuvable."}, status=404)
+        message.status = "read"
+        message.save(update_fields=["status"])
+        return Response(MessageSerializer(message).data)
 
 class AdViewSet(viewsets.ModelViewSet):                                                         #================rajouté================
     serializer_class = AdSerializer
