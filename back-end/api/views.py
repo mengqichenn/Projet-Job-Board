@@ -2,6 +2,7 @@ from pathlib import Path
 from django.http import FileResponse, Http404
 from django.shortcuts import render, get_object_or_404
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission                    #(rajouté)
@@ -12,7 +13,7 @@ from rest_framework.exceptions import PermissionDenied                          
 
 
 from .serializers import (
-    RegisterSerializer, AdSerializer, ApplicationSerializer, AdCreateSerializer,
+    RegisterSerializer, AdSerializer, ApplicationSerializer,
     CategorySerializer, MessageCreateSerializer, MessageSerializer,
 )
 from .models import Ad, Application, Category, Message
@@ -28,99 +29,11 @@ def user_payload(user):
         "name": f"{user.first_name} {user.last_name}".strip() or user.email,
     }
 
-
-
-
 # view pour recruteur                                                                  ================rajouté================
 
 class IsRecruiter(BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.role == "recruiter"
-
-
-
-
-# View pour Ad                                    ==========MODIF=============
-class AdListView(APIView):
-    def get_permissions(self):
-        return [IsRecruiter()] if self.request.method == "POST" else [AllowAny()]
-
-
-    def get(self, request):
-        ads = Ad.objects.filter(status="open")
-        city = request.GET.get("city")
-        if city:
-            ads = ads.filter(city__icontains=city)
-        contract_type = request.GET.get("contract_type")
-        if contract_type:
-            ads = ads.filter(contract_type=contract_type)
-        education_level = request.GET.get("education_level")
-        if education_level:
-            ads = ads.filter(education_level=education_level)
-        experience = request.GET.get("experience")
-        if experience:
-            ads = ads.filter(experience=experience)
-        work_mode = request.GET.get("work_mode")
-        if work_mode:
-            ads = ads.filter(work_mode=work_mode)
-        category = request.GET.get("category")
-        if category:
-            ads = ads.filter(category_id=category)
-        serializer = AdSerializer(ads, many=True)
-        return Response(serializer.data)
-
-    #================RAJOUTé (pour publier l'annonce)===============
-    def post(self, request):
-        user = request.user
-        if user.company is None:
-            raise PermissionDenied("Votre compte n'est lié à aucune entreprise.")
-        serializer = AdCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        ad = serializer.save(recruiter=user, company=user.company)    # status = "open" par défaut
-        return Response(AdSerializer(ad).data, status=201)
-
-
-
-
-    
-# View pour AdDetail
-class AdDetailView(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request, pk):
-
-        ad = Ad.objects.filter(pk=pk, status="open").first()
-        if ad is None:
-            return Response({"message": "Annonce introuvable"}, status=404)
-        serializer = AdSerializer(ad)
-        return Response(serializer.data)
-
-    def patch(self, request, pk):
-        ad = Ad.objects.filter(pk=pk).first()
-        if ad is None: 
-            return Response({"message":"Annonce introuvable"}, status=404)
-        if not request.user.is_authenticated or ad.recruiter != request.user:
-            return Response(
-                {"detail":"Vous n'avez pas le droit de modifier cette annonce."},
-                status=403,
-            )
-        serializer = AdCreateSerializer(ad, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-    
-    def delete(self, request, pk):
-        ad = Ad.objects.filter(pk=pk).first()
-        if ad is None:
-            return Response({"message": "Annonce introuvable"}, status=404)
-        if not request.user.is_authenticated or ad.recruiter != request.user:
-            return Response(
-                {"detail": "Vous n'avez pas le droit de supprimer cette annonce."},
-                status=403,
-            )
-
-        ad.delete()
-        return Response(status=204)
 
 # View pour inscription 
 class RegisterView(APIView):
@@ -234,12 +147,6 @@ class ApplyView(APIView):
             raise
         return Response(serializer.data, status=201)
 
-
-
-
-
-
-
 # view pour recruteur qui reçoit des candidatures                                               ================rajouté================
 class RecruiterApplicationsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -260,25 +167,26 @@ class RecruiterApplicationsView(APIView):
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
 
-# View pour créer une annonce (recruteur uniquement)
-class AdCreateView(APIView):
+# View pour que le recruteur change le statut d'une candidature
+class UpdateApplicationStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def patch(self, request, pk):
         if request.user.role != "recruiter":
             return Response(
-                {"detail": "Seuls les recruteurs peuvent créer une annonce."},
+                {"detail": "Accès réservé aux recruteurs."},
                 status=403,
             )
-        if request.user.company is None:
-            return Response(
-                {"detail": "Vous devez être rattaché à une entreprise."},
-                status=400,
-            )   
-        serializer = AdCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(recruiter=request.user, company=request.user.company)
-        return Response(serializer.data, status=201)
+        application = Application.objects.filter(pk=pk, ad__recruiter=request.user).first()
+        if application is None:
+            return Response({"detail": "Candidature introuvable."}, status=404)
+        new_status = request.data.get("status")
+        valid_statuses = [choice[0] for choice in Application.STATUS_CHOICES]
+        if new_status not in valid_statuses:
+            return Response({"detail": "Statut invalide."}, status=400)
+        application.status = new_status
+        application.save(update_fields=["status"])
+        return Response(ApplicationSerializer(application).data)
 
 #View pour envoyer un message (candidat uniquement)
 
@@ -317,6 +225,7 @@ class MessageCreateView(APIView):
         return Response(serializer.data)
 
 # View pour candidat qui voit ses propres candidatures
+
 class CandidateApplicationsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -334,6 +243,23 @@ class CandidateApplicationsView(APIView):
 
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
+# View pour que le recruteur marque un message comme lu 
+
+class MessageMarkReadView(APIView): 
+    permission_classes =[IsAuthenticated]
+    def patch(self, request, pk):
+        if request.user.role != "recruiter":
+            return Response(
+                {"detail": "Accès réservé aux recruteurs."},
+                status=403,
+            )
+
+        message = Message.objects.filter(pk=pk, ad__recruiter=request.user).first()
+        if message is None:
+            return Response({"detail": "Message introuvable."}, status=404)
+        message.status = "read"
+        message.save(update_fields=["status"])
+        return Response(MessageSerializer(message).data)
 
 class AdViewSet(viewsets.ModelViewSet):                                                         #================rajouté================
     serializer_class = AdSerializer
@@ -359,6 +285,11 @@ class AdViewSet(viewsets.ModelViewSet):                                         
             category = self.request.query_params.get("category")
             if category:
                 qs = qs.filter(category_id=category)
+            search = self.request.query_params.get("search")
+            if search:
+                qs = qs.filter(Q(title__icontains=search)
+                               | Q(short_description__icontains=search)
+                               | Q(full_description__icontains=search))
         return qs
  
     def perform_create(self, serializer):

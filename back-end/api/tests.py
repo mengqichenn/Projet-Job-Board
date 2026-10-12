@@ -5,7 +5,7 @@ from django.test import override_settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APITestCase
 
-from .models import User, Company, Category, Ad, Application
+from .models import User, Company, Category, Ad, Application, Message
 
 
 class ApplicationCVTests(APITestCase):
@@ -43,7 +43,6 @@ class ApplicationCVTests(APITestCase):
             download = self.client.get(url)
             self.assertEqual(download.status_code, 200)
             self.assertEqual(b"".join(download.streaming_content), b"%PDF-1.4\nCV test")
-            download.close()
         other = User.objects.create_user(email="other@example.com", role="recruiter")
         self.client.force_authenticate(other)
         self.assertEqual(self.client.get(url).status_code, 403)
@@ -77,3 +76,94 @@ class ApplicationCVTests(APITestCase):
         self.assertEqual(self.apply(cv=self.pdf()).status_code, 400)
         self.candidate.refresh_from_db()
         self.assertFalse(self.candidate.cv)
+
+
+class ApplicationStatusTests(APITestCase):
+    def setUp(self):
+        self.recruiter = User.objects.create_user(email="rh@example.com", password="test", role="recruiter")
+        self.candidate = User.objects.create_user(email="cand@example.com", password="test")
+        company = Company.objects.create(name="Company", siret="12345678901234")
+        category = Category.objects.create(name="IT", slug="it")
+        ad = Ad.objects.create(title="Dev", company=company, recruiter=self.recruiter,
+                               category=category, contract_type="CDI")
+        self.application = Application.objects.create(candidate=self.candidate, ad=ad, message="Bonjour")
+        self.url = f"/api/applications/{self.application.pk}/status"
+
+    def test_recruiter_can_change_status(self):
+        self.client.force_authenticate(self.recruiter)
+        response = self.client.patch(self.url, {"status": "interview"}, format="json")
+        self.assertEqual(response.status_code, 200)
+        self.application.refresh_from_db()
+        self.assertEqual(self.application.status, "interview")
+    
+    def test_candidate_cannot_change_status(self):
+        self.client.force_authenticate(self.candidate)
+        response = self.client.patch(self.url, {"status": "accepted"}, format="json")
+        self.assertEqual(response.status_code, 403)
+
+    def test_invalid_status_is_rejected(self):
+        self.client.force_authenticate(self.recruiter)
+        response = self.client.patch(self.url, {"status": "nimportequoi"}, format="json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_other_recruiter_gets_404(self):
+        other = User.objects.create_user(email="autre@example.com", password="test", role="recruiter")
+        self.client.force_authenticate(other)
+        response = self.client.patch(self.url, {"status": "accepted"}, format="json")
+        self.assertEqual(response.status_code, 404)
+
+class MessageReadTests(APITestCase):
+    def setUp(self):
+        self.recruiter = User.objects.create_user(email="rh@example.com", password="test", role="recruiter")
+        self.candidate = User.objects.create_user(email="cand@example.com", password="test")
+        company = Company.objects.create(name="Company", siret="12345678901234")
+        category = Category.objects.create(name="IT", slug="it")
+        ad = Ad.objects.create(title="Dev", company=company, recruiter=self.recruiter,
+                               category=category, contract_type="CDI")
+        self.message = Message.objects.create(candidate=self.candidate, ad=ad,
+                                              object="Candidature : Dev", content="Bonjour")
+        self.url = f"/api/messages/{self.message.pk}/read"
+
+    def test_recruiter_can_mark_message_read(self):
+        self.client.force_authenticate(self.recruiter)
+        response = self.client.patch(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.message.refresh_from_db()
+        self.assertEqual(self.message.status, "read")
+
+    def test_candidate_cannot_mark_message_read(self):
+        self.client.force_authenticate(self.candidate)
+        response = self.client.patch(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_other_recruiter_gets_404(self):
+        other = User.objects.create_user(email="autre@example.com", password="test", role="recruiter")
+        self.client.force_authenticate(other)
+        response = self.client.patch(self.url)
+        self.assertEqual(response.status_code, 404)
+
+class AdSearchTests(APITestCase):
+    def setUp(self):
+        recruiter = User.objects.create_user(email="rh@example.com", password="test", role="recruiter")
+        company = Company.objects.create(name="Company", siret="12345678901234")
+        category = Category.objects.create(name="IT", slug="it")
+        Ad.objects.create(title="Dev Python", short_description="Poste de dev",
+                          company=company, recruiter=recruiter, category=category, contract_type="CDI")
+        Ad.objects.create(title="Comptable", short_description="Gestion des comptes",
+                          company=company, recruiter=recruiter, category=category, contract_type="CDI")
+
+    def test_search_finds_matching_ad(self):
+        response = self.client.get("/api/ads?search=python")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["title"], "Dev Python")
+
+    def test_search_looks_in_description(self):
+        response = self.client.get("/api/ads?search=gestion")
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["title"], "Comptable")
+
+    def test_search_without_result_returns_empty_list(self):
+        response = self.client.get("/api/ads?search=zzzz")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])

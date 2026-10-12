@@ -128,32 +128,6 @@ class AdSerializer(serializers.ModelSerializer):
                 {"monthly_salary_max": "Le salaire maximum doit être supérieur au minimum."})
         return data
 
-
-
-# ====================RAJOUTé=====================
-class AdCreateSerializer(serializers.ModelSerializer):
-    # Le formulaire envoie l'identifiant de la catégorie.
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
- 
-    class Meta:
-        model = Ad
-        # status, company, recruiter et les dates n'y sont pas : le client ne peut pas les choisir
-        fields = ["title", "short_description", "full_description", "city", "postal_code",
-                  "contract_type", "monthly_salary_min", "monthly_salary_max", "working_time",
-                  "category", "education_level", "experience", "start_time", "work_mode"]
- 
-    def validate(self, data):
-        low, high = data.get("monthly_salary_min"), data.get("monthly_salary_max")
-        if low is not None and high is not None and high < low:
-            raise serializers.ValidationError(
-                {"monthly_salary_max": "Le salaire maximum doit être supérieur au minimum."})
-        return data
-
-
-
-
-
-
 # Serializer pour candidature
 
 class ApplicationSerializer(serializers.ModelSerializer):
@@ -197,9 +171,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ["id", "name"]       
-
- 
+        fields = ["id", "name", "slug"]       
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
