@@ -102,7 +102,7 @@ textarea::placeholder {
 .ad-list {display:grid;gap:.75rem}
 
 .ad {background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:1.1rem}
-.ad-row {display:grid; gap:.5rem 1rem; align-items:start;
+.ad-row {display:grid; gap:.5rem 1rem; align-items:start; margin-bottom: 1rem;
          grid-template-columns:minmax(0,1fr) auto;
          grid-template-areas:"content heart"
                              "content side"
@@ -110,7 +110,7 @@ textarea::placeholder {
 .ad-row > .ad-content {grid-area: content}
 .ad-row > .save-btn {grid-area: heart; justify-self: end;}
 
-.ad-row > .ad-side {grid-area: side; display:flex;flex-direction:column;align-items:flex-end;gap:.25rem;text-align:right}
+.ad-row > .ad-side {grid-area: side; display:flex; flex-direction:column; align-items:flex-end;gap:.25rem; text-align:right}
 .ad-row > .ad-actions {grid-area: actions}
 .ad-row > .ad-detail,.ad-row > .ad-apply{grid-column:1 / -1}   /* pleine largeur sous la carte */
 
@@ -132,8 +132,7 @@ textarea::placeholder {
 .ad .save-btn:empty::before{content:"♡";font-size:1.2rem;line-height:1}
 .ad .save-btn[aria-pressed=true]:empty::before{content:"♥"}
 
-.ad-salary{margin:0;font-weight:800; white-space:nowrap}
-.ad-salary small{font-weight:400;color:var(--muted)}
+.ad-salary{margin:0;font-weight:800; white-space:nowrap; }
 .ad-date{color:var(--muted);font-size:.85rem}
 
 /* Boutons "En savoir plus" et "Postuler" */
