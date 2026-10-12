@@ -15,11 +15,13 @@ Adresses :
 - Front : http://localhost:5500
 
 Pour repartir d'une base vide : `docker compose down -v`
+(après un `down -v`, il faut refaire l'étape 3)
 
 ## Routes de l'API
 
 Toutes les routes commencent par `/api/`.
 Les routes marquées "connecté" demandent l'en-tête `Authorization: Bearer LE_TOKEN`.
+Les erreurs de validation sont renvoyées en français, champ par champ (code 400).
 
 ### Comptes
 | Méthode | Route | Qui | Rôle |
@@ -33,9 +35,11 @@ Les routes marquées "connecté" demandent l'en-tête `Authorization: Bearer LE_
 | Méthode | Route | Qui | Rôle |
 |---|---|---|---|
 | GET | `categories` | tout le monde | Liste des catégories (id, name, slug) |
-| GET | `ads` | tout le monde | Liste des offres |
+| GET | `ads` | tout le monde | Liste des offres ouvertes. Filtres : `search`, `city`, `contract_type`, `education_level`, `experience`, `work_mode`, `category` (ex. `ads?search=python&city=Paris`) |
 | GET | `ads/<id>` | tout le monde | Détail d'une offre |
-| POST | `ads` | recruteur | Créer une offre (`category` = l'id) |
+| POST | `ads` | recruteur | Créer une offre (`category` = l'id de la catégorie) |
+| PUT / PATCH | `ads/<id>` | recruteur propriétaire | Modifier une offre |
+| DELETE | `ads/<id>` | recruteur propriétaire | Fermer une offre (elle n'est pas effacée) |
 
 ### Candidatures et messages
 | Méthode | Route | Qui | Rôle |
@@ -56,5 +60,8 @@ docker compose exec backend python manage.py test
 
 Au premier lancement, MySQL peut refuser la création de la base de test
 (`Access denied ... test_jobboard_db`). Il faut alors donner le droit à
-`jobboard_user` :voir `README_DOCKER.md`.
+`jobboard_user` (à refaire après chaque `docker compose down -v`) :
 
+```
+ROOTPW=$(docker compose logs db | grep "GENERATED ROOT PASSWORD" | awk '{print $NF}')
+docker compose exec -e MYSQL_PWD="$ROOTPW" db mysql -uroot -e 'GRANT ALL PRIVILEGES ON `test_jobboard_db`.* TO "jobboard_user"@"%";'
