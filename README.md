@@ -35,7 +35,7 @@ Les routes marquées "connecté" demandent l'en-tête `Authorization: Bearer LE_
 | GET | `categories` | tout le monde | Liste des catégories (id, name, slug) |
 | GET | `ads` | tout le monde | Liste des offres |
 | GET | `ads/<id>` | tout le monde | Détail d'une offre |
-| POST | `ads/create` | recruteur | Créer une offre (`category` = l'id) |
+| POST | `ads` | recruteur | Créer une offre (`category` = l'id) |
 
 ### Candidatures et messages
 | Méthode | Route | Qui | Rôle |
