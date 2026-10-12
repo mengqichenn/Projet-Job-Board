@@ -12,6 +12,13 @@ const labels = {
     senior: "Plus de 5 ans",
 };
 
+const educationLabels = {
+    bac: "BACBAC / BAC Pro",
+    bac2: "BAC+2",
+    bac3: "BAC+3, Licence, Bachelor",
+    bac5: "BAC+5, Master, Grande Ecole",
+}
+
 async function loadAds() {
     const list = document.querySelector(".ad-list");
     list.textContent = "Chargement des offres...";
@@ -34,7 +41,7 @@ async function loadAds() {
 
             card.querySelector(".ad-desc").textContent = ad.short_description;
 
-            const tags = card.querySelector(".ad-tages");
+            const tags = card.querySelector(".ad-tags");
             tags.replaceChildren();
 
             for (const [index, value] of [
@@ -71,6 +78,28 @@ async function loadAds() {
 
             card.querySelector("[data-apply]").hidden = currentUser?.role !== "candidate";
 
+            const detail = document.getElementById("template-detail").content.firstElementChild.cloneNode(true);
+
+            const values = {
+                category_name: ad.category_name,
+                company_name: ad.company_name,
+                location: [ad.city, ad.postal_code].filter(Boolean).join(" "),
+                salary: card.querySelector(".ad-salary").textContent,
+                contract_type: ad.contract_type,
+                working_time: labels[ad.working_time] || ad.working_time,
+                work_mode: labels[ad.work_mode] || ad.work_mode,
+                experience: labels[ad.experience] || ad.experience,
+                education_level: educationLabels[ad.education_level] || ad.education_level,
+                start_time: ad.start_time ? new Date(ad.start_time + "T00:00:00").toLocaleDateString("fr-FR"): "Dès que possible",
+                description: ad.full_description,
+            }
+
+            detail.querySelectorAll("[data-field]").forEach(element => {
+                element.textContent = values[element.dataset.field] || "Non précisé";
+            });
+
+            detail.hidden = true;
+            card.append(detail);
             cards.append(card);
         }
 
@@ -84,9 +113,10 @@ async function loadAds() {
     }
 }
 
+
 async function start() {
     currentUser = await initPage();
-    await loadAds;
+    await loadAds();
     
 }
 
