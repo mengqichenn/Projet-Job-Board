@@ -4,14 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
-    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="icon" href="icon.ico" type="image/x-icon">
 
     <title>Modifier mon profil - Talentis</title>
 </head>
 
-<body>
-<!--HEADER-->
+<body class="edit-profile-page">
+    <header class="site-header dashboard-header">
+        <div class="container">
+            <a class="jobboard" href="main.html"><span>Talentis</span></a>
+            <nav aria-label="Navigation principale">
+                <ul class="navbar">
+                    <li><a href="main.html">Offres</a></li>
+                    <li data-role="candidate" hidden><a href="dashboard-candidate.html">Mon dashboard</a></li>
+                    <li data-role="recruiter" hidden><a href="dashboard-recruiter.html">Mon dashboard</a></li>
+                    <li class="menu" data-role="candidate" hidden>
+                        <details>
+                            <summary class="menu-toggle" aria-label="Menu du compte">
+                                <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                            </summary>
+                            <div class="menu-panel">
+                                <a href="dashboard-candidate.html">Mon dashboard</a>
+                                <a href="edit-profile.html">Modifier mon profil</a>
+                                <hr>
+                                <button type="button" data-logout>Déconnexion</button>
+                            </div>
+                        </details>
+                    </li>
+                    <li class="menu" data-role="recruiter" hidden>
+                        <details>
+                            <summary class="menu-toggle" aria-label="Menu du compte">
+                                <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                            </summary>
+                            <div class="menu-panel">
+                                <a href="dashboard-recruiter.html">Mon dashboard</a>
+                                <a href="edit-profile.html">Modifier mon profil</a>
+                                <hr>
+                                <button type="button" data-logout>Déconnexion</button>
+                            </div>
+                        </details>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
     <main class="accountcontainer edit-page">
         <a class="back-link" id="back-link" href="main.html">← Retour</a>
@@ -36,7 +73,7 @@
             </div>
 
             <!-- Candidat -->
-            <fieldset id="fs-candidate" data-role="candidate" hidden style="border:0;padding:0;margin:0">
+            <fieldset id="fs-candidate" data-role="candidate" class="profile-role-fields" hidden>
                 <div class="form-row two">
                     <div class="field"><label for="postal_code">Code postal*</label>
                         <input id="postal_code" name="postal_code" required></div>
@@ -50,7 +87,7 @@
             </fieldset>
 
             <!-- Recruteur -->
-            <fieldset id="fs-recruiter" data-role="recruiter" hidden style="border:0;padding:0;margin:0">
+            <fieldset id="fs-recruiter" data-role="recruiter" class="profile-role-fields" hidden>
                 <div class="form-row two">
                     <div class="field"><label for="company_name">Nom de l'entreprise*</label>
                         <input id="company_name" name="company_name" required></div>
@@ -111,102 +148,7 @@
 
     <script src="js/api.js"></script>
     <script src="js/menu.js"></script>
-<script>
-/* ==================================================================
-   MOCK = true  : données de test (la page marche sans back-end)
-   MOCK = false : vraie API via api() de js/api.js
-   /auth/me existe déjà (utilisée par initPage). /auth/password est à confirmer avec le back-end.
-   Champs et rôles (candidate / recruiter) = ceux de account.html.
-================================================================== */
-const MOCK = true;
-const MOCK_ROLE = "candidate";        // pour tester l'autre formulaire : "recruiter"
+    <script src="js/edit-profile.js"></script>
 
-let profile = { email: "etudiant@exemple.fr", first_name: "Prénom", last_name: "Nom", telephone: "",
-                postal_code: "34000", city: "Montpellier", cv: "cv_2026.pdf",
-                company_name: "TechNova", siret: "12345678901234", description: "", website: "",
-                company_postal_code: "34000", company_city: "Montpellier" };
-
-async function apiSaveProfile(fd){
-  if (MOCK){ fd.forEach((v, k) => { if (!(v instanceof File)) profile[k] = v; else if (v.name) profile.cv = v.name; }); return; }
-  return api("/auth/me", { method: "PATCH", body: fd });          // FormData : api() le gère
-}
-async function apiChangePassword(oldPassword, newPassword){
-  if (MOCK) return;
-  return api("/auth/password", { method: "POST", body: { old_password: oldPassword, new_password: newPassword } });
-}
-async function apiDeleteAccount(){
-  if (MOCK) return;
-  await api("/auth/me", { method: "DELETE" });
-  localStorage.removeItem("token");
-}
-/* ------------------------------------------------------------------ */
-
-const $ = id => document.getElementById(id);
-const form = $("form-info");
-function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); }
-const fail = err => toast(err?.data?.detail || "Une erreur est survenue, réessaie.");
-const serverErrors = err => Object.entries(err?.data || {}).map(([champ, msg]) => `${champ} : ${Array.isArray(msg) ? msg.join(" ") : msg}`).join(" | ");
-
-function fillForm(){
-  [...form.elements].forEach(el => { if (el.name && el.type !== "file") el.value = profile[el.name] ?? ""; });
-  $("cv-current").textContent = profile.cv ? "CV actuel : " + profile.cv : "Aucun CV enregistré.";
-}
-
-// 1) Informations personnelles
-form.addEventListener("submit", async e => {
-  e.preventDefault();
-  ["err-email", "err-cv", "err-form"].forEach(id => $(id).textContent = "");
-  const email = $("email").value.trim(), file = $("cv").files[0];
-  const okMail = /^\S+@\S+\.\S+$/.test(email);
-  $("email").setAttribute("aria-invalid", !okMail);
-  if (!okMail) { $("err-email").textContent = "Entre une adresse mail valide, par exemple nom@exemple.fr."; return; }
-  if (file && !/\.pdf$/i.test(file.name))  { $("err-cv").textContent = "Le CV doit être un fichier PDF."; return; }
-  if (file && file.size > 5 * 1024 * 1024) { $("err-cv").textContent = "Le fichier dépasse 5 Mo."; return; }
-  if (!$("fs-recruiter").disabled && !/^\d{14}$/.test($("siret").value.trim())) { $("err-form").textContent = "Le SIRET doit contenir 14 chiffres."; return; }
-
-  const fd = new FormData(form);                       // les blocs masqués sont "disabled" : ils ne sont pas envoyés
-  if (!file) fd.delete("cv");                          // pas de nouveau CV : on garde l'ancien
-  try {
-    await apiSaveProfile(fd);
-    if (!MOCK) profile = await api("/auth/me");
-    fillForm(); $("cv").value = ""; toast("Profil mis à jour");
-  } catch (err) { const m = serverErrors(err); m ? ($("err-form").textContent = m) : fail(err); }
-});
-
-// 2) Mot de passe (mêmes règles que l'inscription : 12 caractères, lettres et chiffres)
-$("form-pass").addEventListener("submit", async e => {
-  e.preventDefault();
-  const old = $("old-pass").value, p1 = $("new-pass").value, p2 = $("new-pass2").value, err = $("err-pass");
-  if (!old)          return err.textContent = "Entre ton mot de passe actuel.";
-  if (p1.length < 12 || !/[A-Za-z]/.test(p1) || !/\d/.test(p1)) return err.textContent = "Le nouveau mot de passe doit contenir au moins 12 caractères, avec des lettres et des chiffres.";
-  if (p1 !== p2)     return err.textContent = "Les deux mots de passe ne sont pas identiques.";
-  err.textContent = "";
-  try { await apiChangePassword(old, p1); e.target.reset(); toast("Mot de passe modifié"); }
-  catch (er) { err.textContent = serverErrors(er) || "Une erreur est survenue, réessaie."; }
-});
-
-// 3) Supprimer le compte
-$("btn-delete").onclick = () => { $("confirm-text").value = ""; $("del-ok").disabled = true; $("dlg-del").showModal(); };
-$("confirm-text").addEventListener("input", () => $("del-ok").disabled = $("confirm-text").value.trim() !== "SUPPRIMER");
-$("del-cancel").onclick = () => $("dlg-del").close();
-$("del-ok").onclick = async () => {
-  try { await apiDeleteAccount(); location.href = "main.html"; } catch (err) { $("dlg-del").close(); fail(err); }
-};
-
-/* Démarrage : même enchaînement que main.html (js/api.js + js/menu.js) */
-(async () => {
-  let user;
-  if (MOCK){ user = { name: "Test Utilisateur", role: MOCK_ROLE }; applyRole(user.role); }
-  else     { user = await initPage(); if (!user) { location.href = "login.html"; return; } }
-  if (typeof initMenu === "function") initMenu(user);
-
-  // Un seul bloc de champs selon le rôle (même logique que account.html)
-  ["candidate", "recruiter"].forEach(r => { $("fs-" + r).disabled = $("fs-" + r).hidden; });
-  $("back-link").href = user.role === "recruiter" ? "dashboard-recruiter.html" : "dashboard-candidate.html";
-
-  if (!MOCK) { try { profile = await api("/auth/me"); } catch (err) { fail(err); } }
-  fillForm();
-})();
-</script>
 </body>
 </html>
