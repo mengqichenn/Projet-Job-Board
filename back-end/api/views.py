@@ -2,6 +2,7 @@ from pathlib import Path
 from django.http import FileResponse, Http404
 from django.shortcuts import render, get_object_or_404
 from django.db import IntegrityError, transaction
+from django.db.models import Q
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission                    #(rajouté)
@@ -284,6 +285,11 @@ class AdViewSet(viewsets.ModelViewSet):                                         
             category = self.request.query_params.get("category")
             if category:
                 qs = qs.filter(category_id=category)
+            search = self.request.query_params.get("search")
+            if search:
+                qs = qs.filter(Q(title__icontains=search)
+                               | Q(short_description__icontains=search)
+                               | Q(full_description__icontains=search))
         return qs
  
     def perform_create(self, serializer):

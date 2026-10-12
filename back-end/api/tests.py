@@ -141,3 +141,29 @@ class MessageReadTests(APITestCase):
         self.client.force_authenticate(other)
         response = self.client.patch(self.url)
         self.assertEqual(response.status_code, 404)
+
+class AdSearchTests(APITestCase):
+    def setUp(self):
+        recruiter = User.objects.create_user(email="rh@example.com", password="test", role="recruiter")
+        company = Company.objects.create(name="Company", siret="12345678901234")
+        category = Category.objects.create(name="IT", slug="it")
+        Ad.objects.create(title="Dev Python", short_description="Poste de dev",
+                          company=company, recruiter=recruiter, category=category, contract_type="CDI")
+        Ad.objects.create(title="Comptable", short_description="Gestion des comptes",
+                          company=company, recruiter=recruiter, category=category, contract_type="CDI")
+
+    def test_search_finds_matching_ad(self):
+        response = self.client.get("/api/ads?search=python")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["title"], "Dev Python")
+
+    def test_search_looks_in_description(self):
+        response = self.client.get("/api/ads?search=gestion")
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["title"], "Comptable")
+
+    def test_search_without_result_returns_empty_list(self):
+        response = self.client.get("/api/ads?search=zzzz")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])
