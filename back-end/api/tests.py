@@ -5,7 +5,7 @@ from django.test import override_settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APITestCase
 
-from .models import User, Company, Category, Ad, Application
+from .models import User, Company, Category, Ad, Application, Message
 
 
 class ApplicationCVTests(APITestCase):
@@ -110,4 +110,34 @@ class ApplicationStatusTests(APITestCase):
         other = User.objects.create_user(email="autre@example.com", password="test", role="recruiter")
         self.client.force_authenticate(other)
         response = self.client.patch(self.url, {"status": "accepted"}, format="json")
+        self.assertEqual(response.status_code, 404)
+
+class MessageReadTests(APITestCase):
+    def setUp(self):
+        self.recruiter = User.objects.create_user(email="rh@example.com", password="test", role="recruiter")
+        self.candidate = User.objects.create_user(email="cand@example.com", password="test")
+        company = Company.objects.create(name="Company", siret="12345678901234")
+        category = Category.objects.create(name="IT", slug="it")
+        ad = Ad.objects.create(title="Dev", company=company, recruiter=self.recruiter,
+                               category=category, contract_type="CDI")
+        self.message = Message.objects.create(candidate=self.candidate, ad=ad,
+                                              object="Candidature : Dev", content="Bonjour")
+        self.url = f"/api/messages/{self.message.pk}/read"
+
+    def test_recruiter_can_mark_message_read(self):
+        self.client.force_authenticate(self.recruiter)
+        response = self.client.patch(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.message.refresh_from_db()
+        self.assertEqual(self.message.status, "read")
+
+    def test_candidate_cannot_mark_message_read(self):
+        self.client.force_authenticate(self.candidate)
+        response = self.client.patch(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_other_recruiter_gets_404(self):
+        other = User.objects.create_user(email="autre@example.com", password="test", role="recruiter")
+        self.client.force_authenticate(other)
+        response = self.client.patch(self.url)
         self.assertEqual(response.status_code, 404)
