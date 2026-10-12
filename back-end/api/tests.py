@@ -43,7 +43,6 @@ class ApplicationCVTests(APITestCase):
             download = self.client.get(url)
             self.assertEqual(download.status_code, 200)
             self.assertEqual(b"".join(download.streaming_content), b"%PDF-1.4\nCV test")
-            download.close()
         other = User.objects.create_user(email="other@example.com", role="recruiter")
         self.client.force_authenticate(other)
         self.assertEqual(self.client.get(url).status_code, 403)
