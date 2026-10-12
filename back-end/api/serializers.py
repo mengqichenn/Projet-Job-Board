@@ -158,10 +158,13 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     ad_title = serializers.CharField(source="ad.title", read_only=True)
 
+    company_name = serializers.CharField(source="ad.company.name", read_only=True)
+    city = serializers.CharField(source="ad.city", read_only=True)
+
     class Meta:
         model = Application
         fields = [
-            "id", "ad", "ad_title","first_name", "last_name", "email", 
+            "id", "ad", "ad_title", "company_name", "city", "first_name", "last_name", "email",
             "telephone", "message", "status", "created_at",
             "cv", "use_saved_cv", "cv_download_url",
         ]
