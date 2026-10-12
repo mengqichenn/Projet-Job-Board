@@ -34,8 +34,5 @@ class Migration(migrations.Migration):
             name='telephone',
             field=models.CharField(blank=True, default='', max_length=30),
         ),
-        migrations.AddConstraint(
-            model_name='application',
-            constraint=models.UniqueConstraint(fields=('candidate', 'ad'), name='unique_candidate_ad'),
-        ),
+        
     ]

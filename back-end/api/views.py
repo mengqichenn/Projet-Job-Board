@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.db import IntegrityError, transaction
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission                    #(rajouté)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import RegisterSerializer, AdSerializer, CategorySerializer, ApplicationSerializer, AdCreateSerializer, MessageCreateSerializer, MessageSerializer
@@ -18,10 +18,23 @@ def user_payload(user):
         "name": f"{user.first_name} {user.last_name}".strip() or user.email,
     }
 
-# View pour Ad
+
+
+
+# view pour recruteur                                                                  ================rajouté================
+
+class IsRecruiter(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.role == "recruiter"
+
+
+
+
+# View pour Ad                                    ==========MODIF=============
 class AdListView(APIView):
-    authentication_classes = []
-    permission_classes = [AllowAny]
+    def get_permissions(self):
+        return [IsRecruiter()] if self.request.method == "POST" else [AllowAny()]
+
 
     def get(self, request):
         ads = Ad.objects.filter(status="open")
@@ -86,6 +99,7 @@ class AdDetailView(APIView):
         ad.delete()
         return Response(status=204)
 
+
 # View pour inscription 
 class RegisterView(APIView):
     authentication_classes = []
@@ -120,6 +134,7 @@ class MeView(APIView):
         return Response(user_payload(request.user))
 
 
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -137,7 +152,7 @@ class CategoryListView(APIView):
         return Response(serializer.data)
 
 
-# View pour candidature qui postule
+# View pour candidature qui postule                                                             ================rajouté================
 class ApplyView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -185,7 +200,12 @@ class ApplyView(APIView):
         return Response(serializer.data, status=201)
 
 
-# view pour recruteur qui reçoit des candidatures
+
+
+
+
+
+# view pour recruteur qui reçoit des candidatures                                               ================rajouté================
 class RecruiterApplicationsView(APIView):
     permission_classes = [IsAuthenticated]
 

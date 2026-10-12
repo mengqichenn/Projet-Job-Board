@@ -156,7 +156,10 @@ REST_FRAMEWORK = {
 }
 
 # Adresses d'où tu ouvres tes pages HTML
-CORS_ALLOWED_ORIGINS = ["http://localhost:5500", "http://127.0.0.1:5500"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5500", 
+    "http://127.0.0.1:5500",
+    ]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

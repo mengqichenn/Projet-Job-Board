@@ -108,20 +108,47 @@ class RegisterSerializer(serializers.Serializer):
             cv=d.get("cv") if d["role"] == "candidate" else None,   # CV ne peut qu'être déposé par les candidats
         )
 
-# Serializer pour annonces
+# Serializer pour annonces                                  ============MODIF===============
 
 class AdSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(slug_field="slug", queryset=Category.objects.all())
     company_name = serializers.CharField(source="company.name", read_only=True)
-    category_name = serializers.CharField(source="category.name", read_only=True)
+ 
     class Meta:
         model = Ad
-        fields = [
-            "id", "title", "short_description", "full_description",
-            "city", "postal_code", "contract_type",
-            "monthly_salary_min", "monthly_salary_max", "working_time",
-            "education_level", "experience", "start_time", "work_mode",
-            "status", "created_at", "company_name", "category_name",
-        ]
+        fields = "__all__"
+        # le client ne peut pas choisir ces champs : le serveur les remplit
+        read_only_fields = ["status", "company", "recruiter", "created_at", "modified_at"]
+ 
+    def validate(self, data):
+        low, high = data.get("monthly_salary_min"), data.get("monthly_salary_max")
+        if low is not None and high is not None and high < low:
+            raise serializers.ValidationError(
+                {"monthly_salary_max": "Le salaire maximum doit être supérieur au minimum."})
+        return data
+
+
+
+# ====================RAJOUTé=====================
+class AdCreateSerializer(serializers.ModelSerializer):
+    # le formulaire envoie le slug ("tech", "commerce"...) ; Category doit avoir un champ slug
+    category = serializers.SlugRelatedField(slug_field="slug", queryset=Category.objects.all())
+ 
+    class Meta:
+        model = Ad
+        # status, company, recruiter et les dates n'y sont pas : le client ne peut pas les choisir
+        fields = ["title", "short_description", "full_description", "city", "postal_code",
+                  "contract_type", "monthly_salary_min", "monthly_salary_max", "working_time",
+                  "category", "education_level", "experience", "start_time", "work_mode"]
+ 
+    def validate(self, data):
+        low, high = data.get("monthly_salary_min"), data.get("monthly_salary_max")
+        if low is not None and high is not None and high < low:
+            raise serializers.ValidationError(
+                {"monthly_salary_max": "Le salaire maximum doit être supérieur au minimum."})
+        return data
+
+
 
 
 

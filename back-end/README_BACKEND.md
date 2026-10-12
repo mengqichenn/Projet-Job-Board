@@ -23,7 +23,11 @@ curl -X POST http://127.0.0.1:8000/api/auth/register \
 # un recruteur
 curl -X POST http://127.0.0.1:8000/api/auth/register \
     -H "Content-Type: application/json" -H "Accept: application/json" \
-    -d '{"email":"rh@acme.fr","password":"motdepasse123","role":"recruiter","first_name":"Paul","last_name":"Durand","company_name":"Acme SAS","siret":"12345678901234","company_postal_code_":"34000","company_city":"Montpellier"}'
+    -d '{"email":"rh@danone.fr","password":"motdepasse123","role":"recruiter","first_name":"Patrice","last_name":"Louvet","company_name":"Danone SAS","siret":"55203253400703","company_postal_code":"75000","company_city":"Paris"}'
+    
+    -d '{"email":"rh@ubisoft.fr","password":"motdepasse123","role":"recruiter","first_name":"Yves","last_name":"Guillemot","company_name":"Ubisoft Montpellier SAS","siret":"35355586500073","company_postal_code":"34000","company_city":"Montpellier"}'
+
+
 
 # =====TEST => la connection d'un compte ======
        
