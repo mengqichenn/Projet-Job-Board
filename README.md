@@ -65,3 +65,4 @@ Au premier lancement, MySQL peut refuser la création de la base de test
 ```
 ROOTPW=$(docker compose logs db | grep "GENERATED ROOT PASSWORD" | awk '{print $NF}')
 docker compose exec -e MYSQL_PWD="$ROOTPW" db mysql -uroot -e 'GRANT ALL PRIVILEGES ON `test_jobboard_db`.* TO "jobboard_user"@"%";'
+```
