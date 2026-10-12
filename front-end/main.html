@@ -79,30 +79,32 @@
                 <input type="text" name="city" placeholder="Ville" aria-label="Ville">
                 <select name="category" id="category" aria-label="Catégorie de métier">
                     <option value="">Tous les categories</option>
-                    <option value="tech">Informatique et numérique</option>
-                    <option value="administration">Administration et gestion</option>
-                    <option value="commerce">Commerce et vente</option>
-                    <option value="marketing">Marketing et communication</option>
-                    <option value="finance">Finance, banque et comptabilité</option>
-                    <option value="rh">Ressources humaines</option>
-                    <option value="sante">Santé et services sociaux</option>
-                    <option value="education">Éducation et formation</option>
-                    <option value="industrie">Industrie et production</option>
-                    <option value="logistique">Logistique et transport</option>
-                    <option value="tourisme">Tourisme et hôtellerie</option>
-                    <option value="agri">Agriculture</option>
-                    <option value="btp">BTP et construction</option>
-                    <option value="juridique">Juridique et droit</option>
-                    <option value="creation">Creation et design</option>
-                    <option value="autres">Autres</option>
+                    <option value="1">Informatique et numérique</option>
+                    <option value="2">Administration et gestion</option>
+                    <option value="3">Commerce et vente</option>
+                    <option value="4">Marketing et communication</option>
+                    <option value="5">Finance, banque et comptabilité</option>
+                    <option value="6">Ressources humaines</option>
+                    <option value="7">Santé et services sociaux</option>
+                    <option value="8">Éducation et formation</option>
+                    <option value="9">Industrie et production</option>
+                    <option value="10">Logistique et transport</option>
+                    <option value="11">Tourisme et hôtellerie</option>
+                    <option value="12">Agriculture</option>
+                    <option value="13">BTP et construction</option>
+                    <option value="14">Juridique et droit</option>
+                    <option value="15">Creation et design</option>
+                    <option value="16">Autres</option>
                 </select>
                 <button class="btn" type="submit">Rechercher</button>
             </form>
-
-
         </section>
 
+
+
         <div class="adcontainer">
+
+            <!--============== Partie filtre ===============-->
             <aside class="side">
                 <details class="card filters" id="filters" open>
                     <summary>Filtres</summary>
@@ -115,6 +117,14 @@
                             <label class="check"><input type="checkbox" name="contract" value="Alternance">Alternance</label>
                             <label class="check"><input type="checkbox" name="contract" value="Interim">Intérim</label>
                         </fieldset>
+
+                        <fieldset>
+                            <legend>Temps de travail</legend>
+                            <label class="check"><input type="radio" name="working_time" value="full_time">Temps plein</label>
+                            <label class="check"><input type="radio" name="working_time" value="part_time">Temps partiel</label>
+
+                        </fieldset>
+
 
                         <fieldset>
                             <legend>Niveau d'étude</legend>
@@ -150,13 +160,226 @@
             </aside>
 
 
+            <!--=========== Partie annonces ==========-->
+            <div>
+                <div class="results-header">
+                    <h2>Offres</h2>
+                    <button type="button" class="btn" id="open-publish" data-role="recruiter" hidden>Publier une offre</button>
+                </div>
+                <div class="ad-list">
+
+                    <!-- First Ad -->
+                    <article class="ad ad-row" data-id="1">
+                        <div class="ad-content">
+                            <h3 class="ad-title">Ad title 1<span class="ad-new">Nouveau</span></h3>
+                            <p class="ad-meta">company_name · city (postal_code)</p>
+                            <p class="ad-desc">short_description</p>
+                            <ul class="ad-tags"><li class="is-contract">contract_type</li><li>working_time</li><li>work_mode</li><li>experience</li></ul>
+                        </div>
+
+                        <button type="button" class="save-btn" aria-pressed="true" aria-label="Enregistrer l'offre"></button>
+
+                        <div class="ad-side">
+                            
+                            <p class="ad-salary">2 800 à 3 400 € <small>/ mois</small></p>
+                            <time class="ad-date" name="created_at" datetime="2026-10-10T08:00">il y a 2 heures</time>
+                        </div>
+
+                        <div class="ad-actions">
+                            <button type="button" class="btn btn-ghost btn-sm" data-more aria-expanded="false">En savoir plus</button>
+                            <button data-role="candidate" type="button" class="btn btn-sm" data-apply aria-expanded="false" hidden>Postuler</button>
+                        </div>
+                    </article>
+
+                    <!-- Second Ad -->
+                    <article class="ad ad-row" data-id="2">
+                        <div class="ad-content">
+                            <h3 class="ad-title">Ad title 2</h3>
+                            <p class="ad-meta">company_name · city (postal_code)</p>
+                            <p class="ad-desc">short_description</p>
+                            <ul class="ad-tags"><li class="is-contract">contract_type</li><li>working_time</li><li>work_mode</li><li>experience</li></ul>
+                        </div>
+
+                        <button type="button" class="save-btn" aria-pressed="false" aria-label="Retirer des offres enregistrées"></button>
+
+                        <div class="ad-side">
+                            
+                            <p class="ad-salary"><small>Salaire non précisé</small></p>
+                            <time class="ad-date" name="created_at" datetime="2026-10-08T10:00">il y a 2 jours</time>
+                        </div>
+
+                        <div class="ad-actions">
+                            <button type="button" class="btn btn-ghost btn-sm" data-more aria-expanded="false">En savoir plus</button>
+                            <button data-role="candidate" type="button" class="btn btn-sm" data-apply aria-expanded="false" hidden>Postuler</button>
+                        </div>
+                    </article>
+
+                    <!-- Third Ad -->
+                    <article class="ad ad-row" data-id="3">
+                        <div class="ad-content">
+                            <h3 class="ad-title">Ad title 3</h3>
+                            <p class="ad-meta">company_name · city (postal_code)</p>
+                            <p class="ad-desc">short_description</p>
+                            <ul class="ad-tags"><li class="is-contract">contract_type</li><li>working_time</li><li>work_mode</li><li>experience</li></ul>
+                        </div>
+
+                        <button type="button" class="save-btn" aria-pressed="false" aria-label="Retirer des offres enregistrées"></button>
+
+                        <div class="ad-side">
+                            
+                            <p class="ad-salary"><small>Salaire non précisé</small></p>
+                            <time class="ad-date" name="created_at" datetime="2026-10-08T10:00">il y a 2 jours</time>
+                        </div>
+
+                        <div class="ad-actions">
+                            <button type="button" class="btn btn-ghost btn-sm" data-more aria-expanded="false">En savoir plus</button>
+                            <button data-role="candidate" type="button" class="btn btn-sm" data-apply aria-expanded="false" hidden>Postuler</button>
+                        </div>
+
+                    </article>
+                </div>
+            </div>
 
         </div>
 
+
+
+        <!--formulaire pour publier une annonce, réservé aux recruteurs-->
+
+        <dialog id="publish-dialog" class="modal" aria-labelledby="publish-title">
+            <form id="publish-form" class="modal-body">
+                <div class="modal-head">
+                    <h2 id="publish-title">Publier une offre</h2>
+                    <button type="button" class="modal-close" data-close aria-label="Fermer">&times;</button>
+                </div>
+
+                <div class="alert" id="publish-error" role="alert" hidden></div>
+
+                <div class="ad-fields">
+                    <div class="field wide"><label for="p-title">Titre de l'annonce</label><input id="p-title" name="title" maxlength="150" required></div>
+                    
+                    <div class="field wide"><label for="p-short">Description courte</label><input id="p-short" name="short_description" maxlength="255" required></div>
+                    
+                    <div class="field wide"><label for="p-full">Description complète</label><textarea id="p-full" name="full_description" rows="6" required></textarea></div>
+
+                    <div class="field"><label for="p-city">Ville</label><input id="p-city" name="city"></div>
+                    
+                    <div class="field"><label for="p-postal">Code postal</label><input id="p-postal" name="postal_code" inputmode="numeric" maxlength="10"></div>
+
+                    <div class="field"><label for="p-contract">Type de contrat</label>
+                        <select id="p-contract" name="contract_type" required>
+                            <option value="CDI">CDI</option><option value="CDD">CDD</option><option value="Stage">Stage</option>
+                            <option value="Alternance">Alternance</option><option value="Interim">Intérim</option>
+                        </select>
+                    </div>
+
+                    <div class="field"><label for="p-category">Catégorie</label><select id="p-category" name="category" required></select></div>
+
+                    <div class="field"><label for="p-min">Salaire mensuel minimum (€)</label><input id="p-min" name="monthly_salary_min" type="number" min="0"></div>
+
+                    <div class="field"><label for="p-max">Salaire mensuel maximum (€)</label><input id="p-max" name="monthly_salary_max" type="number" min="0"></div>
+
+                    <div class="field"><label for="p-time">Temps de travail</label>
+                        <select id="p-time" name="working_time">
+                            <option value="">Non précisé</option><option value="full_time">Temps plein</option><option value="part_time">Temps partiel</option>
+                        </select>
+                    </div>
+
+                    <div class="field"><label for="p-mode">Mode de travail</label>
+                        <select id="p-mode" name="work_mode">
+                            <option value="onsite">Sur site</option><option value="hybrid">Hybride</option><option value="remote">Télétravail</option>
+                        </select>
+                    </div>
+
+                    <div class="field"><label for="p-exp">Expérience</label>
+                        <select id="p-exp" name="experience">
+                            <option value="">Non précisé</option><option value="debutant">&lt; 1 an</option><option value="junior">1 à 3 ans</option>
+                            <option value="confirme">3 à 5 ans</option><option value="senior">&gt; 5 ans</option>
+                        </select>
+                    </div>
+
+                    <div class="field"><label for="p-edu">Niveau d'études</label>
+                        <select id="p-edu" name="education_level">
+                            <option value="">Non précisé</option><option value="bac">BAC / BAC Pro</option><option value="bac2">BAC+2</option>
+                            <option value="bac3">BAC+3</option><option value="bac5">BAC+5</option>
+                        </select>
+                    </div>
+
+                    <div class="field"><label for="p-start">Date de début (vide = dès que possible)</label><input id="p-start" name="start_time" type="date"></div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+                    <button type="submit" class="btn">Publier</button>
+                </div>
+            </form>
+        </dialog>
+
+
+
+
     </main>
+
+
+    <!-- Panneau "En savoir plus" -->
+    <template id="template-detail">
+        <section class="ad-detail">
+            <h3>Détail du poste</h3>
+
+            <dl>
+                <dt>Catégorie</dt><dd>category</dd>
+                <dt>Entreprise</dt><dd>company_name</dd>
+                <dt>Lieu</dt><dd>city (postal_code)</dd>
+                <dt>Salaire</dt><dd>monthly_salary_min à monthly_salary_max € par mois</dd>
+                <dt>Contrat</dt><dd>contract_type</dd>
+                <dt>Temps de travail</dt><dd>working_time</dd>
+                <dt>Mode de travail</dt><dd>work_mode</dd>
+                <dt>Expérience</dt><dd>experience</dd>
+                <dt>Niveau d'études</dt><dd>education_level</dd>
+                <dt>Début</dt><dd>start_time</dd>
+            </dl>
+
+            <p class="ad-full">Description : full_description</p>
+        </section>
+    </template>
+
+    <!-- Formulaire "Postuler" -->
+    <template id="template-apply">
+        <form class="ad-apply" enctype="multipart/form-data">
+            <h3>Postuler à cette annonce</h3>
+            <div class="field">
+                <label class="cv">CV
+                    <select class="cv-load" name="cv_choice">
+                        <option value="saved" disabled>CV enregistré (chargement…)</option>
+                        <option value="new">Ajouter un nouveau CV</option>
+                        <option value="none" selected>Continuer sans CV</option>
+                    </select>
+                </label>
+                <label class="cv-upload" hidden>Nouveau CV (PDF, 5 Mo maximum)
+                    <input class="newcv" type="file" name="cv" accept=".pdf,application/pdf" disabled>
+                </label>
+
+            </div>
+            <div class="ad-fields">
+                <div class="field"><label>Prénom*</label><input name="first_name" autocomplete="given-name" required></div>
+                <div class="field"><label>Nom*</label><input name="last_name" autocomplete="family-name" required></div>
+                <div class="field"><label>Adresse mail*</label><input name="email" type="email" autocomplete="email" required></div>
+                <div class="field"><label>Téléphone</label><input name="telephone" type="tel" autocomplete="tel"></div>
+                <div class="field wide"><label>Message au recruteur</label><textarea name="message" required></textarea></div>
+            </div>
+            <div class="ad-actions">
+                <button type="submit" class="btn btn-sm">Envoyer ma candidature</button>
+                <button type="button" class="btn btn-ghost btn-sm" data-cancel>Annuler</button>
+            </div>
+        </form>
+    </template>
+
+
+
 
     <script src="js/api.js"></script>
     <script src="js/menu.js"></script>
+
     <script>
         async function start() {
         const user = await initPage();
@@ -164,7 +387,10 @@
         console.log("Utilisateur connecté :", user);
         }
 
-        start();
+        start();    
     </script>
+
+    <script src="js/main.js"></script>
+    
 </body>
 </html>
