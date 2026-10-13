@@ -209,3 +209,48 @@ class AdminApiTests(APITestCase):
         self.assertEqual(response.status_code, 201, response.data)
         self.assertNotIn("password", response.data)
         self.assertTrue(User.objects.get(email="new@example.com").check_password("motdepasse123"))
+
+class ProfileApiTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="ana@test.fr", password="Motdepasse123", role="candidate",
+            first_name="Ana", last_name="Roy", city="Lyon", postal_code="69000")
+        User.objects.create_user(
+            email="bob@test.fr", password="Motdepasse123", role="candidate",
+            first_name="Bob", last_name="Lee", city="Nice", postal_code="06000")
+
+    def test_anonymous_gets_401(self):
+        r = self.client.patch("/api/auth/me", {"city": "Paris"}, format="json")
+        self.assertEqual(r.status_code, 401)
+
+    def test_update_profile(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.patch("/api/auth/me", {"city": "Paris", "first_name": "Anna"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["city"], "Paris")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "Anna")
+
+    def test_cannot_change_role(self):
+        self.client.force_authenticate(self.user)
+        self.client.patch("/api/auth/me", {"role": "admin"}, format="json")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.role, "candidate")
+
+    def test_email_already_used(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.patch("/api/auth/me", {"email": "bob@test.fr"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_password_needs_current(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.patch("/api/auth/me", {"password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_password_change(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.patch("/api/auth/me", {"current_password": "Motdepasse123",
+                              "password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Nouveau12345678"))

@@ -185,3 +185,32 @@ class MessageCreateSerializer(serializers.ModelSerializer):
         model = Message
         fields = ["object", "content"]
 
+class ProfileSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False, min_length=12)
+    current_password = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name", "telephone", "city",
+                  "postal_code", "password", "current_password"]
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError("Cette adresse mail est déjà utilisée.")
+        return value
+
+    def validate_password(self, value):
+        return RegisterSerializer().validate_password(value)
+    def validate(self, data):
+        current = data.pop("current_password", None)
+        if "password" in data and not (current and self.instance.check_password(current)):
+            raise serializers.ValidationError({"current_password": "Mot de passe actuel incorrect."})
+        return data
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        user = super().update(instance, validated_data)
+        if password:
+            user.set_password(password)
+            user.save()
+        return user

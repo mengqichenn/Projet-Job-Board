@@ -14,7 +14,7 @@ from rest_framework.exceptions import PermissionDenied                          
 
 from .serializers import (
     RegisterSerializer, AdSerializer, ApplicationSerializer,
-    CategorySerializer, MessageCreateSerializer, MessageSerializer,
+    CategorySerializer, MessageCreateSerializer, MessageSerializer, ProfileSerializer
 )
 from .models import Ad, Application, Category, Message
 
@@ -66,8 +66,17 @@ class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response(user_payload(request.user))
+        u = request.user
+        data = user_payload(u)
+        data.update({"email": u.email, "first_name": u.first_name, "last_name": u.last_name,
+                     "telephone": u.telephone, "city": u.city, "postal_code": u.postal_code})
+        return Response(data)
 
+    def patch(self, request):
+        s = ProfileSerializer(request.user, data=request.data, partial=True)
+        s.is_valid(raise_exception=True)
+        s.save()
+        return self.get(request)
 
 
 class LogoutView(APIView):
