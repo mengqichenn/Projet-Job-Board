@@ -1,3 +1,5 @@
+// script pour faire appeel à l'API pour retourner les annonces dans la base de donnée + filter annonces
+let timer;
 let currentUser = null;
 
 const labels = {
@@ -24,7 +26,7 @@ async function loadAds() {
     list.textContent = "Chargement des offres...";
 
     try {
-        const ads = await api("/ads");
+        const ads = await api("/ads?" + buildParams());
         const cards = document.createDocumentFragment();
 
         for (const ad of ads) {
@@ -114,10 +116,41 @@ async function loadAds() {
 }
 
 
+
+
+function buildParams() {
+    const p = new URLSearchParams();
+
+    const search = document.getElementById("search-form");
+    for (const el of search.elements)
+        if (el.name && el.value) p.append(el.name, el.value);
+
+    const filters = new FormData(document.getElementById('filters-form'));
+    for (const [name, value] of filters) p.append(name, value);
+
+    return p;
+}
+
 async function start() {
     currentUser = await initPage();
     await loadAds();
     
 }
+
+
+// "submit" to search + filtres fonctionnent en direct
+
+
+document.getElementById('search-form').addEventListener('submit', e => { e.preventDefault(); loadAds(); });
+document.getElementById('filters-form').addEventListener('change', loadAds);   // cases et radios : en direct
+
+
+// réinitialiser le filtre
+
+document.getElementById("reset-filter").addEventListener("click", () => {
+    document.getElementById("filters-form").reset();
+    document.getElementById("search-form").reset();
+    loadAds();
+});
 
 start();
