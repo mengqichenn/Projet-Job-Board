@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 from .models import User, Company, Ad, Application, Message, Category
 import requests
+from .password_reset import read_token
 
 
 # Serializer pour l'inscription
@@ -158,10 +159,13 @@ class ApplicationSerializer(serializers.ModelSerializer):
 
     ad_title = serializers.CharField(source="ad.title", read_only=True)
 
+    company_name = serializers.CharField(source="ad.company.name", read_only=True)
+    city = serializers.CharField(source="ad.city", read_only=True)
+
     class Meta:
         model = Application
         fields = [
-            "id", "ad", "ad_title","first_name", "last_name", "email", 
+            "id", "ad", "ad_title", "company_name", "city", "first_name", "last_name", "email",
             "telephone", "message", "status", "created_at",
             "cv", "use_saved_cv", "cv_download_url",
         ]
@@ -182,3 +186,61 @@ class MessageCreateSerializer(serializers.ModelSerializer):
         model = Message
         fields = ["object", "content"]
 
+class ProfileSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=False, min_length=12)
+    current_password = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = User
+        fields = ["email", "first_name", "last_name", "telephone", "city",
+                  "postal_code", "password", "current_password"]
+
+    def validate_email(self, value):
+        if User.objects.filter(email__iexact=value).exclude(pk=self.instance.pk).exists():
+            raise serializers.ValidationError("Cette adresse mail est déjà utilisée.")
+        return value
+
+    def validate_password(self, value):
+        return RegisterSerializer().validate_password(value)
+    def validate(self, data):
+        current = data.pop("current_password", None)
+        if "password" in data and not (current and self.instance.check_password(current)):
+            raise serializers.ValidationError({"current_password": "Mot de passe actuel incorrect."})
+        return data
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        user = super().update(instance, validated_data)
+        if password:
+            user.set_password(password)
+            user.save()
+        return user
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class ResetPasswordSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True, min_length=12)
+
+    def validate_password(self, value):
+        return RegisterSerializer().validate_password(value)
+
+    def validate(self, data):
+        user = read_token(data["token"])
+        if user is None:
+            raise serializers.ValidationError({"token": "Ce lien est invalide ou a expiré."})
+        data["user"] = user
+        return data
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, min_length=12)
+
+    def validate_new_password(self, value):
+        return RegisterSerializer().validate_password(value)
+
+    def validate_old_password(self, value):
+        if not self.context["request"].user.check_password(value):
+            raise serializers.ValidationError("Mot de passe actuel incorrect.")
+        return value

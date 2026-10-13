@@ -1,10 +1,16 @@
 from django.urls import path
 from rest_framework.routers import SimpleRouter
+from . import admin_api
 from . import views
 
-# path "ads" ramplacés par un routeur
 router = SimpleRouter(trailing_slash=False)
 router.register("ads", views.AdViewSet, basename="ad")
+router.register("admin/companies", admin_api.CompanyAdminViewSet, basename="admin-companies")
+router.register("admin/categories", admin_api.CategoryAdminViewSet, basename="admin-categories")
+router.register("admin/ads", admin_api.AdAdminViewSet, basename="admin-ads")
+router.register("admin/applications", admin_api.ApplicationAdminViewSet, basename="admin-applications")
+router.register("admin/messages", admin_api.MessageAdminViewSet, basename="admin-messages")
+router.register("admin/users", admin_api.UserAdminViewSet, basename="admin-users")
 
 urlpatterns = [
     path("applications/<int:pk>/cv", views.ApplicationCVView.as_view()),
@@ -19,6 +25,7 @@ urlpatterns = [
     path("candidate/applications", views.CandidateApplicationsView.as_view()),
     path("applications/<int:pk>/status", views.UpdateApplicationStatusView.as_view()),
     path("messages/<int:pk>/read", views.MessageMarkReadView.as_view()),
-]
-
-urlpatterns += router.urls     # génère : GET/POST /ads, GET/PUT/PATCH/DELETE /ads/<pk> 
+    path("auth/forgot-password", views.ForgotPasswordView.as_view()),
+    path("auth/reset-password", views.ResetPasswordView.as_view()),
+    path("auth/password", views.ChangePasswordView.as_view()),
+] + router.urls

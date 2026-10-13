@@ -1,6 +1,7 @@
 import tempfile
 from pathlib import Path
-
+from django.core import mail
+from .password_reset import make_token
 from django.test import override_settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APITestCase
@@ -167,3 +168,170 @@ class AdSearchTests(APITestCase):
         response = self.client.get("/api/ads?search=zzzz")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, [])
+
+class AdminApiTests(APITestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(email="admin@example.com", role="admin")
+        self.candidate = User.objects.create_user(email="candidate@example.com", role="candidate")
+        Company.objects.create(name="Danone", siret="11111111111111")
+        Company.objects.create(name="Ubisoft", siret="22222222222222")
+
+    def test_anonymous_is_refused(self):
+        self.assertEqual(self.client.get("/api/admin/companies").status_code, 401)
+
+    def test_non_admin_is_refused(self):
+        self.client.force_authenticate(self.candidate)
+        self.assertEqual(self.client.get("/api/admin/companies").status_code, 403)
+
+    def test_admin_lists_with_pagination(self):
+        self.client.force_authenticate(self.admin)
+        response = self.client.get("/api/admin/companies?page_size=1")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["count"], 2)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertIsNotNone(response.data["next"])
+
+    def test_admin_creates_updates_deletes(self):
+        self.client.force_authenticate(self.admin)
+        data = {"name": "Nouvelle", "siret": "33333333333333", "city": "Lyon", "postal_code": "69000"}
+        created = self.client.post("/api/admin/companies", data, format="json")
+        self.assertEqual(created.status_code, 201, created.data)
+        url = f"/api/admin/companies/{created.data['id']}"
+        self.assertEqual(self.client.patch(url, {"city": "Paris"}, format="json").status_code, 200)
+        self.assertEqual(Company.objects.get(pk=created.data["id"]).city, "Paris")
+        self.assertEqual(self.client.delete(url).status_code, 204)
+        self.assertFalse(Company.objects.filter(pk=created.data["id"]).exists())
+
+    def test_user_password_is_hidden_and_hashed(self):
+        self.client.force_authenticate(self.admin)
+        data = {"email": "new@example.com", "password": "motdepasse123", "role": "candidate",
+                "city": "Nice", "postal_code": "06000"}
+        response = self.client.post("/api/admin/users", data, format="json")
+        self.assertEqual(response.status_code, 201, response.data)
+        self.assertNotIn("password", response.data)
+        self.assertTrue(User.objects.get(email="new@example.com").check_password("motdepasse123"))
+
+class ProfileApiTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="ana@test.fr", password="Motdepasse123", role="candidate",
+            first_name="Ana", last_name="Roy", city="Lyon", postal_code="69000")
+        User.objects.create_user(
+            email="bob@test.fr", password="Motdepasse123", role="candidate",
+            first_name="Bob", last_name="Lee", city="Nice", postal_code="06000")
+
+    def test_anonymous_gets_401(self):
+        r = self.client.patch("/api/auth/me", {"city": "Paris"}, format="json")
+        self.assertEqual(r.status_code, 401)
+
+    def test_update_profile(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.patch("/api/auth/me", {"city": "Paris", "first_name": "Anna"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.data["city"], "Paris")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, "Anna")
+
+    def test_cannot_change_role(self):
+        self.client.force_authenticate(self.user)
+        self.client.patch("/api/auth/me", {"role": "admin"}, format="json")
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.role, "candidate")
+
+    def test_email_already_used(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.patch("/api/auth/me", {"email": "bob@test.fr"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_password_needs_current(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.patch("/api/auth/me", {"password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_password_change(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.patch("/api/auth/me", {"current_password": "Motdepasse123",
+                              "password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Nouveau12345678"))
+
+class PasswordResetTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="ana@test.fr", password="Motdepasse123", role="candidate")
+
+    def test_forgot_sends_mail(self):
+        r = self.client.post("/api/auth/forgot-password", {"email": "ana@test.fr"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_forgot_unknown_email_same_answer(self):
+        r = self.client.post("/api/auth/forgot-password", {"email": "inconnu@test.fr"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_reset_changes_password(self):
+        token = make_token(self.user)
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": token, "password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Nouveau12345678"))
+
+    def test_link_works_only_once(self):
+        token = make_token(self.user)
+        self.client.post("/api/auth/reset-password",
+                         {"token": token, "password": "Nouveau12345678"}, format="json")
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": token, "password": "Autre123456789"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_weak_password_rejected(self):
+        token = make_token(self.user)
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": token, "password": "abc"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_invalid_token_rejected(self):
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": "n-importe-quoi", "password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 400)
+   
+    def test_short_password_rejected(self):
+        token = make_token(self.user)
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": token, "password": "abc123"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+class ChangePasswordTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="ana@test.fr", password="Motdepasse123", role="candidate")
+
+    def test_anonymous_gets_401(self):
+        r = self.client.post("/api/auth/password",
+                             {"old_password": "Motdepasse123", "new_password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 401)
+
+    def test_change_password(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.post("/api/auth/password",
+                             {"old_password": "Motdepasse123", "new_password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Nouveau12345678"))
+
+    def test_wrong_old_password(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.post("/api/auth/password",
+                             {"old_password": "FauxMotdepasse1", "new_password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 400)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Motdepasse123"))
+
+    def test_weak_new_password(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.post("/api/auth/password",
+                             {"old_password": "Motdepasse123", "new_password": "abc123"}, format="json")
+        self.assertEqual(r.status_code, 400)
