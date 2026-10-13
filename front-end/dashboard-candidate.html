@@ -11,30 +11,61 @@
 </head>
 
 <body class="candidate-dashboard-page">
-  <header class="site-header dashboard-header">
-    <div class="container">
-      <a class="jobboard" href="main.html"><span>Talentis</span></a>
-      <nav aria-label="Navigation principale">
-        <ul class="navbar">
-          <li><a href="main.html">Offres</a></li>
-          <li><a href="edit-profile.html">Modifier mon profil</a></li>
-          <li class="menu" data-role="candidate" hidden>
-            <details>
-              <summary class="menu-toggle" aria-label="Menu du compte">
-                <span class="avatar menu-initials">TE</span><span class="menu-name">Mon compte</span>
-              </summary>
-              <div class="menu-panel">
-                <a href="dashboard-candidate.html">Mon dashboard</a>
-                <a href="edit-profile.html">Modifier mon profil</a>
-                <hr>
-                <button type="button" data-logout>Déconnexion</button>
-              </div>
-            </details>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <header class="site-header">
+        <div class="container">
+            <a class="jobboard" href="main.html"><span>Talentis</span></a>
+            <nav class="navbar">
+
+                <!--header avec différents data-role-->
+
+                <li><a href="main.html" aria-current="page">Offres</a></li>
+
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="login.html">Se connecter</a></li>
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
+
+
+                <!--Menu déroulant pour candidat-->
+                <li class="menu" data-role="candidate" hidden>
+                    <details>
+                        <summary class="menu-toggle" aria-label="Menu du compte">
+                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                        </summary>
+                        <div class="menu-panel">
+                            <a class="menu-profile" href="profile.html">
+                                <span class="avatar menu-initials">MC</span>
+                                <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
+                            </a>
+                            <hr>
+                            <a href="dashboard-candidate.html">Mon dashboard</a>
+                            <hr>
+                            <button type="button" data-logout>Déconnexion</button>
+                        </div>
+                    </details>
+                </li>
+                
+                <!--Menu déroulant pour recruteur-->
+
+                <li class="menu" data-role="recruiter" hidden>
+                    <details>
+                        <summary class="menu-toggle" aria-label="Menu du compte">
+                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                        </summary>
+
+                        <div class="menu-panel">
+                            <a class="menu-profile" href="account.html">
+                                <span class="avatar menu-initials">MC</span>
+                                <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
+                            </a>
+                            <hr>
+                            <a href="dashboard-recruiter.html">Mon dashboard</a>
+                            <hr>
+                            <button type="button" data-logout>Déconnexion</button>
+                        </div>
+                    </details>
+                </li>
+            </nav>
+        </div>
+    </header>
 
     <main class="container dash-page">
         <h1>Mes candidatures</h1>
