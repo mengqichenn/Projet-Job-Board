@@ -287,10 +287,19 @@ class AdViewSet(viewsets.ModelViewSet):                                         
             city = self.request.query_params.get("city")
             if city:
                 qs = qs.filter(city__icontains=city)
-            for field in ("contract_type", "education_level", "experience", "work_mode"):
+
+            
+            for field in ("working_time", "education_level", "experience"):     #bouton radio (filtre de main.html)
                 value = self.request.query_params.get(field)
                 if value:
                     qs = qs.filter(**{field: value})
+
+            for field in ("contract_type", "work_mode"):        #case à cocher (filtre de main.html)
+                values = self.request.query_params.getlist(field)
+                if values:
+                    qs = qs.filter(**{f"{field}__in": values})
+
+            
             category = self.request.query_params.get("category")
             if category:
                 qs = qs.filter(category_id=category)
@@ -300,7 +309,8 @@ class AdViewSet(viewsets.ModelViewSet):                                         
                                | Q(short_description__icontains=search)
                                | Q(full_description__icontains=search))
         return qs
- 
+
+
     def perform_create(self, serializer):
         user = self.request.user
         if user.company is None:

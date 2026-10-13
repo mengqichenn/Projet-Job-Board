@@ -32,7 +32,7 @@
                             <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
                         </summary>
                         <div class="menu-panel">
-                            <a class="menu-profile" href="account.html">
+                            <a class="menu-profile" href="profile.html">
                                 <span class="avatar menu-initials">MC</span>
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
@@ -53,7 +53,7 @@
                         </summary>
 
                         <div class="menu-panel">
-                            <a class="menu-profile" href="account.html">
+                            <a class="menu-profile" href="profile.html">
                                 <span class="avatar menu-initials">MC</span>
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
@@ -111,11 +111,11 @@
                     <form id="filters-form">
                         <fieldset>
                             <legend>Type de contrat</legend>
-                            <label class="check"><input type="checkbox" name="contract" value="CDI">CDI</label>
-                            <label class="check"><input type="checkbox" name="contract" value="CDD">CDD</label>
-                            <label class="check"><input type="checkbox" name="contract" value="Stage">Stage</label>
-                            <label class="check"><input type="checkbox" name="contract" value="Alternance">Alternance</label>
-                            <label class="check"><input type="checkbox" name="contract" value="Interim">Intérim</label>
+                            <label class="check"><input type="checkbox" name="contract_type" value="CDI">CDI</label>
+                            <label class="check"><input type="checkbox" name="contract_type" value="CDD">CDD</label>
+                            <label class="check"><input type="checkbox" name="contract_type" value="Stage">Stage</label>
+                            <label class="check"><input type="checkbox" name="contract_type" value="Alternance">Alternance</label>
+                            <label class="check"><input type="checkbox" name="contract_type" value="Interim">Intérim</label>
                         </fieldset>
 
                         <fieldset>
@@ -142,12 +142,13 @@
                             <label class="check"><input type="radio" name="experience" value="senior"> > 5 ans </label>
                         </fieldset>
 
-                        <fieldset>
+
+                        <!-- <fieldset>
                             <legend>Date de début</legend>
                             <label class="check"><input type="checkbox" name="start_time" value="ASAP">Dès que possible</label>
                             <label class="check"><input type="checkbox" name="start_time" value="3months">Dans moins de 3 mois</label>
                             <label class="check"><input type="checkbox" name="start_time" value="moremonths">Dans plus de 3 mois</label>
-                        </fieldset>
+                        </fieldset> -->
 
                         <fieldset>
                             <legend>Mode de travail</legend>
@@ -156,6 +157,7 @@
                             <label class="check"><input type="checkbox" name="work_mode" value="onsite">Sur site</label>
                         </fieldset>
                     </form>
+                    <button type="button" class="btn btn-ghost btn-sm" id="reset-filter">Réinitiaiser</button>
                 </details>
             </aside>
 
@@ -334,6 +336,7 @@
 
 
     <script src="js/api.js"></script>
+    <script src="js/cookies.js"></script>
     <script src="js/menu.js"></script>
 
     <script src="js/ads.js"></script>
