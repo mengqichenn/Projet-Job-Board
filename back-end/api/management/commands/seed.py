@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from api.models import Category
+from django.core.management import call_command
 
 CATEGORIES = [
     "Informatique et numérique",
@@ -27,3 +28,4 @@ class Command(BaseCommand):
         for category_name in CATEGORIES:
             Category.objects.get_or_create(name=category_name)
         self.stdout.write("Catégories prêtes.")
+        call_command("seed_demo")
