@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 from .models import User, Company, Ad, Application, Message, Category
 import requests
+from .password_reset import read_token
 
 
 # Serializer pour l'inscription
@@ -214,3 +215,20 @@ class ProfileSerializer(serializers.ModelSerializer):
             user.set_password(password)
             user.save()
         return user
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class ResetPasswordSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate_password(self, value):
+        return RegisterSerializer().validate_password(value)
+
+    def validate(self, data):
+        user = read_token(data["token"])
+        if user is None:
+            raise serializers.ValidationError({"token": "Ce lien est invalide ou a expiré."})
+        data["user"] = user
+        return data

@@ -14,9 +14,12 @@ from rest_framework.exceptions import PermissionDenied                          
 
 from .serializers import (
     RegisterSerializer, AdSerializer, ApplicationSerializer,
-    CategorySerializer, MessageCreateSerializer, MessageSerializer, ProfileSerializer
+    CategorySerializer, MessageCreateSerializer, MessageSerializer, ProfileSerializer, ForgotPasswordSerializer, ResetPasswordSerializer,
 )
-from .models import Ad, Application, Category, Message
+from .models import Ad, Application, Category, Message, User
+from django.conf import settings
+from django.core.mail import send_mail
+from .password_reset import make_token
 
 
 # Create your views here.
@@ -78,6 +81,36 @@ class MeView(APIView):
         s.save()
         return self.get(request)
 
+class ForgotPasswordView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        s = ForgotPasswordSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        user = User.objects.filter(email__iexact=s.validated_data["email"]).first()
+        if user:
+            link = f"{settings.FRONTEND_URL}/reset-password.html?token={make_token(user)}"
+            send_mail(
+                "Réinitialisation de votre mot de passe Talentis",
+                f"Bonjour,\n\nPour choisir un nouveau mot de passe, cliquez sur ce lien :\n{link}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez ce message.",
+                None,
+                [user.email],
+            )
+        return Response({"message": "Si cette adresse existe, un e-mail vient d'être envoyé."})
+
+class ResetPasswordView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        s = ResetPasswordSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        user = s.validated_data["user"]
+        user.set_password(s.validated_data["password"])
+        user.save()
+        Token.objects.filter(user=user).delete()
+        return Response({"message": "Votre mot de passe a bien été modifié."})
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]

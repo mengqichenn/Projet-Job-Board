@@ -163,3 +163,8 @@ CORS_ALLOWED_ORIGINS = [
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# --- E-mails (mode développement : le mail s'affiche dans le terminal) ---
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "Talentis <no-reply@talentis.local>"
+FRONTEND_URL = "http://127.0.0.1:5500"

@@ -25,4 +25,6 @@ urlpatterns = [
     path("candidate/applications", views.CandidateApplicationsView.as_view()),
     path("applications/<int:pk>/status", views.UpdateApplicationStatusView.as_view()),
     path("messages/<int:pk>/read", views.MessageMarkReadView.as_view()),
+    path("auth/forgot-password", views.ForgotPasswordView.as_view()),
+    path("auth/reset-password", views.ResetPasswordView.as_view()),
 ] + router.urls

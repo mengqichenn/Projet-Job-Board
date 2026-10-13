@@ -1,6 +1,7 @@
 import tempfile
 from pathlib import Path
-
+from django.core import mail
+from .password_reset import make_token
 from django.test import override_settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APITestCase
@@ -254,3 +255,45 @@ class ProfileApiTests(APITestCase):
         self.assertEqual(r.status_code, 200)
         self.user.refresh_from_db()
         self.assertTrue(self.user.check_password("Nouveau12345678"))
+
+class PasswordResetTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="ana@test.fr", password="Motdepasse123", role="candidate")
+
+    def test_forgot_sends_mail(self):
+        r = self.client.post("/api/auth/forgot-password", {"email": "ana@test.fr"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_forgot_unknown_email_same_answer(self):
+        r = self.client.post("/api/auth/forgot-password", {"email": "inconnu@test.fr"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_reset_changes_password(self):
+        token = make_token(self.user)
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": token, "password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Nouveau12345678"))
+
+    def test_link_works_only_once(self):
+        token = make_token(self.user)
+        self.client.post("/api/auth/reset-password",
+                         {"token": token, "password": "Nouveau12345678"}, format="json")
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": token, "password": "Autre123456789"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_weak_password_rejected(self):
+        token = make_token(self.user)
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": token, "password": "abc"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_invalid_token_rejected(self):
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": "n-importe-quoi", "password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 400)
