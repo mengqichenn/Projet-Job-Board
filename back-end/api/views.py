@@ -14,7 +14,7 @@ from rest_framework.exceptions import PermissionDenied                          
 
 from .serializers import (
     RegisterSerializer, AdSerializer, ApplicationSerializer,
-    CategorySerializer, MessageCreateSerializer, MessageSerializer, ProfileSerializer, ForgotPasswordSerializer, ResetPasswordSerializer,
+    CategorySerializer, MessageCreateSerializer, MessageSerializer, ProfileSerializer, ForgotPasswordSerializer, ResetPasswordSerializer, ChangePasswordSerializer,
 )
 from .models import Ad, Application, Category, Message, User
 from django.conf import settings
@@ -80,6 +80,16 @@ class MeView(APIView):
         s.is_valid(raise_exception=True)
         s.save()
         return self.get(request)
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        s = ChangePasswordSerializer(data=request.data, context={"request": request})
+        s.is_valid(raise_exception=True)
+        request.user.set_password(s.validated_data["new_password"])
+        request.user.save()
+        return Response({"message": "Mot de passe modifié."})
 
 class ForgotPasswordView(APIView):
     authentication_classes = []

@@ -221,7 +221,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
 class ResetPasswordSerializer(serializers.Serializer):
     token = serializers.CharField()
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, min_length=12)
 
     def validate_password(self, value):
         return RegisterSerializer().validate_password(value)
@@ -232,3 +232,15 @@ class ResetPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({"token": "Ce lien est invalide ou a expiré."})
         data["user"] = user
         return data
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, min_length=12)
+
+    def validate_new_password(self, value):
+        return RegisterSerializer().validate_password(value)
+
+    def validate_old_password(self, value):
+        if not self.context["request"].user.check_password(value):
+            raise serializers.ValidationError("Mot de passe actuel incorrect.")
+        return value

@@ -297,3 +297,41 @@ class PasswordResetTests(APITestCase):
         r = self.client.post("/api/auth/reset-password",
                              {"token": "n-importe-quoi", "password": "Nouveau12345678"}, format="json")
         self.assertEqual(r.status_code, 400)
+   
+    def test_short_password_rejected(self):
+        token = make_token(self.user)
+        r = self.client.post("/api/auth/reset-password",
+                             {"token": token, "password": "abc123"}, format="json")
+        self.assertEqual(r.status_code, 400)
+
+class ChangePasswordTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            email="ana@test.fr", password="Motdepasse123", role="candidate")
+
+    def test_anonymous_gets_401(self):
+        r = self.client.post("/api/auth/password",
+                             {"old_password": "Motdepasse123", "new_password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 401)
+
+    def test_change_password(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.post("/api/auth/password",
+                             {"old_password": "Motdepasse123", "new_password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Nouveau12345678"))
+
+    def test_wrong_old_password(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.post("/api/auth/password",
+                             {"old_password": "FauxMotdepasse1", "new_password": "Nouveau12345678"}, format="json")
+        self.assertEqual(r.status_code, 400)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password("Motdepasse123"))
+
+    def test_weak_new_password(self):
+        self.client.force_authenticate(self.user)
+        r = self.client.post("/api/auth/password",
+                             {"old_password": "Motdepasse123", "new_password": "abc123"}, format="json")
+        self.assertEqual(r.status_code, 400)

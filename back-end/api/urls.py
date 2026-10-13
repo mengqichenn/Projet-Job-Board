@@ -27,4 +27,5 @@ urlpatterns = [
     path("messages/<int:pk>/read", views.MessageMarkReadView.as_view()),
     path("auth/forgot-password", views.ForgotPasswordView.as_view()),
     path("auth/reset-password", views.ResetPasswordView.as_view()),
+    path("auth/password", views.ChangePasswordView.as_view()),
 ] + router.urls
