@@ -39,7 +39,7 @@ sudo mysql
     COLLATE utf8mb4_unicode_ci;
 
     CREATE USER 'jobboard_user'@'localhost'
-    IDENTIFIED BY '9981';
+    IDENTIFIED BY 'change-me';
 
     GRANT ALL PRIVILEGES
     ON jobboard_db.*
