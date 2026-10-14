@@ -97,7 +97,7 @@ function fillForm() {
     $("cv-current").textContent = profile.cv ? "CV actuel : " + profile.cv : "Aucun CV enregistré.";
     applyRole(profile.role);
     initMenu(profile);
-    $("back-link").href = profile.role === "recruiter" ? "dashboard-recruiter.html" : "dashboard-candidate.html";
+    $("back-link").href = profile.role === "recruiter" ? "espace-recruiter.html" : "espace-candidate.html";
 }
 
 infoForm.addEventListener("submit", async event => {

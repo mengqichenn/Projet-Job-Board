@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
     <link rel="stylesheet" href="style/style.css">
-    <link rel="icon" href="style/icon.ico" type="image/x-icon">
+    <link rel="icon" href="style/logo.png" type="image/x-icon">
 
     <title>Connexion - Talentis</title>
 </head>
@@ -15,15 +15,15 @@
     <header class="site-header">
         <div class="container">
             <a class="jobboard" href="main.html"><img src="style/logo.png" class="header-logo" alt=""><span>Talentis</span></a>
-            <nav class="navbar">
-
-                <!--header avec différents data-role-->
-
-                <li><a href="main.html" aria-current="page">Offres</a></li>
+            
+            <nav class="navbar" id="nav-user">
+                <li><a class="btn-nav-outline" href="main.html">Offres</a></li>
                 <li data-role="visitor"><a class="btn btn-sm" href="login.html">Se connecter</a></li>
-                <li data-role="visitor"><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
-                <li data-role="candidate" hidden><a href="dashboard-candidate.html">Mon compte</a></li>
-                <li data-role="recruiter" hidden><a href="dashboard-recruiter.html">Mon compte</a></li>
+                <li data-role="visitor"><a class="btn-nav-outline" href="account.html">S'inscrire</a></li>
+            </nav>
+
+            <nav class="navbar" id="nav-admin" hidden>
+                <li><span class="btn btn-sm btn-ghost" aria-current="page">Espace admin</span></li>
             </nav>
         </div>
     </header>
@@ -31,12 +31,10 @@
 
 
     <main class="auth">
-        <div class="card">
+        
+        <div class="card" id="panel-user">
             <h1>Connexion</h1>
-
-<!-- autocomplete à reconfirmer -->
- <!--API pour les liens -->
-
+            <div class="alert" id="login-error" role="alert" hidden></div>
             <form id="login-form">
                 <div class="field"><label for="email">Adresse mail</label>
                     <input id="email" type="email" name="email" autocomplete="email" required>
@@ -47,49 +45,30 @@
                 <p class="notice"> <a href="reset-password.html">Mot de passe oublié ?</a></p>
                 <p class="notice">Pas encore de compte ? <a href="account.html?mode=create">Créer un compte</a></p>
                 <button class="btn" type="submit">Se connecter</button>
+                <p class="notice"><a href="#" id="login-admin">Espace administrateur</a></p>
             </form>
         </div>
 
 
-
+        <div class="card" id="panel-admin" hidden>
+            <a class="back-link" id="login-user" href="#">← Retour</a>
+            <h1>Connexion</h1>
+            <div class="alert" id="admin-error" role="alert" hidden></div>
+            <form id="admin-login-form">
+                <div class="field"><label for="admin-email">Adresse mail</label>
+                    <input id="admin-email" type="email" autocomplete="email" required>
+                </div>
+                <div class="field"><label for="admin-password">Mot de passe</label>
+                    <input id="admin-password" type="password" autocomplete="current-password" required>
+                </div>
+                <p class="notice"> <a href="reset-password.html">Mot de passe oublié ?</a></p>
+                <button class="btn" type="submit">Se connecter</button>
+            </form>
+        </div>
 
     </main>
     
     <script src="js/api.js"></script>
-    <script>
-        initPage();
-
-        const form = document.getElementById("login-form");
-
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-
-            try {
-                const data = await api("/auth/login", {
-                    method: "POST",
-                    body: {
-                        email: email,
-                        password: password
-                    },
-                    redirectOn401: false
-                });
-
-                localStorage.setItem("token", data.token);
-                location.href = "main.html";
-
-            } catch(err) {
-                
-                if (err.status === 401) {
-                    alert("Adresse mail ou mot de passe incorrect.");
-                } else {
-                    alert("Une erreur est survenue lors de la connexion.")
-                }
-                
-            }
-        });
-    </script>
+    <script src="js/login.js"></script>
 </body>
 </html>
