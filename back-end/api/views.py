@@ -80,6 +80,10 @@ class MeView(APIView):
         s.is_valid(raise_exception=True)
         s.save()
         return self.get(request)
+   
+    def delete(self, request):
+        request.user.delete()
+        return Response(status=204)
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]

@@ -385,3 +385,34 @@ class CandidateApplicationDetailTests(APITestCase):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, 204)
         self.assertFalse(Application.objects.filter(pk=self.application.pk).exists())
+
+class DeleteAccountTests(APITestCase):
+    def setUp(self):
+        self.candidate = User.objects.create_user(email="candidate@example.com", password="test")
+        self.other = User.objects.create_user(email="other@example.com", password="test")
+        self.recruiter = User.objects.create_user(email="recruiter@example.com", role="recruiter")
+        company = Company.objects.create(name="Company", siret="12345678901234")
+        category = Category.objects.create(name="IT", slug="it")
+        ad = Ad.objects.create(title="Dev", company=company, recruiter=self.recruiter,
+                               category=category, contract_type="CDI")
+        Application.objects.create(candidate=self.candidate, ad=ad, first_name="Jane",
+                                   last_name="Doe", email="candidate@example.com", message="Bonjour")
+        self.client.force_authenticate(self.candidate)
+
+    def test_anonymous_gets_401(self):
+        self.client.force_authenticate(None)
+        self.assertEqual(self.client.delete("/api/auth/me").status_code, 401)
+        self.assertEqual(User.objects.count(), 3)
+
+    def test_candidate_deletes_own_account_and_applications(self):
+        response = self.client.delete("/api/auth/me")
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(User.objects.filter(email="candidate@example.com").exists())
+        self.assertFalse(Application.objects.exists())
+        self.assertTrue(User.objects.filter(email="other@example.com").exists())
+
+    def test_recruiter_deletion_removes_his_ads_but_keeps_company(self):
+        self.client.force_authenticate(self.recruiter)
+        self.assertEqual(self.client.delete("/api/auth/me").status_code, 204)
+        self.assertFalse(Ad.objects.exists())
+        self.assertTrue(Company.objects.exists())
