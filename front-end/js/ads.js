@@ -15,7 +15,7 @@ const labels = {
 };
 
 const educationLabels = {
-    bac: "BACBAC / BAC Pro",
+    bac: "BAC / BAC Pro",
     bac2: "BAC+2",
     bac3: "BAC+3, Licence, Bachelor",
     bac5: "BAC+5, Master, Grande Ecole",

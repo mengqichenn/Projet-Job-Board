@@ -37,7 +37,7 @@
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-candidate.html">Mon dashboard</a>
+                            <a href="dashboard-candidate.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
@@ -53,12 +53,12 @@
                         </summary>
 
                         <div class="menu-panel">
-                            <a class="menu-profile" href="profile.html">
+                            <a class="menu-profile" href="account.html">
                                 <span class="avatar menu-initials">MC</span>
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-recruiter.html">Mon dashboard</a>
+                            <a href="dashboard-recruiter.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
@@ -118,6 +118,14 @@
                 </div>
 
                 <div class="form-row two">
+                    <div class="field"><label for="company_postal_code">Code postal*</label>
+                        <input id="company_postal_code" name="company_postal_code" required></div>
+
+                    <div class="field"><label for="company_city">Ville*</label>
+                        <input id="company_city" name="company_city" required></div>
+                </div>
+
+                <div class="form-row two">
                     <div class="field"><label for="description">Description, activité</label>
                         <input id="description" name="description"></div>
 
@@ -125,13 +133,6 @@
                         <input id="website" name="website" type="url"></div>
                 </div>
 
-                <div class="form-row two">
-                    <div class="field"><label for="company_postal_code">Code postal*</label>
-                        <input id="company_postal_code" name="company_postal_code" required></div>
-
-                    <div class="field"><label for="company_city">Ville*</label>
-                        <input id="company_city" name="company_city" required></div>
-                </div>
             </fieldset>
 
             <p class="error" id="err-form" role="alert"></p>

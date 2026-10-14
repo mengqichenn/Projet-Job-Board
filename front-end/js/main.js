@@ -90,7 +90,7 @@ const publishDialog = document.getElementById('publish-dialog');
 const publishForm = document.getElementById('publish-form');
 const publishError = document.getElementById('publish-error');
 
-// Catégories : on recopie celles du filtre de recherche (sans "Toutes les catégories")
+// Catégories
 document.getElementById('p-category').innerHTML = [...document.querySelectorAll('#category option')]
     .filter(o => o.value)
     .map(o => `<option value="${o.value}">${o.textContent}</option>`).join('');

@@ -1,9 +1,11 @@
 /*root*/
-:root{--bg:#eef2f1;--surface:#fff;--ink:#15212b;--muted:#5d6b76;--line:#d9e1e0;
+:root{--bg:#e7eeee;--surface:#fff;--ink:#15212b;--muted:#5d6b76;--line:#d9e1e0;
 --primary:#0a697ebb;--primary-dark:#0a4452;--accent:#f2b84b;--danger:#b3261e;--ok:#1b7a4b;--r:10px}
+:root { --header-h: 72px; }
 
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Figtree",system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0; padding-top: 70px;background:var(--bg);color:var(--ink);font:16px/1.55 "Figtree",system-ui,-apple-system,"Segoe UI",sans-serif}
+
 
 a {color:var(--primary)}
 h1,h2,h3 {line-height:1.2;margin:1em 0 .5em}
@@ -16,18 +18,19 @@ h3 {font-size: clamp(.8rem,4vw,1.1rem);}
 /* =========================================================================
             HEADER (same for all pages)
 =============================================================================*/
-.site-header {background:var(--surface); border-bottom:1.5px solid var(--line); position:sticky; top:0; z-index:10; width: 100%}
 
-.site-header .container {display:grid; grid-template-columns: 2fr 3fr; justify-items: center; align-items: center; gap:1rem; min-height:75x; flex-wrap:wrap}
+.site-header {background:var(--surface); border-bottom:1.5px solid var(--line); position:fixed; top:0; z-index:10; width: 100%;}
 
-.jobboard {font-weight:800; font-size:1.8rem; color:var(--ink); text-decoration:none; justify-items: center;}
+.site-header .container {display:grid; grid-template-columns: 2fr 3fr; align-items: center; gap:1rem; min-height:70px; flex-wrap:wrap;}
+
+.jobboard {font-weight:800; font-size:2rem; color:var(--ink); text-decoration:none;justify-items:start}
 .jobboard span {color:var(--primary)}
 
 /*nav*/
-.navbar {display:flex; gap:.5rem; align-items:center; flex-wrap:wrap}
-.navbar li {list-style:none}
+.navbar {display:flex; gap:3rem; align-items:center; flex-wrap:wrap; justify-content: end;}
+.navbar li {list-style:none;}
 
-.navbar a {padding:.4rem .7rem;border-radius:var(--r);text-decoration:none;color:var(--ink)}
+.navbar a {padding:.8rem 1rem;border-radius:var(--r);text-decoration:none;color:var(--ink)}
 .navbar a:hover,.navbar a[aria-current=page]{background:var(--bg)}
 
 .btn {display:inline-block;border:0;border-radius:var(--r);padding:.65rem 1.1rem;font:inherit;font-weight:600;cursor:pointer;background:var(--primary);color:#fff;text-decoration:none}

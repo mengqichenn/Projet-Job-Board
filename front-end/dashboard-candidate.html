@@ -36,7 +36,7 @@
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-candidate.html">Mon dashboard</a>
+                            <a href="dashboard-candidate.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
@@ -57,7 +57,7 @@
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-recruiter.html">Mon dashboard</a>
+                            <a href="dashboard-recruiter.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
@@ -68,8 +68,8 @@
     </header>
 
     <main class="container dash-page">
-        <h1>Mes candidatures</h1>
-        <p class="muted">Suis l'avancement des offres auxquelles tu as postulé.</p>
+        <h1>Mon espace candidat</h1>
+        <p class="muted">Ici vous pouvez suivre l'avancement des offres auxquelles vous avez postulées.</p>
 
         <section class="card" aria-label="Résumé">
             <div class="stats" id="stats"></div>
@@ -82,10 +82,11 @@
                     <label for="filter" class="muted">Statut</label>
                     <select id="filter">
                         <option value="all">Toutes</option>
-                        <option value="attente">En attente</option>
-                        <option value="vue">Vue par le recruteur</option>
-                        <option value="accepte">Acceptées</option>
-                        <option value="refuse">Refusées</option>
+                        <option value="sent">Envoyée</option>
+                        <option value="seen">Vue par le recruteur</option>
+                        <option value="interview">Entretien</option>
+                        <option value="accepted">Acceptée</option>
+                        <option value="rejected">Refusée</option>
                     </select>
                 </div>
             </div>
@@ -98,13 +99,21 @@
         <form id="form-edit">
             <h2 id="edit-title">Modifier ma candidature</h2>
             <div class="field">
-                <label for="e-cv">CV (PDF, 5 Mo maximum)</label>
+                <label for="e-cv-choice">CV</label>
+                <select id="e-cv-choice">
+                    <option value="keep">Garder le CV actuel</option>
+                    <option value="saved">Utiliser mon CV enregistré</option>
+                    <option value="new">Nouveau fichier</option>
+                </select>
+            </div>
+            <div class="field" id="e-cv-field" hidden>
+                <label for="e-cv">Nouveau CV (PDF)</label>
                 <input type="file" id="e-cv" accept="application/pdf">
                 <p class="notice" id="e-cv-current"></p>
                 <p class="error" id="e-cv-error" role="alert"></p>
             </div>
             <div class="field">
-                <label for="e-letter">Lettre de motivation</label>
+                <label for="e-letter">Message</label>
                 <textarea id="e-letter" required></textarea>
             </div>
             <div class="actions-row">
@@ -116,7 +125,7 @@
 
     <!-- Retirer une candidature -->
     <dialog id="dlg-del">
-        <h2>Retirer ma candidature ?</h2>
+        <h2>Confirmer votre choix</h2>
         <p class="muted" id="del-text"></p>
         <div class="actions-row">
             <button class="btn btn-ghost" id="del-cancel">Garder</button>

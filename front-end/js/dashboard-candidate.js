@@ -52,8 +52,10 @@ function renderStats(){
   const count = s => applications.filter(a => a.status === s).length;
   $("stats").innerHTML =
     `<div><strong>${applications.length}</strong><span class="muted">Candidatures</span></div>` +
-    `<div><strong>${count("sent") + count("seen") + count("interview")}</strong><span class="muted">En attente</span></div>` +
-    `<div><strong>${count("accepted")}</strong><span class="muted">Acceptées</span></div>`;
+    `<div><strong>${count("sent") + count("seen")}</strong><span class="muted">En attente</span></div>` +
+    `<div><strong>${count("interview")}</strong><span class="muted">Entretien</span></div>`+
+    `<div><strong>${count("accepted")}</strong><span class="muted">Acceptée</span></div>`+
+    `<div><strong>${count("rejected")}</strong><span class="muted">Refusée</span></div>`;
 }
 
 function renderList(){
@@ -93,12 +95,19 @@ function render() { renderStats(); renderList(); }
 $("list").addEventListener("click", e => {
   const edit = e.target.closest("[data-edit]"), del = e.target.closest("[data-del]");
   const toggle = e.target.closest("[data-toggle-msg]"), cv = e.target.closest("[data-cv]");
+
+$("e-cv-choice").addEventListener("change", () => {
+    $("e-cv-field").hidden = $("e-cv-choice").value !== "new";
+});
+
  
   if (edit) {
     const a = applications.find(x => x.id === +edit.dataset.edit);
     currentId = a.id;
     $("edit-title").textContent = "Modifier : " + a.ad_title;
     $("e-cv").value = "";
+    $("e-cv-choice").value = "keep";
+    $("e-cv-field").hidden = true;
     $("e-cv-current").textContent = a.cv_download_url
       ? "Un CV est déjà joint (choisis un fichier pour le remplacer)."
       : "Aucun CV joint actuellement.";
@@ -110,7 +119,7 @@ $("list").addEventListener("click", e => {
   if (del){
     const a = applications.find(x => x.id === +del.dataset.del);
     currentId = a.id;
-    $("del-text").textContent = `Votre candidature pour l'offre « ${a.ad_title} » chez ${a.company_name} sera retirée.`;
+    $("del-text").textContent = `Votre candidature pour l'offre « ${a.ad_title} » sera retirée.`;
     $("dlg-del").showModal();
   }
   if (toggle) {
@@ -137,7 +146,9 @@ $("form-edit").addEventListener("submit", async e => {
     if (file.size > 5 * 1024 * 1024) { $("e-cv-error").textContent = "Le fichier dépasse 5 Mo."; return; }
   }
   try {
-    await apiUpdateApplication(currentId, { message: $("e-letter").value.trim(), cvChoice: file ? "new" : "keep", file });
+    await apiUpdateApplication(currentId, { 
+      message: $("e-letter").value.trim(), 
+      cvChoice: $("e-cv-choice").value, file });
     applications = await apiLoadApplications();
     $("dlg-edit").close(); render(); toast("Candidature modifiée");
   } catch (err) { fail(err); }
