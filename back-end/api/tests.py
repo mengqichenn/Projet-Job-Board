@@ -416,3 +416,77 @@ class DeleteAccountTests(APITestCase):
         self.assertEqual(self.client.delete("/api/auth/me").status_code, 204)
         self.assertFalse(Ad.objects.exists())
         self.assertTrue(Company.objects.exists())
+
+class ProfileFieldsTests(APITestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        override = override_settings(MEDIA_ROOT=directory.name)
+        override.enable()
+        self.addCleanup(override.disable)
+        self.company = Company.objects.create(name="Acme", siret="12345678901234", city="Lyon",
+                                              postal_code="69000", description="Super", website="https://acme.fr")
+        self.candidate = User.objects.create_user(email="candidate@example.com", password="test")
+        self.recruiter = User.objects.create_user(email="recruiter@example.com", password="test",
+                                                  role="recruiter", company=self.company)
+
+    def pdf(self, name="resume.pdf"):
+        return SimpleUploadedFile(name, b"%PDF-1.4\nCV test", content_type="application/pdf")
+
+    def test_get_returns_cv_name(self):
+        self.client.force_authenticate(self.candidate)
+        self.assertIsNone(self.client.get("/api/auth/me").data["cv"])
+        self.candidate.cv = self.pdf()
+        self.candidate.save()
+        self.assertEqual(self.client.get("/api/auth/me").data["cv"], "resume.pdf")
+
+    def test_get_returns_company_fields_for_recruiter(self):
+        self.client.force_authenticate(self.recruiter)
+        data = self.client.get("/api/auth/me").data
+        self.assertEqual(data["company_name"], "Acme")
+        self.assertEqual(data["siret"], "12345678901234")
+        self.assertEqual(data["company_city"], "Lyon")
+        self.assertEqual(data["company_postal_code"], "69000")
+        self.assertEqual(data["website"], "https://acme.fr")
+        self.client.force_authenticate(self.candidate)
+        self.assertNotIn("company_name", self.client.get("/api/auth/me").data)
+    def test_patch_saves_cv(self):
+        self.client.force_authenticate(self.candidate)
+        response = self.client.patch("/api/auth/me", {"cv": self.pdf()}, format="multipart")
+        self.assertEqual(response.status_code, 200, response.data)
+        self.assertEqual(response.data["cv"], "resume.pdf")
+        self.candidate.refresh_from_db()
+        self.assertTrue(self.candidate.cv)
+
+    def test_patch_rejects_bad_cv(self):
+        self.client.force_authenticate(self.candidate)
+        for file in (self.pdf("resume.txt"), SimpleUploadedFile("fake.pdf", b"invalid"),
+                     SimpleUploadedFile("big.pdf", b"%PDF-" + b"x" * (5 * 1024 * 1024))):
+            response = self.client.patch("/api/auth/me", {"cv": file}, format="multipart")
+            self.assertEqual(response.status_code, 400)
+        self.candidate.refresh_from_db()
+        self.assertFalse(self.candidate.cv)
+    def test_recruiter_updates_company(self):
+        self.client.force_authenticate(self.recruiter)
+        response = self.client.patch("/api/auth/me", {"company_name": "Acme 2", "company_city": "Paris",
+                                                      "website": ""}, format="multipart")
+        self.assertEqual(response.status_code, 200, response.data)
+        self.assertEqual(response.data["company_name"], "Acme 2")
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.name, "Acme 2")
+        self.assertEqual(self.company.city, "Paris")
+        self.assertEqual(self.company.website, "")
+
+    def test_invalid_or_taken_siret(self):
+        Company.objects.create(name="Other", siret="98765432109876", city="Nice", postal_code="06000")
+        self.client.force_authenticate(self.recruiter)
+        for siret in ("123", "1234567890123a", "98765432109876"):
+            response = self.client.patch("/api/auth/me", {"siret": siret}, format="multipart")
+            self.assertEqual(response.status_code, 400, siret)
+        self.company.refresh_from_db()
+        self.assertEqual(self.company.siret, "12345678901234")
+
+    def test_candidate_cannot_edit_company(self):
+        self.client.force_authenticate(self.candidate)
+        response = self.client.patch("/api/auth/me", {"company_name": "Hack"}, format="multipart")
+        self.assertEqual(response.status_code, 400)

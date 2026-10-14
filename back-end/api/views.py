@@ -72,9 +72,14 @@ class MeView(APIView):
         u = request.user
         data = user_payload(u)
         data.update({"email": u.email, "first_name": u.first_name, "last_name": u.last_name,
-                     "telephone": u.telephone, "city": u.city, "postal_code": u.postal_code})
+                     "telephone": u.telephone, "city": u.city, "postal_code": u.postal_code,
+                     "cv": Path(u.cv.name).name if u.cv else None})
+        if u.company:
+            c = u.company
+            data.update({"company_name": c.name, "siret": c.siret, "description": c.description,
+                         "website": c.website, "company_city": c.city,
+                         "company_postal_code": c.postal_code})
         return Response(data)
-
     def patch(self, request):
         s = ProfileSerializer(request.user, data=request.data, partial=True)
         s.is_valid(raise_exception=True)
