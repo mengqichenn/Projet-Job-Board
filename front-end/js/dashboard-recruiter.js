@@ -43,10 +43,12 @@ async function refresh() { await apiLoadAll(); render(); }
 function renderStats() {
   const active = offers.filter(o => o.status === "open").length;
   const toDo = applicants.filter(a => a.status === "sent").length;
+  const interview = applicants.filter(a => a.status === "interview").length;
   $("stats").innerHTML =
     `<div><strong>${active}</strong><span class="muted">Offres actives</span></div>` +
     `<div><strong>${applicants.length}</strong><span class="muted">Candidatures reçues</span></div>` +
-    `<div><strong>${toDo}</strong><span class="muted">À traiter</span></div>`;
+    `<div><strong>${toDo}</strong><span class="muted">À traiter</span></div>` +
+    `<div><strong>${interview}</strong><span class="muted">Entretien</span></div>`;
 }
 
 function renderOffers() {
