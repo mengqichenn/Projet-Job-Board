@@ -335,3 +335,53 @@ class ChangePasswordTests(APITestCase):
         r = self.client.post("/api/auth/password",
                              {"old_password": "Motdepasse123", "new_password": "abc123"}, format="json")
         self.assertEqual(r.status_code, 400)
+
+class CandidateApplicationDetailTests(APITestCase):
+    def setUp(self):
+        self.candidate = User.objects.create_user(email="candidate@example.com", password="test")
+        self.other = User.objects.create_user(email="other@example.com", password="test")
+        recruiter = User.objects.create_user(email="recruiter@example.com", role="recruiter")
+        company = Company.objects.create(name="Company", siret="12345678901234")
+        category = Category.objects.create(name="IT", slug="it")
+        ad = Ad.objects.create(title="Dev", company=company, recruiter=recruiter,
+                               category=category, contract_type="CDI")
+        self.application = Application.objects.create(
+            candidate=self.candidate, ad=ad, first_name="Jane", last_name="Doe",
+            email="candidate@example.com", message="Bonjour")
+        self.url = f"/api/candidate/applications/{self.application.pk}"
+        self.client.force_authenticate(self.candidate)
+
+    def test_candidate_can_edit_message(self):
+        response = self.client.patch(self.url, {"message": "Nouveau message"}, format="json")
+        self.assertEqual(response.status_code, 200, response.data)
+        self.application.refresh_from_db()
+        self.assertEqual(self.application.message, "Nouveau message")
+
+    def test_candidate_cannot_change_status(self):
+        self.client.patch(self.url, {"status": "accepted"}, format="json")
+        self.application.refresh_from_db()
+        self.assertEqual(self.application.status, "sent")
+
+    def test_other_candidate_gets_404(self):
+        self.client.force_authenticate(self.other)
+        self.assertEqual(self.client.patch(self.url, {"message": "Piraté"}, format="json").status_code, 404)
+        self.assertEqual(self.client.delete(self.url).status_code, 404)
+        self.assertTrue(Application.objects.filter(pk=self.application.pk).exists())
+
+    def test_anonymous_gets_401(self):
+        self.client.force_authenticate(None)
+        self.assertEqual(self.client.patch(self.url, {"message": "x"}, format="json").status_code, 401)
+        self.assertEqual(self.client.delete(self.url).status_code, 401)
+
+    def test_closed_application_cannot_be_edited_or_withdrawn(self):
+        for status in ("accepted", "rejected"):
+            self.application.status = status
+            self.application.save()
+            self.assertEqual(self.client.patch(self.url, {"message": "x"}, format="json").status_code, 400)
+            self.assertEqual(self.client.delete(self.url).status_code, 400)
+        self.assertTrue(Application.objects.filter(pk=self.application.pk).exists())
+
+    def test_candidate_can_withdraw(self):
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 204)
+        self.assertFalse(Application.objects.filter(pk=self.application.pk).exists())
