@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
+  <link rel="icon" href="icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="style.css">
+  <title>Entreprises - Administration Talentis</title>
+</head>
+<body class="admin-page">
+  <header class="site-header admin-header">
+    <div class="container admin-header-inner">
+      <a href="dashboard-admin.html" class="jobboard"><span>Talentis</span></a>
+      <details class="menu">
+        <summary class="menu-toggle" aria-label="Menu du compte administrateur"><span class="avatar">CM</span><span class="menu-name">Camille Morel</span></summary>
+        <div class="menu-panel"><div class="menu-profile"><span class="avatar">CM</span><span><strong>Camille Morel</strong><small>camille.morel@exemple.fr</small></span></div><hr><a href="admin-login.html">Déconnexion</a></div>
+      </details>
+    </div>
+  </header>
+  <div class="admin-layout">
+    <nav class="admin-sidebar" aria-label="Navigation administrateur">
+      <a href="dashboard-admin.html">Tableau de bord</a><a href="admin-users.html">Utilisateurs</a>
+      <a href="admin-companies.html" aria-current="page">Entreprises</a><a href="admin-ads.html">Offres</a>
+      <a href="admin-applications.html">Candidatures</a><a href="admin-promos.html">Annonces</a><a href="admin-messages.html">Messages</a>
+    </nav>
+    <main class="admin-content dash-page">
+      <h1>Gestion des entreprises</h1>
+      <section class="card" aria-labelledby="companies-title">
+        <div class="list-head"><h2 id="companies-title">Entreprises inscrites</h2><label class="admin-control" for="company-search">Rechercher<input id="company-search" type="search" placeholder="Nom ou ville"></label></div>
+        <div class="list" id="companies-list">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <article class="app"><div><h3>Atelier Boréal</h3><p class="muted">Rennes · Hugo Perrin, hugo.perrin@exemple.fr</p></div><span class="badge s-active">6 offres</span></article>
+          <article class="app"><div><h3>Maison des Nuages</h3><p class="muted">Lille · Émile Roche, emile.roche@exemple.fr</p></div><span class="badge s-active">3 offres</span></article>
+          <article class="app"><div><h3>Les Jardins d'Opale</h3><p class="muted">Angers · Maëlle Dumas, maelle.dumas@exemple.fr</p></div><span class="badge s-fermee">1 offre fermée</span></article>
+          <article class="app"><div><h3>Pixel &amp; Pollen</h3><p class="muted">Dijon · Sacha Millet, sacha.millet@exemple.fr</p></div><span class="badge s-active">4 offres</span></article>
+          <article class="app"><div><h3>Les Cartographes Heureux</h3><p class="muted">Brest · Noémie Faure, noemie.faure@exemple.fr</p></div><span class="badge s-attente">En attente</span></article>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+          <p class="empty" id="companies-empty" hidden>Aucune entreprise pour le moment.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

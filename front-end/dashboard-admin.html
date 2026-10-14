@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
+  <link rel="icon" href="icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="style.css">
+  <title>Tableau de bord administrateur - Talentis</title>
+</head>
+<body class="admin-page">
+  <header class="site-header admin-header">
+    <div class="container admin-header-inner">
+      <a href="dashboard-admin.html" class="jobboard"><span>Talentis</span></a>
+      <details class="menu">
+        <summary class="menu-toggle" aria-label="Menu du compte administrateur">
+          <span class="avatar">CM</span><span class="menu-name">Camille Morel</span>
+        </summary>
+        <div class="menu-panel">
+          <div class="menu-profile">
+            <span class="avatar">CM</span>
+            <span><strong>Camille Morel</strong><small>camille.morel@exemple.fr</small></span>
+          </div>
+          <hr>
+          <a href="admin-login.html">Déconnexion</a>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+    <nav class="admin-sidebar" aria-label="Navigation administrateur">
+      <a href="dashboard-admin.html" aria-current="page">Tableau de bord</a>
+      <a href="admin-users.html">Utilisateurs</a>
+      <a href="admin-companies.html">Entreprises</a>
+      <a href="admin-ads.html">Offres</a>
+      <a href="admin-applications.html">Candidatures</a>
+      <a href="admin-promos.html">Annonces</a>
+      <a href="admin-messages.html">Messages</a>
+    </nav>
+
+    <main class="admin-content dash-page">
+      <h1>Tableau de bord administrateur</h1>
+
+      <section class="card" aria-labelledby="stats-title">
+        <h2 id="stats-title">Vue d'ensemble</h2>
+        <div class="stats admin-stats" id="stats">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <div class="admin-stat"><strong id="stat-users">128</strong><span class="muted">Utilisateurs</span></div>
+          <div class="admin-stat"><strong id="stat-companies">24</strong><span class="muted">Entreprises</span></div>
+          <div class="admin-stat"><strong id="stat-ads">57</strong><span class="muted">Offres actives</span></div>
+          <div class="admin-stat"><strong id="stat-apps">342</strong><span class="muted">Candidatures</span></div>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="users-title">
+        <div class="list-head">
+          <h2 id="users-title">Derniers utilisateurs</h2>
+          <a class="btn btn-ghost btn-sm" href="admin-users.html">Tout voir</a>
+        </div>
+        <div class="list" id="users-list">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <article class="app">
+            <div><h3>Inès Valette</h3><p class="muted">ines.valette@exemple.fr · Lyon</p></div>
+            <span class="badge s-vue">Candidat</span>
+          </article>
+          <article class="app">
+            <div><h3>Hugo Perrin</h3><p class="muted">hugo.perrin@exemple.fr · Recruteur · Atelier Boréal</p></div>
+            <span class="badge s-active">Recruteur</span>
+          </article>
+          <article class="app">
+            <div><h3>Lila Garnier</h3><p class="muted">lila.garnier@exemple.fr · Nantes</p></div>
+            <span class="badge s-vue">Candidat</span>
+          </article>
+          <article class="app">
+            <div><h3>Camille Morel</h3><p class="muted">camille.morel@exemple.fr</p></div>
+            <span class="badge s-attente">Admin</span>
+          </article>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+          <p class="empty" id="users-empty" hidden>Aucun utilisateur pour le moment.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="ads-title">
+        <div class="list-head">
+          <h2 id="ads-title">Dernières offres publiées</h2>
+          <a class="btn btn-ghost btn-sm" href="admin-ads.html">Tout voir</a>
+        </div>
+        <div class="list" id="ads-list">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <article class="app">
+            <div><h3>Développeur·euse front-end</h3><p class="muted">Atelier Boréal · Rennes · CDI</p></div>
+            <span class="badge s-active">Active</span>
+          </article>
+          <article class="app">
+            <div><h3>Assistant·e chef de projet</h3><p class="muted">Maison des Nuages · Lille · Alternance</p></div>
+            <span class="badge s-active">Active</span>
+          </article>
+          <article class="app">
+            <div><h3>Chargé·e de communication</h3><p class="muted">Les Jardins d'Opale · Angers · CDD</p></div>
+            <span class="badge s-fermee">Fermée</span>
+          </article>
+          <article class="app">
+            <div><h3>Technicien·ne qualité</h3><p class="muted">Pixel &amp; Pollen · Dijon · Stage</p></div>
+            <span class="badge s-active">Active</span>
+          </article>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+          <p class="empty" id="ads-empty" hidden>Aucune offre pour le moment.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
