@@ -107,29 +107,70 @@
     </main>
 
     <!-- Publier / modifier une offre -->
-    <dialog id="dlg-offer">
-        <form id="form-offer">
-            <h2 id="offer-title">Publier une offre</h2>
-            <div class="field">
-                <label for="o-title">Titre du poste</label>
-                <input id="o-title" required>
+    <dialog id="publish-dialog" class="modal" aria-labelledby="publish-title">
+        <form id="publish-form" class="modal-body">
+            <div class="modal-head">
+                <h2 id="publish-title">Publier une offre</h2>
+                <button type="button" class="modal-close" data-close aria-label="Fermer">&times;</button>
             </div>
-            <div class="form-row two">
-                <div class="field">
-                    <label for="o-city">Ville</label>
-                    <input id="o-city" required>
-                </div>
-                <div class="field">
-                    <label for="o-contract">Type de contrat</label>
-                    <select id="o-contract">
-                        <option>CDI</option><option>CDD</option><option>Stage</option>
-                        <option>Alternance</option><option>Intérim</option>
+
+            <div class="alert" id="publish-error" role="alert" hidden></div>
+            <div class="ad-fields">
+                <div class="field wide"><label for="p-title">Titre du poste</label><input id="p-title" name="title" maxlength="150" required></div>
+                    
+                <div class="field wide"><label for="p-short">Description courte</label><input id="p-short" name="short_description" maxlength="255" required></div>
+                    
+                <div class="field wide"><label for="p-full">Description complète</label><textarea id="p-full" name="full_description" rows="6" required></textarea></div>
+
+                <div class="field"><label for="p-city">Ville</label><input id="p-city" name="city"></div>
+                    
+                <div class="field"><label for="p-postal">Code postal</label><input id="p-postal" name="postal_code" inputmode="numeric" maxlength="10"></div>
+
+                <div class="field"><label for="p-contract">Type de contrat</label>
+                    <select id="p-contract" name="contract_type" required>
+                        <option value="CDI">CDI</option><option value="CDD">CDD</option><option value="Stage">Stage</option>
+                        <option value="Alternance">Alternance</option><option value="Interim">Intérim</option>
                     </select>
                 </div>
+
+                <div class="field"><label for="p-category">Catégorie</label><select id="p-category" name="category" required></select></div>
+
+                <div class="field"><label for="p-min">Salaire mensuel minimum (€)</label><input id="p-min" name="monthly_salary_min" type="number" min="0"></div>
+
+                <div class="field"><label for="p-max">Salaire mensuel maximum (€)</label><input id="p-max" name="monthly_salary_max" type="number" min="0"></div>
+
+                <div class="field"><label for="p-time">Temps de travail</label>
+                    <select id="p-time" name="working_time">
+                        <option value="">Non précisé</option><option value="full_time">Temps plein</option><option value="part_time">Temps partiel</option>
+                    </select>
+                </div>
+
+                <div class="field"><label for="p-mode">Mode de travail</label>
+                    <select id="p-mode" name="work_mode">
+                        <option value="onsite">Sur site</option><option value="hybrid">Hybride</option><option value="remote">Télétravail</option>
+                    </select>
+                </div>
+
+                <div class="field"><label for="p-exp">Expérience</label>
+                    <select id="p-exp" name="experience">
+                        <option value="">Non précisé</option><option value="debutant">&lt; 1 an</option><option value="junior">1 à 3 ans</option>
+                        <option value="confirme">3 à 5 ans</option><option value="senior">&gt; 5 ans</option>
+                    </select>
+                </div>
+
+                <div class="field"><label for="p-edu">Niveau d'études</label>
+                    <select id="p-edu" name="education_level">
+                        <option value="">Non précisé</option><option value="bac">BAC / BAC Pro</option><option value="bac2">BAC+2</option>
+                        <option value="bac3">BAC+3</option><option value="bac5">BAC+5</option>
+                    </select>
+                </div>
+
+                <div class="field"><label for="p-start">Date de début (vide = dès que possible)</label><input id="p-start" name="start_time" type="date"></div>
             </div>
-            <div class="field">
-                <label for="o-desc">Description</label>
-                <textarea id="o-desc" required></textarea>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" data-close>Annuler</button>
+                <button type="submit" class="btn">Publier</button>
             </div>
             <div class="actions-row">
                 <button type="button" class="btn btn-ghost" id="offer-cancel">Annuler</button>
@@ -139,14 +180,14 @@
     </dialog>
 
     <!-- Supprimer une offre -->
-    <dialog id="dlg-del">
+    <!-- <dialog id="dlg-del">
         <h2>Supprimer cette offre ?</h2>
         <p class="muted" id="del-text"></p>
         <div class="actions-row">
             <button class="btn btn-ghost" id="del-cancel">Garder</button>
             <button class="btn btn-danger" id="del-ok">Supprimer l'offre</button>
         </div>
-    </dialog>
+    </dialog> -->
 
     <div id="toast" role="status" aria-live="polite"></div>
 
