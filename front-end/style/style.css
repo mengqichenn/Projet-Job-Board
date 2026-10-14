@@ -22,8 +22,8 @@ h3 {font-size: clamp(.8rem,4vw,1.1rem);}
 .site-header {background:var(--surface); border-bottom:1.5px solid var(--line); position:fixed; top:0; z-index:10; width: 100%;}
 
 .site-header .container {display:grid; grid-template-columns: 2fr 3fr; align-items: center; gap:1rem; min-height:70px; flex-wrap:wrap;}
-
-.jobboard {font-weight:800; font-size:2rem; color:var(--ink); text-decoration:none;justify-items:start}
+.header-logo {width: 48px; height: auto;}
+.jobboard {display:inline-flex; align-items:center; gap:.5rem; width:max-content; font-weight:800; font-size:2rem; color:var(--ink); text-decoration:none}
 .jobboard span {color:var(--primary)}
 
 /*nav*/
