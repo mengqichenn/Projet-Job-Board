@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets                                                     #=======rajouté===========
 from rest_framework.exceptions import PermissionDenied                                  #=======rajouté===========
-
+from rest_framework.decorators import action
 
 from .serializers import (
     RegisterSerializer, AdSerializer, ApplicationSerializer,
@@ -365,6 +365,15 @@ class AdViewSet(viewsets.ModelViewSet):                                         
         instance.save(update_fields=["status", "modified_at"])
 
 
+    # Réouvrir l'annonce => POST /ads/<id>/reopen
+        @action(detail=True, methods=["post"])
+        def reopen(self, request, pk=None):
+            ad = get_object_or_404(Ad, pk=pk, recruiter=request.user)
+            ad.status = "open"
+            ad.save(update_fields=["status", "modified_at"])
+            return Response(AdSerializer(ad).data)
+
+        
 class ApplicationCVView(APIView):
     permission_classes = [IsAuthenticated]
 
