@@ -379,7 +379,7 @@ class AdViewSet(viewsets.ModelViewSet):                                         
 
         if self.action == "list":
             mine = self.request.query_params.get("mine")
-            if mine:
+            if mine in ("1","true"):
                 if not (self.request.user.is_authenticated and self.request.user.role == "recruiter"):
                     raise PermissionDenied("Accès réservé aux recruteurs.")
                 return qs.filter(recruiter=self.request.user)      # ses offres, ouvertes ET fermées
@@ -404,7 +404,7 @@ class AdViewSet(viewsets.ModelViewSet):                                         
                 qs = qs.filter(Q(title__icontains=search) | Q(short_description__icontains=search)
                             | Q(full_description__icontains=search))
             return qs
-        return qs
+        return qs.filter(status="open")
 
     def perform_create(self, serializer):
         user = self.request.user

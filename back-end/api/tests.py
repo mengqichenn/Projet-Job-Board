@@ -490,3 +490,39 @@ class ProfileFieldsTests(APITestCase):
         self.client.force_authenticate(self.candidate)
         response = self.client.patch("/api/auth/me", {"company_name": "Hack"}, format="multipart")
         self.assertEqual(response.status_code, 400)
+
+class MyAdsTests(APITestCase):
+    def setUp(self):
+        self.recruiter = User.objects.create_user(email="rh@example.com", password="test", role="recruiter")
+        other = User.objects.create_user(email="rh2@example.com", password="test", role="recruiter")
+        self.candidate = User.objects.create_user(email="candidate@example.com", password="test")
+        company = Company.objects.create(name="Company", siret="12345678901234")
+        category = Category.objects.create(name="IT", slug="it")
+        self.closed = Ad.objects.create(title="Fermée", company=company, recruiter=self.recruiter,
+                                        category=category, contract_type="CDI", status="closed")
+        Ad.objects.create(title="Ouverte", company=company, recruiter=self.recruiter,
+                          category=category, contract_type="CDI")
+        Ad.objects.create(title="Autre", company=company, recruiter=other,
+                          category=category, contract_type="CDI")
+
+    def titles(self, response):
+        return {ad["title"] for ad in response.data}
+
+    def test_mine_returns_own_open_and_closed_ads(self):
+        self.client.force_authenticate(self.recruiter)
+        response = self.client.get("/api/ads?mine=true")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.titles(response), {"Ouverte", "Fermée"})
+
+    def test_public_list_hides_closed_ads(self):
+        response = self.client.get("/api/ads")
+        self.assertEqual(self.titles(response), {"Ouverte", "Autre"})
+
+    def test_mine_is_refused_to_candidate_and_anonymous(self):
+        self.client.force_authenticate(self.candidate)
+        self.assertEqual(self.client.get("/api/ads?mine=true").status_code, 403)
+        self.client.force_authenticate(None)
+        self.assertIn(self.client.get("/api/ads?mine=true").status_code, (401, 403))
+
+    def test_closed_ad_detail_is_hidden_from_public(self):
+        self.assertEqual(self.client.get(f"/api/ads/{self.closed.pk}").status_code, 404)
