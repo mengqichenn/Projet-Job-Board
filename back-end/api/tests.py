@@ -528,3 +528,17 @@ class MyAdsTests(APITestCase):
 
     def test_closed_ad_detail_is_hidden_from_public(self):
         self.assertEqual(self.client.get(f"/api/ads/{self.closed.pk}").status_code, 404)
+
+    def test_recruiter_reopens_own_closed_ad(self):
+        self.client.force_authenticate(self.recruiter)
+        response = self.client.post(f"/api/ads/{self.closed.pk}/reopen")
+        self.assertEqual(response.status_code, 200)
+        self.closed.refresh_from_db()
+        self.assertEqual(self.closed.status, "open")
+
+    def test_reopen_refused_to_other_recruiter_and_candidate(self):
+        other = User.objects.get(email="rh2@example.com")
+        self.client.force_authenticate(other)
+        self.assertEqual(self.client.post(f"/api/ads/{self.closed.pk}/reopen").status_code, 404)
+        self.client.force_authenticate(self.candidate)
+        self.assertEqual(self.client.post(f"/api/ads/{self.closed.pk}/reopen").status_code, 403)
