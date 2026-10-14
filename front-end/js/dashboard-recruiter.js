@@ -1,15 +1,9 @@
-/* ==================================================================
-   MOCK = true  : données de test (la page marche sans back-end, le menu s'affiche comme un recruteur connecté)
-   MOCK = false : vraie API via api() de js/api.js
-   Les adresses /offers/... et /applications/... sont à confirmer avec le back-end.
-================================================================== */
-const MOCK = true;
+let offers = [];
 
-let offers = [
-  { id: 1, title: "Développeur Python junior", city: "Montpellier", contract: "CDI",        date: "2026-09-25", status: "active", description: "Rejoins notre équipe pour développer des API avec Django." },
-  { id: 2, title: "Stagiaire développeur web",  city: "Paris",       contract: "Stage",      date: "2026-09-18", status: "active", description: "Stage de 6 mois sur notre site e-commerce." },
-  { id: 3, title: "Alternant DevOps",           city: "Toulouse",    contract: "Alternance", date: "2026-08-30", status: "fermee", description: "Alternance autour de Docker et de l'intégration continue." }
-];
+async function apiLoadApplications(){
+  return api("/recruiter/applications");
+}
+
 let applicants = [
   { id: 1, offerId: 1, name: "Sara Benali",    email: "sara@exemple.fr",    date: "2026-10-01", status: "attente", cv: "cv_sara.pdf",    letter: "Bonjour, étudiante en informatique, votre offre de développeur Python correspond à mon projet…" },
   { id: 2, offerId: 1, name: "Youssef Amrani", email: "youssef@exemple.fr", date: "2026-09-29", status: "vue",     cv: "cv_youssef.pdf", letter: "Je me permets de vous adresser ma candidature pour le poste de développeur…" },
@@ -58,7 +52,9 @@ async function refresh(){ await apiLoadAll(); render(); }
 function renderStats(){
   const active = offers.filter(o => o.status === "active").length;
   const toDo = applicants.filter(a => a.status === "attente").length;
+  const all = active+toDo;
   $("stats").innerHTML =
+    `<div><strong>${all}</strong><span class="muted">Tous mes offres</span></div>`
     `<div><strong>${active}</strong><span class="muted">Offres actives</span></div>` +
     `<div><strong>${applicants.length}</strong><span class="muted">Candidatures reçues</span></div>` +
     `<div><strong>${toDo}</strong><span class="muted">À traiter</span></div>`;
