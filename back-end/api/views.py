@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets                                                     #=======rajouté===========
 from rest_framework.exceptions import PermissionDenied                                  #=======rajouté===========
-from rest_framework.decorators import action
+
 
 from .serializers import (
     RegisterSerializer, AdSerializer, ApplicationSerializer,
@@ -295,47 +295,6 @@ class CandidateApplicationsView(APIView):
 
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
-
-
-# View pour que le candidat puisse modifier ses candidatures
-
-class CandidateApplicationDetailView(APIView):
-    permission_classes = [IsAuthenticated]
- 
-    def get_object(self, request, pk):
-        application = Application.objects.filter(pk=pk, candidate=request.user).first()
-        if application is None:
-            return None
-        return application
- 
-    def patch(self, request, pk):
-        application = self.get_object(request, pk)
-        if application is None:
-            return Response({"detail": "Candidature introuvable."}, status=404)
-        if application.status in ("accepted", "rejected"):
-            return Response({"detail": "Cette candidature est clôturée, elle ne peut plus être modifiée."}, status=400)
- 
-        serializer = ApplicationSerializer(application, data=request.data, partial=True,
-                                            context={"request": request})
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
- 
-        if "cv" in request.FILES:                              # même logique que dans ApplyView
-            request.user.cv = application.cv.name
-            request.user.save(update_fields=["cv", "modified_at"])
- 
-        return Response(serializer.data)
- 
-    def delete(self, request, pk):
-        application = self.get_object(request, pk)
-        if application is None:
-            return Response({"detail": "Candidature introuvable."}, status=404)
-        if application.status in ("accepted", "rejected"):
-            return Response({"detail": "Cette candidature est clôturée, elle ne peut plus être retirée."}, status=400)
-        application.delete()
-        return Response(status=204)
-    
-
 # View pour que le recruteur marque un message comme lu 
 
 class MessageMarkReadView(APIView): 
@@ -362,40 +321,38 @@ class AdViewSet(viewsets.ModelViewSet):                                         
             return [AllowAny()]                              # tout le monde peut voir les annonces
         return [IsRecruiter()]                               # créer, modifier, supprimer : recruteurs
  
-
     def get_queryset(self):
         qs = Ad.objects.select_related("company", "category")
         if self.action in ("update", "partial_update", "destroy"):
-            return qs.filter(recruiter=self.request.user)   # un recruteur ne touche qu'à ses annonces
-
+            return qs.filter(recruiter=self.request.user)    # un recruteur ne touche qu'à ses annonces
+        qs = qs.filter(status="open")                       # le public ne voit que les annonces ouvertes
         if self.action == "list":
-            mine = self.request.query_params.get("mine")
-            if mine:
-                if not (self.request.user.is_authenticated and self.request.user.role == "recruiter"):
-                    raise PermissionDenied("Accès réservé aux recruteurs.")
-                return qs.filter(recruiter=self.request.user)      # ses offres, ouvertes ET fermées
-
-            qs = qs.filter(status="open")
             city = self.request.query_params.get("city")
             if city:
                 qs = qs.filter(city__icontains=city)
-            for field in ("working_time", "education_level", "experience"):
+
+            
+            for field in ("working_time", "education_level", "experience"):     #bouton radio (filtre de main.html)
                 value = self.request.query_params.get(field)
                 if value:
                     qs = qs.filter(**{field: value})
-            for field in ("contract_type", "work_mode"):
+
+            for field in ("contract_type", "work_mode"):        #case à cocher (filtre de main.html)
                 values = self.request.query_params.getlist(field)
                 if values:
                     qs = qs.filter(**{f"{field}__in": values})
+
+            
             category = self.request.query_params.get("category")
             if category:
                 qs = qs.filter(category_id=category)
             search = self.request.query_params.get("search")
             if search:
-                qs = qs.filter(Q(title__icontains=search) | Q(short_description__icontains=search)
-                            | Q(full_description__icontains=search))
-            return qs
+                qs = qs.filter(Q(title__icontains=search)
+                               | Q(short_description__icontains=search)
+                               | Q(full_description__icontains=search))
         return qs
+
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -406,14 +363,6 @@ class AdViewSet(viewsets.ModelViewSet):                                         
     def perform_destroy(self, instance):                     # « supprimer » = fermer l'annonce
         instance.status = "closed"
         instance.save(update_fields=["status", "modified_at"])
-
-    # Réouvrir l'annonce => POST /ads/<id>/reopen
-    @action(detail=True, methods=["post"])
-    def reopen(self, request, pk=None):
-        ad = get_object_or_404(Ad, pk=pk, recruiter=request.user)
-        ad.status = "open"
-        ad.save(update_fields=["status", "modified_at"])
-        return Response(AdSerializer(ad).data)
 
 
 class ApplicationCVView(APIView):
