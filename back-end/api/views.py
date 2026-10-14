@@ -362,38 +362,40 @@ class AdViewSet(viewsets.ModelViewSet):                                         
             return [AllowAny()]                              # tout le monde peut voir les annonces
         return [IsRecruiter()]                               # créer, modifier, supprimer : recruteurs
  
+
     def get_queryset(self):
         qs = Ad.objects.select_related("company", "category")
         if self.action in ("update", "partial_update", "destroy"):
-            return qs.filter(recruiter=self.request.user)    # un recruteur ne touche qu'à ses annonces
-        qs = qs.filter(status="open")                       # le public ne voit que les annonces ouvertes
+            return qs.filter(recruiter=self.request.user)   # un recruteur ne touche qu'à ses annonces
+
         if self.action == "list":
+            mine = self.request.query_params.get("mine")
+            if mine:
+                if not (self.request.user.is_authenticated and self.request.user.role == "recruiter"):
+                    raise PermissionDenied("Accès réservé aux recruteurs.")
+                return qs.filter(recruiter=self.request.user)      # ses offres, ouvertes ET fermées
+
+            qs = qs.filter(status="open")
             city = self.request.query_params.get("city")
             if city:
                 qs = qs.filter(city__icontains=city)
-
-            
-            for field in ("working_time", "education_level", "experience"):     #bouton radio (filtre de main.html)
+            for field in ("working_time", "education_level", "experience"):
                 value = self.request.query_params.get(field)
                 if value:
                     qs = qs.filter(**{field: value})
-
-            for field in ("contract_type", "work_mode"):        #case à cocher (filtre de main.html)
+            for field in ("contract_type", "work_mode"):
                 values = self.request.query_params.getlist(field)
                 if values:
                     qs = qs.filter(**{f"{field}__in": values})
-
-            
             category = self.request.query_params.get("category")
             if category:
                 qs = qs.filter(category_id=category)
             search = self.request.query_params.get("search")
             if search:
-                qs = qs.filter(Q(title__icontains=search)
-                               | Q(short_description__icontains=search)
-                               | Q(full_description__icontains=search))
+                qs = qs.filter(Q(title__icontains=search) | Q(short_description__icontains=search)
+                            | Q(full_description__icontains=search))
+            return qs
         return qs
-
 
     def perform_create(self, serializer):
         user = self.request.user
