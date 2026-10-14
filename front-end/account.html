@@ -16,7 +16,7 @@
             <a class="jobboard" href="main.html"><span>Talentis</span></a>
             <nav class="navbar">
 
-                <!--header avec différents data-role -->
+                <!--header avec différents data-role-->
 
                 <li><a href="main.html" aria-current="page">Offres</a></li>
 
@@ -31,12 +31,12 @@
                             <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
                         </summary>
                         <div class="menu-panel">
-                            <a class="menu-profile" href="account.html">
+                            <a class="menu-profile" href="profile.html">
                                 <span class="avatar menu-initials">MC</span>
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-candidate.html">Mon dashboard</a>
+                            <a href="dashboard-candidate.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
@@ -57,7 +57,7 @@
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-recruiter.html">Mon dashboard</a>
+                            <a href="dashboard-recruiter.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
@@ -144,6 +144,13 @@
                             <label for="siret">Numéro SIRET*</label>
                             <input id="siret" name="siret" inputmode="numeric" pattern="[0-9]{14}" minlength="14" maxlength="14" required></div>
 
+                        <div class="field">
+                            <label for="company_postal_code">Code postal*</label>
+                            <input id="company_postal_code" name="company_postal_code" required></div>
+
+                        <div class="field">
+                            <label for="company_city">Ville*</label>
+                            <input id="company_city" name="company_city" required></div>
 
                         <div class="field">
                             <label for="description">Description, activité</label>
@@ -154,14 +161,6 @@
                             <label for="website">Site web</label>
                             <input id="website" name="website" type="url"></div>
 
-                        <div class="field">
-                            <label for="company_postal_code">Code postal*</label>
-                            <input id="company_postal_code" name="company_postal_code" required></div>
-
-                        <div class="field">
-                            <label for="company_city">Ville*</label>
-                            <input id="company_city" name="company_city" required></div>
-                        
                     </div>
 
                 </fieldset>

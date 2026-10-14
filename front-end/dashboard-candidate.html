@@ -11,34 +11,65 @@
 </head>
 
 <body class="candidate-dashboard-page">
-  <header class="site-header dashboard-header">
-    <div class="container">
-      <a class="jobboard" href="main.html"><span>Talentis</span></a>
-      <nav aria-label="Navigation principale">
-        <ul class="navbar">
-          <li><a href="main.html">Offres</a></li>
-          <li><a href="edit-profile.html">Modifier mon profil</a></li>
-          <li class="menu" data-role="candidate" hidden>
-            <details>
-              <summary class="menu-toggle" aria-label="Menu du compte">
-                <span class="avatar menu-initials">TE</span><span class="menu-name">Mon compte</span>
-              </summary>
-              <div class="menu-panel">
-                <a href="dashboard-candidate.html">Mon dashboard</a>
-                <a href="edit-profile.html">Modifier mon profil</a>
-                <hr>
-                <button type="button" data-logout>Déconnexion</button>
-              </div>
-            </details>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  <header class="site-header">
+        <div class="container">
+            <a class="jobboard" href="main.html"><span>Talentis</span></a>
+            <nav class="navbar">
+
+                <!--header avec différents data-role-->
+
+                <li><a href="main.html" aria-current="page">Offres</a></li>
+
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="login.html">Se connecter</a></li>
+                <li data-role="visitor" hidden><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
+
+
+                <!--Menu déroulant pour candidat-->
+                <li class="menu" data-role="candidate" hidden>
+                    <details>
+                        <summary class="menu-toggle" aria-label="Menu du compte">
+                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                        </summary>
+                        <div class="menu-panel">
+                            <a class="menu-profile" href="profile.html">
+                                <span class="avatar menu-initials">MC</span>
+                                <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
+                            </a>
+                            <hr>
+                            <a href="dashboard-candidate.html">Mon espace</a>
+                            <hr>
+                            <button type="button" data-logout>Déconnexion</button>
+                        </div>
+                    </details>
+                </li>
+                
+                <!--Menu déroulant pour recruteur-->
+
+                <li class="menu" data-role="recruiter" hidden>
+                    <details>
+                        <summary class="menu-toggle" aria-label="Menu du compte">
+                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                        </summary>
+
+                        <div class="menu-panel">
+                            <a class="menu-profile" href="account.html">
+                                <span class="avatar menu-initials">MC</span>
+                                <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
+                            </a>
+                            <hr>
+                            <a href="dashboard-recruiter.html">Mon espace</a>
+                            <hr>
+                            <button type="button" data-logout>Déconnexion</button>
+                        </div>
+                    </details>
+                </li>
+            </nav>
+        </div>
+    </header>
 
     <main class="container dash-page">
-        <h1>Mes candidatures</h1>
-        <p class="muted">Suis l'avancement des offres auxquelles tu as postulé.</p>
+        <h1>Mon espace candidat</h1>
+        <p class="muted">Ici vous pouvez suivre l'avancement des offres auxquelles vous avez postulées.</p>
 
         <section class="card" aria-label="Résumé">
             <div class="stats" id="stats"></div>
@@ -51,10 +82,11 @@
                     <label for="filter" class="muted">Statut</label>
                     <select id="filter">
                         <option value="all">Toutes</option>
-                        <option value="attente">En attente</option>
-                        <option value="vue">Vue par le recruteur</option>
-                        <option value="accepte">Acceptées</option>
-                        <option value="refuse">Refusées</option>
+                        <option value="sent">Envoyée</option>
+                        <option value="seen">Vue par le recruteur</option>
+                        <option value="interview">Entretien</option>
+                        <option value="accepted">Acceptée</option>
+                        <option value="rejected">Refusée</option>
                     </select>
                 </div>
             </div>
@@ -67,13 +99,21 @@
         <form id="form-edit">
             <h2 id="edit-title">Modifier ma candidature</h2>
             <div class="field">
-                <label for="e-cv">CV (PDF, 5 Mo maximum)</label>
+                <label for="e-cv-choice">CV</label>
+                <select id="e-cv-choice">
+                    <option value="keep">Garder le CV actuel</option>
+                    <option value="saved">Utiliser mon CV enregistré</option>
+                    <option value="new">Nouveau fichier</option>
+                </select>
+            </div>
+            <div class="field" id="e-cv-field" hidden>
+                <label for="e-cv">Nouveau CV (PDF)</label>
                 <input type="file" id="e-cv" accept="application/pdf">
                 <p class="notice" id="e-cv-current"></p>
                 <p class="error" id="e-cv-error" role="alert"></p>
             </div>
             <div class="field">
-                <label for="e-letter">Lettre de motivation</label>
+                <label for="e-letter">Message</label>
                 <textarea id="e-letter" required></textarea>
             </div>
             <div class="actions-row">
@@ -85,7 +125,7 @@
 
     <!-- Retirer une candidature -->
     <dialog id="dlg-del">
-        <h2>Retirer ma candidature ?</h2>
+        <h2>Confirmer votre choix</h2>
         <p class="muted" id="del-text"></p>
         <div class="actions-row">
             <button class="btn btn-ghost" id="del-cancel">Garder</button>
