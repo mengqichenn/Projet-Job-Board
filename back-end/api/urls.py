@@ -23,6 +23,7 @@ urlpatterns = [
     path("recruiter/applications", views.RecruiterApplicationsView.as_view()),
     path("ads/<int:ad_id>/messages", views.MessageCreateView.as_view()),
     path("candidate/applications", views.CandidateApplicationsView.as_view()),
+    path("candidate/applications/<int:pk>", views.CandidateApplicationDetailView.as_view()),
     path("applications/<int:pk>/status", views.UpdateApplicationStatusView.as_view()),
     path("messages/<int:pk>/read", views.MessageMarkReadView.as_view()),
     path("auth/forgot-password", views.ForgotPasswordView.as_view()),

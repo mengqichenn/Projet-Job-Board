@@ -295,6 +295,47 @@ class CandidateApplicationsView(APIView):
 
         serializer = ApplicationSerializer(applications, many=True)
         return Response(serializer.data)
+
+
+# View pour que le candidat puisse modifier ses candidatures
+
+class CandidateApplicationDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+ 
+    def get_object(self, request, pk):
+        application = Application.objects.filter(pk=pk, candidate=request.user).first()
+        if application is None:
+            return None
+        return application
+ 
+    def patch(self, request, pk):
+        application = self.get_object(request, pk)
+        if application is None:
+            return Response({"detail": "Candidature introuvable."}, status=404)
+        if application.status in ("accepted", "rejected"):
+            return Response({"detail": "Cette candidature est clôturée, elle ne peut plus être modifiée."}, status=400)
+ 
+        serializer = ApplicationSerializer(application, data=request.data, partial=True,
+                                            context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+ 
+        if "cv" in request.FILES:                              # même logique que dans ApplyView
+            request.user.cv = application.cv.name
+            request.user.save(update_fields=["cv", "modified_at"])
+ 
+        return Response(serializer.data)
+ 
+    def delete(self, request, pk):
+        application = self.get_object(request, pk)
+        if application is None:
+            return Response({"detail": "Candidature introuvable."}, status=404)
+        if application.status in ("accepted", "rejected"):
+            return Response({"detail": "Cette candidature est clôturée, elle ne peut plus être retirée."}, status=400)
+        application.delete()
+        return Response(status=204)
+    
+
 # View pour que le recruteur marque un message comme lu 
 
 class MessageMarkReadView(APIView): 
