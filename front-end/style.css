@@ -243,9 +243,6 @@ select {
 .notice2 {position:absolute; top:100%; left:0; margin:.25rem 0 0;
          color:var(--muted); font-size:.85rem; text-indent: 20px; padding-bottom: 5px;}
 
-
-
-
 /*==============================================================================
     dashboard recruteur/candidat  :  BODY
 ===============================================================================*/
@@ -546,3 +543,91 @@ dialog textarea{min-height:120px;resize:vertical}
 @media (prefers-reduced-motion:reduce) {
   :is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) #toast {transition:none}
 }
+
+/* ===== AJOUT ADMIN : layout et composants des pages d'administration (ajouté pour dashboard-admin.html) ===== */
+.admin-page .admin-header-inner {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  min-height:75px;
+  gap:1rem;
+}
+
+.admin-layout {
+  display:grid;
+  grid-template-columns:minmax(12rem,15rem) minmax(0,1fr);
+  gap:2rem;
+  width:min(1280px,100% - 2rem);
+  margin-inline:auto;
+  padding-block:2rem 4rem;
+}
+
+.admin-sidebar {
+  display:flex;
+  flex-direction:column;
+  gap:.25rem;
+  align-self:start;
+  padding-right:1rem;
+  border-right:1px solid var(--line);
+}
+
+.admin-sidebar a {
+  padding:.65rem .8rem;
+  border-radius:var(--r);
+  color:var(--ink);
+  text-decoration:none;
+}
+
+.admin-sidebar a:hover,
+.admin-sidebar a[aria-current="page"] {background:var(--bg)}
+.admin-sidebar a[aria-current="page"] {font-weight:800}
+.admin-page a:focus-visible {outline:3px solid var(--accent);outline-offset:2px}
+.admin-page .admin-content {max-width:none;padding:0;min-width:0}
+.admin-page .admin-content h1 {margin-top:0}
+.admin-page .admin-content .card {margin-top:1.5rem}
+.admin-page .admin-content .app {align-items:center}
+
+.admin-page .admin-stats {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1rem;
+}
+
+.admin-stat {padding:.25rem .8rem;border-left:1px solid var(--line)}
+.admin-stat:first-child {border-left:0;padding-left:0}
+
+.admin-toolbar {display:flex;align-items:flex-end;gap:.75rem;flex-wrap:wrap}
+.admin-control {display:flex;flex-direction:column;gap:.25rem;color:var(--muted);font-weight:600}
+.admin-control input,.admin-control select {width:100%;min-width:10rem;margin:0}
+.admin-toolbar .admin-control input {min-width:min(18rem,70vw)}
+.admin-actions {display:flex;align-items:center;justify-content:flex-end;gap:.4rem;flex-wrap:wrap}
+.admin-actions .badge {margin-right:.25rem}
+.admin-page-heading {margin-bottom:1rem}
+.admin-page-heading h1 {margin:0}
+
+@media (max-width:760px) {
+  .admin-layout {grid-template-columns:minmax(0,1fr);gap:1.25rem;padding-block:1rem 3rem}
+  .admin-sidebar {
+    flex-direction:row;
+    overflow-x:auto;
+    padding:0 0 .65rem;
+    border-right:0;
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+  }
+  .admin-sidebar a {flex:none}
+}
+
+@media (max-width:640px) {
+  .admin-page .admin-header-inner {grid-template-columns:none}
+}
+
+@media (max-width:560px) {
+  .admin-page .admin-stats {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-stat:nth-child(odd) {border-left:0;padding-left:0}
+  .admin-actions {justify-content:flex-start}
+  .admin-toolbar {width:100%;align-items:stretch}
+  .admin-toolbar .admin-control {flex:1 1 12rem}
+  .admin-toolbar .admin-control input {min-width:0}
+}
+/* ===== FIN AJOUT ADMIN ===== */
