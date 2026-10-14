@@ -238,10 +238,12 @@ class ProfileApiTests(APITestCase):
         self.user.refresh_from_db()
         self.assertEqual(self.user.role, "candidate")
 
-    def test_email_already_used(self):
+    def test_cannot_change_email(self):
         self.client.force_authenticate(self.user)
         r = self.client.patch("/api/auth/me", {"email": "bob@test.fr"}, format="json")
-        self.assertEqual(r.status_code, 400)
+        self.assertEqual(r.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertNotEqual(self.user.email, "bob@test.fr")
 
     def test_password_needs_current(self):
         self.client.force_authenticate(self.user)

@@ -204,16 +204,12 @@ class ProfileSerializer(serializers.ModelSerializer):
                       "website": "website"}
 
     class Meta:
+        read_only_fields = ["email"]
         model = User
         fields = ["email", "first_name", "last_name", "telephone", "city",
                   "postal_code", "cv", "password", "current_password",
                   "company_name", "siret", "company_city", "company_postal_code",
                   "description", "website"]
-
-    def validate_email(self, value):
-        if User.objects.filter(email__iexact=value).exclude(pk=self.instance.pk).exists():
-            raise serializers.ValidationError("Cette adresse mail est déjà utilisée.")
-        return value
 
     def validate_cv(self, value):
         return RegisterSerializer().validate_cv(value)
