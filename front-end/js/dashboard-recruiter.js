@@ -31,17 +31,24 @@ function esc(s) { const d = document.createElement("div"); d.textContent = s ?? 
 function fmt(d) { return new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }); }
 function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); }
 const fail = err => toast(err?.message || "Une erreur est survenue, réessaie.");
+function showFormError(err) {
+  const box = $("publish-error");
+  box.textContent = err?.message || "Une erreur est survenue, réessaie.";
+  box.hidden = false;
+}
+function clearFormError() { $("publish-error").hidden = true; $("publish-error").textContent = ""; }
 const offerOf = id => offers.find(o => o.id === id);
 async function refresh() { await apiLoadAll(); render(); }
 
 function renderStats() {
   const active = offers.filter(o => o.status === "open").length;
   const toDo = applicants.filter(a => a.status === "sent").length;
+  const interview = applicants.filter(a => a.status === "interview").length;
   $("stats").innerHTML =
-    `<div><strong>${offers.length}</strong><span class="muted">Toutes mes offres</span></div>` +
     `<div><strong>${active}</strong><span class="muted">Offres actives</span></div>` +
     `<div><strong>${applicants.length}</strong><span class="muted">Candidatures reçues</span></div>` +
-    `<div><strong>${toDo}</strong><span class="muted">À traiter</span></div>`;
+    `<div><strong>${toDo}</strong><span class="muted">À traiter</span></div>` +
+    `<div><strong>${interview}</strong><span class="muted">Entretien</span></div>`;
 }
 
 function renderOffers() {
@@ -113,38 +120,38 @@ async function downloadCV(appId) {
 }
 
 function fillOfferForm(o) {
-  $("o-title").value = o?.title ?? "";
-  $("o-short").value = o?.short_description ?? "";
-  $("o-full").value = o?.full_description ?? "";
-  $("o-city").value = o?.city ?? "";
-  $("o-postal").value = o?.postal_code ?? "";
-  $("o-contract").value = o?.contract_type ?? "CDI";
-  $("o-category").value = o?.category ?? "";
-  $("o-min").value = o?.monthly_salary_min ?? "";
-  $("o-max").value = o?.monthly_salary_max ?? "";
-  $("o-working-time").value = o?.working_time ?? "";
-  $("o-work-mode").value = o?.work_mode ?? "onsite";
-  $("o-experience").value = o?.experience ?? "";
-  $("o-education").value = o?.education_level ?? "";
-  $("o-start").value = o?.start_time ?? "";
+  $("p-title").value = o?.title ?? "";
+  $("p-short").value = o?.short_description ?? "";
+  $("p-full").value = o?.full_description ?? "";
+  $("p-city").value = o?.city ?? "";
+  $("p-postal").value = o?.postal_code ?? "";
+  $("p-contract").value = o?.contract_type ?? "CDI";
+  $("p-category").value = o?.category ?? categories[0]?.id ?? "";
+  $("p-min").value = o?.monthly_salary_min ?? "";
+  $("p-max").value = o?.monthly_salary_max ?? "";
+  $("p-time").value = o?.working_time ?? "";
+  $("p-mode").value = o?.work_mode ?? "onsite";
+  $("p-exp").value = o?.experience ?? "";
+  $("p-edu").value = o?.education_level ?? "";
+  $("p-start").value = o?.start_time ?? "";
 }
 
 function buildOfferPayload() {
   const data = {
-    title: $("o-title").value.trim(),
-    short_description: $("o-short").value.trim(),
-    full_description: $("o-full").value.trim(),
-    city: $("o-city").value.trim(),
-    postal_code: $("o-postal").value.trim(),
-    contract_type: $("o-contract").value,
-    category: $("o-category").value,
-    monthly_salary_min: $("o-min").value || null,
-    monthly_salary_max: $("o-max").value || null,
-    working_time: $("o-working-time").value,
-    work_mode: $("o-work-mode").value,
-    experience: $("o-experience").value,
-    education_level: $("o-education").value,
-    start_time: $("o-start").value || null,
+    title: $("p-title").value.trim(),
+    short_description: $("p-short").value.trim(),
+    full_description: $("p-full").value.trim(),
+    city: $("p-city").value.trim(),
+    postal_code: $("p-postal").value.trim(),
+    contract_type: $("p-contract").value,
+    category: $("p-category").value,
+    monthly_salary_min: $("p-min").value || null,
+    monthly_salary_max: $("p-max").value || null,
+    working_time: $("p-time").value,
+    work_mode: $("p-mode").value,
+    experience: $("p-exp").value,
+    education_level: $("p-edu").value,
+    start_time: $("p-start").value || null,
   };
   return data;
 }
@@ -158,9 +165,10 @@ $("offers").addEventListener("click", async e => {
     $("applicants-section").scrollIntoView({ behavior: "smooth" });
   }
   if (b.dataset.act === "edit") {
-    $("offer-title").textContent = "Modifier l'offre";
+    $("publish-title").textContent = "Modifier l'offre";
     fillOfferForm(o);
-    $("dlg-offer").showModal();
+    clearFormError();
+    $("publish-dialog").showModal();
   }
   if (b.dataset.act === "toggle") {
     const wasActive = o.status === "open";
@@ -173,16 +181,17 @@ $("applicants").addEventListener("click", e => {
   downloadCV(+b.dataset.cv);
 });
 
-$("btn-new").onclick = () => { currentId = null; $("offer-title").textContent = "Publier une offre"; $("form-offer").reset(); fillOfferForm(null); $("dlg-offer").showModal(); };
-$("form-offer").addEventListener("submit", async e => {
+$("btn-new").onclick = () => { currentId = null; $("publish-title").textContent = "Publier une offre"; $("publish-form").reset(); fillOfferForm(null); clearFormError(); $("publish-dialog").showModal(); };
+$("publish-form").addEventListener("submit", async e => {
   e.preventDefault();
   const editing = currentId !== null;
   try {
     await apiSaveOffer(buildOfferPayload(), currentId);
-    $("dlg-offer").close(); await refresh(); toast(editing ? "Offre modifiée" : "Offre publiée");
-  } catch (err) { fail(err); }
+    $("publish-dialog").close(); await refresh(); toast(editing ? "Offre modifiée" : "Offre publiée");
+  } catch (err) { showFormError(err); }
 });
-$("offer-cancel").onclick = () => $("dlg-offer").close();
+$("offer-cancel").onclick = () => $("publish-dialog").close();
+document.querySelectorAll("[data-close]").forEach(b => b.onclick = () => $("publish-dialog").close());
 
 $("applicants").addEventListener("change", async e => {
   const s = e.target.closest("[data-status]"); if (!s) return;
@@ -195,7 +204,7 @@ $("f-status").addEventListener("change", renderApplicants);
   const user = await initPage();
   if (!user || user.role !== "recruiter") { location.href = "login.html"; return; }
   if (typeof initMenu === "function") initMenu(user);
-  try { categories = await api("/categories"); $("o-category").innerHTML = categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join(""); } catch {}
+  try { categories = await api("/categories"); $("p-category").innerHTML = categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join(""); } catch {}
   try { await apiLoadAll(); } catch (err) { fail(err); offers = []; applicants = []; }
   render();
 })();
