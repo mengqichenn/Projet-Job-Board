@@ -22,7 +22,8 @@
         <div class="admin-actions"><span class="badge ${common.statusClass(application.status)}">${common.escape(common.statusLabel(application.status))}</span>
         <label class="admin-control" for="application-status-${application.id}">Statut<select id="application-status-${application.id}" data-application-status="${application.id}">
           ${options.map(([value, label]) => `<option value="${value}" ${application.status === value ? "selected" : ""}>${label}</option>`).join("")}
-        </select></label></div></article>`;
+        </select></label>
+        <button class="btn btn-danger btn-sm" type="button" data-delete-application="${application.id}">Supprimer</button></div></article>`;
     }).join("") : common.empty(list, "Aucune candidature pour le moment.");
   }
 
@@ -42,6 +43,15 @@
           await api(`/admin/applications/${select.dataset.applicationStatus}`, { method: "PATCH", body: { status: select.value } });
           applications = await common.list("/admin/applications");
           render(); common.report("Statut de candidature mis à jour.");
+        } catch (error) { common.report(error.message, true); }
+      });
+      list.addEventListener("click", async event => {
+        const button = event.target.closest("[data-delete-application]");
+        if (!button || !confirm("Supprimer définitivement cette candidature ?")) return;
+        try {
+          await api(`/admin/applications/${button.dataset.deleteApplication}`, { method: "DELETE" });
+          applications = await common.list("/admin/applications");
+          render(); common.report("Candidature supprimée.");
         } catch (error) { common.report(error.message, true); }
       });
     } catch (error) { common.report(`Impossible de charger les candidatures : ${error.message}`, true); }
