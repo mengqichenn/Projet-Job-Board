@@ -5,6 +5,7 @@ const ROLE_BADGES = { candidate: "s-vue", recruiter: "s-active", admin: "s-atten
 
 let currentUser = null;   // l'admin connecté
 let currentPage = 1;      // la page affichée
+let usersById = {};       // les utilisateurs affichés, rangés par numéro
 
 // Empêche qu'un texte venant de la base soit lu comme du HTML (sécurité)
 function esc(text) {
@@ -52,9 +53,44 @@ async function loadUsers(page = 1) {
   const empty = document.getElementById("users-empty");
 
   currentPage = page;
+  usersById = Object.fromEntries(data.results.map(u => [u.id, u]));
   list.querySelectorAll("article").forEach(a => a.remove());
   empty.insertAdjacentHTML("beforebegin", data.results.map(userRow).join(""));
   renderPager(data, page);
+}
+
+// Fenêtre de modification d'un utilisateur
+function openEditDialog(user) {
+  let dialog = document.getElementById("edit-dialog");
+  if (!dialog) {
+    dialog = document.createElement("dialog");
+    dialog.id = "edit-dialog";
+    document.body.appendChild(dialog);
+  }
+  dialog.innerHTML = `
+    <form id="edit-form" class="card" data-user-id="${user.id}">
+      <h2>Modifier l'utilisateur</h2>
+      <label>Prénom <input name="first_name" value="${esc(user.first_name)}"></label>
+      <label>Nom <input name="last_name" value="${esc(user.last_name)}"></label>
+      <label>Email <input name="email" type="email" required value="${esc(user.email)}"></label>
+      <label>Téléphone <input name="telephone" value="${esc(user.telephone)}"></label>
+      <label>Ville <input name="city" value="${esc(user.city)}"></label>
+      <label>Code postal <input name="postal_code" value="${esc(user.postal_code)}"></label>
+      <label>Rôle
+        <select name="role">
+          ${Object.entries(ROLE_LABELS).map(([value, label]) =>
+            `<option value="${value}" ${user.role === value ? "selected" : ""}>${label}</option>`).join("")}
+        </select>
+      </label>
+      <label><input name="is_active" type="checkbox" ${user.is_active ? "checked" : ""}> Compte actif</label>
+      <p id="edit-error" class="muted"></p>
+      <div class="admin-actions">
+        <button type="button" class="btn btn-ghost" id="edit-cancel">Annuler</button>
+        <button type="submit" class="btn">Enregistrer</button>
+      </div>
+    </form>`;
+  dialog.querySelector("#edit-cancel").onclick = () => dialog.close();
+  dialog.showModal();
 }
 
 // Supprime un utilisateur (avec confirmation)
@@ -85,6 +121,42 @@ document.addEventListener("click", e => {
   if (!btn) return;
   const id = Number(btn.closest("article").dataset.userId);
   if (btn.dataset.act === "delete") deleteUser(id);
+  if (btn.dataset.act === "edit") openEditDialog(usersById[id]);
+});
+
+// Enregistrement de la fenêtre de modification
+document.addEventListener("submit", async e => {
+  if (e.target.id !== "edit-form") return;
+  e.preventDefault();
+
+  const form = e.target;
+  const id = Number(form.dataset.userId);
+  const f = new FormData(form);
+  const body = {
+    first_name: f.get("first_name"),
+    last_name: f.get("last_name"),
+    email: f.get("email"),
+    telephone: f.get("telephone"),
+    city: f.get("city"),
+    postal_code: f.get("postal_code"),
+    role: f.get("role"),
+    is_active: f.has("is_active"),
+  };
+
+  // Sécurité : on ne peut pas se retirer ses propres droits
+  if (id === currentUser.id && (body.role !== "admin" || !body.is_active)) {
+    document.getElementById("edit-error").textContent =
+      "Tu ne peux pas retirer le rôle admin ou désactiver ton propre compte.";
+    return;
+  }
+
+  try {
+    await api(`/admin/users/${id}`, { method: "PATCH", body });
+    document.getElementById("edit-dialog").close();
+    await loadUsers(currentPage);
+  } catch (err) {
+    document.getElementById("edit-error").textContent = err.message;
+  }
 });
 
 // Démarrage : on vérifie que c'est bien un admin, sinon retour à la connexion
