@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
-  <link rel="icon" href="style/icon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="style/style.css">
+  <link rel="stylesheet" href="style/style_2.css">
+  <link rel="icon" href="style/logo.png" type="image/x-icon">
   <title>Offres - Administration Talentis</title>
 </head>
 <body class="admin-page">
@@ -29,7 +29,7 @@
       <section class="card" aria-labelledby="ads-title">
         <div class="list-head"><h2 id="ads-title">Offres publiées</h2>
           <div class="admin-toolbar"><div class="admin-control"><label for="ads-search">Rechercher</label><input id="ads-search" type="search" placeholder="Intitulé ou entreprise"></div>
-            <div class="admin-control"><label for="ads-status">Statut</label><select id="ads-status"><option value="all">Tous</option><option value="active">Active</option><option value="closed">Fermée</option></select></div>
+            <div class="admin-control"><label for="ads-status">Statut</label><select id="ads-status"><option value="all">Tous</option><option value="open">Ouverte</option><option value="closed">Fermée</option></select></div>
           </div>
         </div>
         <div class="list" id="ads-list">
@@ -45,5 +45,8 @@
       </section>
     </main>
   </div>
+  <script src="js/api.js"></script>
+  <script src="js/admin-common.js"></script>
+  <script src="js/admin-ads.js"></script>
 </body>
 </html>
