@@ -190,27 +190,57 @@ class ProfileSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False, min_length=12)
     current_password = serializers.CharField(write_only=True, required=False)
 
+    # Champs de l'entreprise (recruteur uniquement)
+    company_name = serializers.CharField(max_length=150, required=False)
+    siret = serializers.CharField(max_length=14, required=False)
+    company_city = serializers.CharField(max_length=100, required=False)
+    company_postal_code = serializers.CharField(max_length=10, required=False)
+    description = serializers.CharField(required=False, allow_blank=True)
+    website = serializers.URLField(max_length=255, required=False, allow_blank=True)
+
+    # nom du champ envoyé par la page -> nom du champ dans la table Company
+    COMPANY_FIELDS = {"company_name": "name", "siret": "siret", "company_city": "city",
+                      "company_postal_code": "postal_code", "description": "description",
+                      "website": "website"}
+
     class Meta:
+        read_only_fields = ["email"]
         model = User
         fields = ["email", "first_name", "last_name", "telephone", "city",
-                  "postal_code", "password", "current_password"]
+                  "postal_code", "cv", "password", "current_password",
+                  "company_name", "siret", "company_city", "company_postal_code",
+                  "description", "website"]
 
-    def validate_email(self, value):
-        if User.objects.filter(email__iexact=value).exclude(pk=self.instance.pk).exists():
-            raise serializers.ValidationError("Cette adresse mail est déjà utilisée.")
+    def validate_cv(self, value):
+        return RegisterSerializer().validate_cv(value)
+
+    def validate_siret(self, value):
+        if len(value) != 14 or not value.isdigit():
+            raise serializers.ValidationError("Le numéro SIRET doit contenir 14 chiffres.")
+        if Company.objects.filter(siret=value).exclude(pk=self.instance.company_id).exists():
+            raise serializers.ValidationError("Cette entreprise est déjà inscrite.")
         return value
 
     def validate_password(self, value):
         return RegisterSerializer().validate_password(value)
+
     def validate(self, data):
         current = data.pop("current_password", None)
         if "password" in data and not (current and self.instance.check_password(current)):
             raise serializers.ValidationError({"current_password": "Mot de passe actuel incorrect."})
+        if any(name in data for name in self.COMPANY_FIELDS) and not self.instance.company:
+            raise serializers.ValidationError("Ce compte n'est lié à aucune entreprise.")
         return data
 
     def update(self, instance, validated_data):
         password = validated_data.pop("password", None)
+        company_data = {model_name: validated_data.pop(name)
+                        for name, model_name in self.COMPANY_FIELDS.items() if name in validated_data}
         user = super().update(instance, validated_data)
+        if company_data:
+            for attr, value in company_data.items():
+                setattr(user.company, attr, value)
+            user.company.save()
         if password:
             user.set_password(password)
             user.save()

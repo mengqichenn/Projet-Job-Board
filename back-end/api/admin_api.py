@@ -1,6 +1,7 @@
 from rest_framework import serializers, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import BasePermission
+from rest_framework.filters import SearchFilter
 
 from .models import Ad, Application, Category, Company, Message, User
 
@@ -64,9 +65,17 @@ class UserAdminSerializer(serializers.ModelSerializer):
             user.save()
         return user
 
-
 class UserAdminViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by("id")
     serializer_class = UserAdminSerializer
     permission_classes = [IsAdminRole]
     pagination_class = AdminPagination
+    filter_backends = [SearchFilter]
+    search_fields = ["email", "first_name", "last_name"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        role = self.request.query_params.get("role")
+        if role:
+            queryset = queryset.filter(role=role)
+        return queryset
