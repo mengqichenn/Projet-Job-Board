@@ -3,7 +3,7 @@
   const list = document.getElementById("messages-list");
   if (!list) return;
 
-  const search = document.getElementById("search");
+  const search = document.getElementById("messages-search");
   let messages = [];
   let users = [];
   let ads = [];
