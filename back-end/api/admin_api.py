@@ -1,7 +1,9 @@
-from rest_framework import serializers, viewsets
+from django.db.models import ProtectedError
+from rest_framework import serializers, status, viewsets
+from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import BasePermission
-from rest_framework.filters import SearchFilter
+from rest_framework.response import Response
 
 from .models import Ad, Application, Category, Company, Message, User
 
@@ -16,6 +18,7 @@ class AdminPagination(PageNumberPagination):
     page_size_query_param = "page_size"
     max_page_size = 100
 
+
 def make_viewset(model_class):
     class Serializer(serializers.ModelSerializer):
         class Meta:
@@ -28,6 +31,15 @@ def make_viewset(model_class):
         permission_classes = [IsAdminRole]
         pagination_class = AdminPagination
 
+        def destroy(self, request, *args, **kwargs):
+            try:
+                return super().destroy(request, *args, **kwargs)
+            except ProtectedError:
+                return Response(
+                    {"detail": "Suppression impossible : des offres sont rattachées à cet élément."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+
     return ViewSet
 
 
@@ -36,6 +48,7 @@ CategoryAdminViewSet = make_viewset(Category)
 AdAdminViewSet = make_viewset(Ad)
 ApplicationAdminViewSet = make_viewset(Application)
 MessageAdminViewSet = make_viewset(Message)
+
 
 class UserAdminSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False, min_length=12)
@@ -64,6 +77,7 @@ class UserAdminSerializer(serializers.ModelSerializer):
             user.set_password(password)
             user.save()
         return user
+
 
 class UserAdminViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by("id")

@@ -202,6 +202,17 @@ class AdminApiTests(APITestCase):
         self.assertEqual(self.client.delete(url).status_code, 204)
         self.assertFalse(Company.objects.filter(pk=created.data["id"]).exists())
 
+    def test_admin_cannot_delete_company_with_ads(self):
+        self.client.force_authenticate(self.admin)
+        company = Company.objects.get(name="Danone")
+        recruiter = User.objects.create_user(email="rh@example.com", role="recruiter")
+        category = Category.objects.create(name="IT", slug="it")
+        Ad.objects.create(title="Dev Python", short_description="Poste de dev",
+                          company=company, recruiter=recruiter, category=category, contract_type="CDI")
+        response = self.client.delete(f"/api/admin/companies/{company.id}")
+        self.assertEqual(response.status_code, 409)
+        self.assertTrue(Company.objects.filter(pk=company.id).exists())
+
     def test_user_password_is_hidden_and_hashed(self):
         self.client.force_authenticate(self.admin)
         data = {"email": "new@example.com", "password": "motdepasse123", "role": "candidate",
