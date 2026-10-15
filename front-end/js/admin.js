@@ -6,6 +6,8 @@ const ROLE_BADGES = { candidate: "s-vue", recruiter: "s-active", admin: "s-atten
 let currentUser = null;   // l'admin connecté
 let currentPage = 1;      // la page affichée
 let usersById = {};       // les utilisateurs affichés, rangés par numéro
+let searchText = "";      // ce qui est tapé dans "Rechercher"
+let roleFilter = "all";   // le rôle choisi dans le menu
 
 // Empêche qu'un texte venant de la base soit lu comme du HTML (sécurité)
 function esc(text) {
@@ -48,7 +50,10 @@ function renderPager(data, page) {
 
 // Va chercher une page d'utilisateurs et l'affiche
 async function loadUsers(page = 1) {
-  const data = await api(`/admin/users?page=${page}`);
+  const params = new URLSearchParams({ page });
+  if (searchText) params.set("search", searchText);
+  if (roleFilter !== "all") params.set("role", roleFilter);
+  const data = await api(`/admin/users?${params}`);
   const list = document.getElementById("users-list");
   const empty = document.getElementById("users-empty");
 
@@ -57,6 +62,7 @@ async function loadUsers(page = 1) {
   list.querySelectorAll("article").forEach(a => a.remove());
   empty.insertAdjacentHTML("beforebegin", data.results.map(userRow).join(""));
   renderPager(data, page);
+  empty.hidden = data.results.length > 0;
 }
 
 // Fenêtre de modification d'un utilisateur
@@ -157,6 +163,22 @@ document.addEventListener("submit", async e => {
   } catch (err) {
     document.getElementById("edit-error").textContent = err.message;
   }
+});
+
+// Recherche (on attend 0,3 s après la dernière lettre tapée)
+let searchTimer;
+document.getElementById("search").addEventListener("input", e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchText = e.target.value.trim();
+    loadUsers(1);
+  }, 300);
+});
+
+// Filtre par rôle
+document.getElementById("role-filter").addEventListener("change", e => {
+  roleFilter = e.target.value;
+  loadUsers(1);
 });
 
 // Démarrage : on vérifie que c'est bien un admin, sinon retour à la connexion
