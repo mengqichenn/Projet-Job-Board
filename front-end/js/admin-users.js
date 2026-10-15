@@ -4,9 +4,18 @@
   if (!list) return;
 
   let users = [];
+  
+  let currentPage = 1;
+  let totalPages = 1;
+
+  const pageSize = 10; // Number of users per page
+
   const search = document.getElementById("search");
   const roleFilter = document.getElementById("role-filter");
   const roleNames = { candidate: "Candidat", recruiter: "Recruteur", admin: "Admin" };
+  const previousButton = document.getElementById("previous-page");
+  const nextButton = document.getElementById("next-page");
+  const pageInfo = document.getElementById("page-info");
 
   function render() {
     const query = search.value.trim().toLocaleLowerCase("fr");
@@ -19,9 +28,20 @@
       <div class="admin-actions"><span class="badge ${user.role === "recruiter" ? "s-active" : user.role === "admin" ? "s-vue" : "s-attente"}">${common.escape(roleNames[user.role] || user.role)}</span>
       <button class="btn btn-ghost btn-sm" type="button" data-action="edit" data-id="${user.id}">Modifier</button>
       <button class="btn btn-danger btn-sm" type="button" data-action="delete" data-id="${user.id}">Supprimer</button></div></article>`).join("") : common.empty(list, "Aucun utilisateur pour le moment.");
+      pageInfo.textContent = `Page ${currentPage} sur ${Math.max(totalPages, 1)}`;
+
+      previousButton.disabled = currentPage <= 1;
+      nextButton.disabled = currentPage >= totalPages;
   }
 
-  async function reload() { users = await common.list("/admin/users"); render(); }
+  async function reload() {
+    const data = await api(
+      `/admin/users?page=${currentPage}&page_size=${pageSize}`
+  );
+    users = data.results || [];
+    totalPages = Math.ceil((data.count || 0) / pageSize);
+    render();
+  }
 
   function edit(user) {
     const dialog = common.formDialog("Modifier un utilisateur", [
@@ -35,16 +55,28 @@
         await api(`/admin/users/${user.id}`, { method: "PATCH", body: Object.fromEntries(new FormData(event.target)) });
         await reload(); common.report("Utilisateur modifié."); dialog.close(); dialog.remove();
       } catch (error) { common.report(error.message, true); }
-    });
+    }); 
   }
 
   async function init() {
     if (!await common.requireAdmin()) return;
     try {
-      users = await common.list("/admin/users");
-      render();
+      await reload();
       search.addEventListener("input", render);
       roleFilter.addEventListener("change", render);
+      previousButton.addEventListener("click", async () => {
+  if (currentPage > 1) {
+    currentPage--;
+    await reload();
+  }
+});
+
+nextButton.addEventListener("click", async () => {
+  if (currentPage < totalPages) {
+    currentPage++;
+    await reload();
+  }
+});
       list.addEventListener("click", async event => {
         const button = event.target.closest("[data-action]");
         if (!button) return;
