@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from api.models import User, Company, Ad, Application, Category
+from api.models import User, Company, Ad, Application, Category, Message
 
 from datetime import date
 from django.db import transaction
@@ -358,7 +358,8 @@ class Command(BaseCommand):
     def create_applications(self, ads, candidates):
         for email, ad_index, message, status in APPLICATIONS:
             candidate = candidates[email]
-            Application.objects.get_or_create(
+
+            application, _ = Application.objects.get_or_create(
                 candidate=candidate,
                 ad=ads[ad_index],
                 defaults=dict(
@@ -369,6 +370,14 @@ class Command(BaseCommand):
                     message=message,
                     status=status,
                 ),
+            )
+
+            Message.objects.get_or_create(
+                candidate=candidate,
+                ad=application.ad,
+                object=f"Candidature : {application.ad.title}"[:255],
+                content=application.message,
+                defaults={"status": "unread"},
             )
 
 

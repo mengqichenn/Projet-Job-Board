@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="icon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="icon" href="style/icon.ico" type="image/x-icon">
 
     <title>Modifier mon profil - Talentis</title>
 </head>
@@ -14,12 +14,12 @@
 
     <header class="site-header">
         <div class="container">
-            <a class="jobboard" href="main.html"><span>Talentis</span></a>
+            <a class="jobboard" href="main.html"><img src="style/logo.png" class="header-logo" alt=""><span>Talentis</span></a>
             <nav class="navbar">
 
                 <!--header avec différents data-role-->
 
-                <li><a href="main.html" aria-current="page">Offres</a></li>
+                <li><a class="btn-nav-outline" href="main.html">Offres</a></li>
 
                 <li data-role="visitor" hidden><a class="btn btn-sm" href="login.html">Se connecter</a></li>
                 <li data-role="visitor" hidden><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
@@ -37,7 +37,7 @@
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-candidate.html">Mon espace</a>
+                            <a href="espace-candidate.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
@@ -58,7 +58,7 @@
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-recruiter.html">Mon espace</a>
+                            <a href="espace-recruiter.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
@@ -160,16 +160,16 @@
         </form>
 
         <!-- Suppression du compte -->
-        <section class="accountform danger-zone">
+        <section class="accountform">
             <h2>Supprimer mon compte</h2>
-            <p class="muted">Ton profil et toutes tes données seront supprimés. Cette action est définitive.</p>
+            <p class="muted">Votre profil et toutes les données seront supprimés. Cette action est définitive.</p>
             <div class="actions-row"><button class="btn btn-danger" id="btn-delete">Supprimer mon compte</button></div>
         </section>
     </main>
 
     <dialog id="dlg-del" aria-labelledby="delete-title">
-        <h2 id="delete-title">Supprimer ton compte ?</h2>
-        <p>Cette action est définitive. Confirmer la suppression de votre compte ?</p>
+        <h2 id="delete-title">Supprimer mon compte ?</h2>
+        <p>Cette action est définitive. Confirmez-vous la suppression de votre compte ?</p>
         <p class="error" id="err-delete" role="alert"></p>
         <div class="actions-row">
             <button class="btn btn-ghost" id="del-cancel">Annuler</button>

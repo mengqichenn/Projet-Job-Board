@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="icon" href="icon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="icon" href="style/icon.ico" type="image/x-icon">
     
     <title>Inscription - Talentis</title>
 </head>
@@ -13,30 +13,30 @@
     
     <header class="site-header">
         <div class="container">
-            <a class="jobboard" href="main.html"><span>Talentis</span></a>
+            <a class="jobboard" href="main.html"><img src="style/logo.png" class="header-logo" alt=""><span>Talentis</span></a>
             <nav class="navbar">
 
                 <!--header avec différents data-role-->
 
-                <li><a href="main.html" aria-current="page">Offres</a></li>
+                <li><a class="btn-nav-outline" href="main.html">Offres</a></li>
 
                 <li data-role="visitor" hidden><a class="btn btn-sm" href="login.html">Se connecter</a></li>
-                <li data-role="visitor" hidden><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
+                <li data-role="visitor" hidden><a class="btn-nav-outline" href="account.html">S'inscrire</a></li>
 
 
                 <!--Menu déroulant pour candidat-->
                 <li class="menu" data-role="candidate" hidden>
                     <details>
                         <summary class="menu-toggle" aria-label="Menu du compte">
-                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                            <span class="avatar menu-initials"></span><span class="menu-name">Mon compte</span>
                         </summary>
                         <div class="menu-panel">
                             <a class="menu-profile" href="profile.html">
-                                <span class="avatar menu-initials">MC</span>
+                                <span class="avatar menu-initials"></span>
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-candidate.html">Mon espace</a>
+                            <a href="espace-candidate.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
@@ -48,16 +48,16 @@
                 <li class="menu" data-role="recruiter" hidden>
                     <details>
                         <summary class="menu-toggle" aria-label="Menu du compte">
-                            <span class="avatar menu-initials">MC</span><span class="menu-name">Mon compte</span>
+                            <span class="avatar menu-initials"></span><span class="menu-name">Mon compte</span>
                         </summary>
 
                         <div class="menu-panel">
                             <a class="menu-profile" href="account.html">
-                                <span class="avatar menu-initials">MC</span>
+                                <span class="avatar menu-initials"></span>
                                 <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
                             </a>
                             <hr>
-                            <a href="dashboard-recruiter.html">Mon espace</a>
+                            <a href="espace-recruiter.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>
