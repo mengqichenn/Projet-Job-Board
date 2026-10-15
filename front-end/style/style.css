@@ -251,6 +251,9 @@ select {
 .notice2 {position:absolute; top:100%; left:0; margin:.25rem 0 0;
          color:var(--muted); font-size:.85rem; text-indent: 20px; padding-bottom: 5px;}
 
+
+
+
 /*==============================================================================
     dashboard recruteur/candidat  :  BODY
 ===============================================================================*/
@@ -318,154 +321,19 @@ dialog textarea{min-height:120px;resize:vertical}
 @media (prefers-reduced-motion:reduce){ #toast{transition:none} }
 
 
-/* forgot password page */
-.forgot-password-page .forgot-auth {
-  min-height: calc(100vh - 75px);
-  padding: 2rem 1rem;
-  background: radial-gradient(ellipse at 12% 10%, rgba(10, 105, 126, .09), transparent 42%), var(--bg);
-}
-
-.forgot-password-page .auth .forgot-card {
-  width: min(480px, 100%);
-  padding: clamp(1.5rem, 6vw, 3rem);
-  box-shadow: 0 18px 48px rgba(21, 33, 43, .08);
-}
-
-.forgot-password-page .forgot-eyebrow {
-  margin: 0 0 .65rem;
-  color: var(--primary-dark);
-  font-size: .78rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.forgot-password-page .forgot-card h1 {
-  margin: 0;
-  font-size: clamp(1.75rem, 6vw, 2.25rem);
-}
-
-.forgot-password-page .forgot-intro {
-  margin: .85rem 0 1.6rem;
-  color: var(--muted);
-}
-
-.forgot-password-page .forgot-field {
-  gap: .45rem;
-  margin-bottom: 1rem;
-}
-
-.forgot-password-page .forgot-field label {
-  margin: 0;
-  text-indent: 0;
-}
-
-.forgot-password-page .forgot-field input {
-  width: 100%;
-  min-height: 3rem;
-  margin: 0;
-  text-indent: 0;
-}
-
-.forgot-password-page .forgot-field input:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--primary) 35%, transparent);
-  outline-offset: 2px;
-  border-color: var(--primary);
-}
-
-.forgot-password-page .forgot-submit {
-  width: 100%;
-  min-height: 3rem;
-  transition: background-color .15s ease, transform .15s ease;
-}
-
-.forgot-password-page .forgot-submit:hover {
-  transform: translateY(-1px);
-}
-
-.forgot-password-page .forgot-submit:focus-visible,
-.forgot-password-page .forgot-back:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.forgot-password-page .form-message {
-  margin: 0 0 1rem;
-  padding: .75rem .9rem;
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  font-size: .92rem;
-}
-
-.forgot-password-page .form-message.is-error {
-  border-color: color-mix(in srgb, var(--danger) 35%, var(--line));
-  background: #fff3f1;
-  color: var(--danger);
-}
-
-.forgot-password-page .form-message.is-success {
-  border-color: color-mix(in srgb, var(--ok) 35%, var(--line));
-  background: #edf8f1;
-  color: var(--ok);
-}
-
-.forgot-password-page .form-message.is-info {
-  border-color: color-mix(in srgb, var(--primary) 35%, var(--line));
-  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
-  color: var(--primary-dark);
-}
-
-.forgot-password-page .forgot-back {
-  display: inline-block;
-  margin-top: 1.25rem;
-  font-weight: 600;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-}
-
-.forgot-password-page .forgot-demo {
-  margin: 1.5rem 0 0;
-  padding-top: 1rem;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: .82rem;
-}
-
-@media (max-width: 480px) {
-  .forgot-password-page .site-header .container {
-    grid-template-columns: 1fr;
-    justify-items: start;
-    padding-block: .65rem;
-  }
-
-  .forgot-password-page .navbar {
-    gap: .25rem;
-  }
-
-  .forgot-password-page .navbar a {
-    padding-inline: .5rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .forgot-password-page .forgot-submit {
-    transition: none;
-  }
-}
-
-
 /* Dashboard candidat, dashboard recruteur et édition du profil */
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .muted {color:var(--muted)}
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) a:focus-visible,
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) button:focus-visible,
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) input:focus-visible,
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) select:focus-visible,
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) textarea:focus-visible {
+:is(.candidate-dashboard-page) .muted {color:var(--muted)}
+:is(.candidate-dashboard-page) a:focus-visible,
+:is(.candidate-dashboard-page) button:focus-visible,
+:is(.candidate-dashboard-page) input:focus-visible,
+:is(.candidate-dashboard-page) select:focus-visible,
+:is(.candidate-dashboard-page) textarea:focus-visible {
   outline:3px solid var(--accent);
   outline-offset:2px;
 }
 
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .btn:disabled {opacity:.45;cursor:not-allowed}
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .actions-row {display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
+:is(.candidate-dashboard-page) .btn:disabled {opacity:.45;cursor:not-allowed}
+:is(.candidate-dashboard-page) .actions-row {display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem}
 
 .dashboard-header .container {min-height:75px}
 .dashboard-header .navbar {margin:0;padding:0}
@@ -499,17 +367,17 @@ dialog textarea{min-height:120px;resize:vertical}
 .edit-page h1 {margin-top:.5rem}
 .back-link {color:var(--muted);text-decoration:none}
 .back-link:hover {color:var(--primary-dark)}
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .accountform h2 {margin-top:0}
-.edit-profile-page .accountform.danger-zone {border-color:var(--danger)}
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) .error {color:var(--danger);font-size:.85rem;text-indent:10px;min-height:1.2em;margin:.25rem 0 0}
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) input[aria-invalid="true"] {border-color:var(--danger)}
-.edit-profile-page .profile-role-fields {border:0;padding:0;margin:0}
+:is(.candidate-dashboard-page ) .accountform h2 {margin-top:0}
+.accountform.danger-zone {border-color:var(--danger)}
+:is(.candidate-dashboard-page ) .error {color:var(--danger);font-size:.85rem;text-indent:10px;min-height:1.2em;margin:.25rem 0 0}
+:is(.candidate-dashboard-page  ) input[aria-invalid="true"] {border-color:var(--danger)}
+
 
 @media (min-width:600px) {
   .edit-page .form-row.two {grid-template-columns:1fr 1fr}
 }
 
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) dialog {
+:is(.candidate-dashboard-page ) dialog {
   border:1px solid var(--line);
   border-radius:var(--r);
   padding:1.5rem;
@@ -518,10 +386,10 @@ dialog textarea{min-height:120px;resize:vertical}
   color:var(--ink);
 }
 
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) dialog::backdrop {background:rgba(21,33,43,.5)}
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) dialog h2 {margin-top:0}
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) dialog textarea {min-height:120px;resize:vertical}
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) #toast {
+:is(.candidate-dashboard-page) dialog::backdrop {background:rgba(21,33,43,.5)}
+:is(.candidate-dashboard-page) dialog h2 {margin-top:0}
+:is(.candidate-dashboard-page) dialog textarea {min-height:120px;resize:vertical}
+:is(.candidate-dashboard-page) #toast {
   position:fixed;
   bottom:20px;
   left:50%;
@@ -535,24 +403,40 @@ dialog textarea{min-height:120px;resize:vertical}
   transition:opacity .2s;
   z-index:30;
 }
-:is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) #toast.show {opacity:1}
+:is(.candidate-dashboard-page) #toast.show {opacity:1}
 
 @media (max-width:560px) {
   .dash-page .app {grid-template-columns:1fr}
   .dash-page .app .actions {justify-content:flex-start}
 }
 
-@media (max-width:640px) {
-  .dashboard-header .container {grid-template-columns:1fr;justify-items:start;padding-block:.65rem}
-  .dashboard-header .navbar {gap:.25rem}
-  .dashboard-header .navbar a {padding-inline:.5rem}
-}
+
 
 @media (prefers-reduced-motion:reduce) {
-  :is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) #toast {transition:none}
+  :is(.candidate-dashboard-page) #toast {transition:none}
 }
 
-/* ===== AJOUT ADMIN : layout et composants des pages d'administration (ajouté pour dashboard-admin.html) ===== */
+/* Administration : règles complémentaires issues de style_2.css. */
+html:has(.admin-page) {scroll-behavior:smooth}
+
+.admin-page {--admin-header-height:75px;--admin-sidebar-width:20%}
+
+.admin-section {
+  min-height:calc(100dvh - var(--admin-header-height));
+  scroll-margin-top:calc(var(--admin-header-height) + 1rem);
+  padding-block:1rem 2rem;
+}
+
+.admin-page .admin-section .card {margin-top:1rem}
+
+.admin-page .admin-section .card h3 {margin-top:0}
+
+.admin-page .admin-content > h1 {margin-bottom:0}
+
+.admin-skip-link {position:fixed;top:-5rem;left:1rem;z-index:20;background:var(--surface);padding:1rem}
+
+.admin-skip-link:focus {top:.5rem}
+
 .admin-page .admin-header-inner {
   display:flex;
   justify-content:space-between;
@@ -562,21 +446,27 @@ dialog textarea{min-height:120px;resize:vertical}
 }
 
 .admin-layout {
-  display:grid;
-  grid-template-columns:minmax(12rem,15rem) minmax(0,1fr);
-  gap:2rem;
-  width:min(1280px,100% - 2rem);
-  margin-inline:auto;
-  padding-block:2rem 4rem;
+  margin-left:var(--admin-sidebar-width);
+  margin-right: 5%;
+  padding:calc(var(--admin-header-height) + 1rem) clamp(1rem, 3vw, 3rem) 2rem;
 }
 
 .admin-sidebar {
+  position:fixed;
+  top:var(--admin-header-height);
+  bottom:0;
+  left:5rem;
+  z-index:5;
+  width:15%;
   display:flex;
   flex-direction:column;
+  justify-content:safe center;
   gap:.25rem;
-  align-self:start;
-  padding-right:1rem;
-  border-right:1px solid var(--line);
+  padding:1rem clamp(.5rem, 2vw, 2rem) calc(1rem + 10vh);
+  overflow-y:auto;
+  text-align:left;
+  background:transparent;
+
 }
 
 .admin-sidebar a {
@@ -587,12 +477,18 @@ dialog textarea{min-height:120px;resize:vertical}
 }
 
 .admin-sidebar a:hover,
-.admin-sidebar a[aria-current="page"] {background:var(--bg)}
-.admin-sidebar a[aria-current="page"] {font-weight:800}
+.admin-sidebar a[aria-current] {background:var(--line)}
+
+.admin-sidebar a[aria-current] {font-weight:800}
+
 .admin-page a:focus-visible {outline:3px solid var(--accent);outline-offset:2px}
+
 .admin-page .admin-content {max-width:none;padding:0;min-width:0}
+
 .admin-page .admin-content h1 {margin-top:0}
+
 .admin-page .admin-content .card {margin-top:1.5rem}
+
 .admin-page .admin-content .app {align-items:center}
 
 .admin-page .admin-stats {
@@ -602,28 +498,80 @@ dialog textarea{min-height:120px;resize:vertical}
 }
 
 .admin-stat {padding:.25rem .8rem;border-left:1px solid var(--line)}
+
 .admin-stat:first-child {border-left:0;padding-left:0}
 
 .admin-toolbar {display:flex;align-items:flex-end;gap:.75rem;flex-wrap:wrap}
+
 .admin-control {display:flex;flex-direction:column;gap:.25rem;color:var(--muted);font-weight:600}
-.admin-control input,.admin-control select {width:100%;min-width:10rem;margin:0}
+
+.admin-control input,
+.admin-control select {width:100%;min-width:10rem;margin:0}
+
 .admin-toolbar .admin-control input {min-width:min(18rem,70vw)}
+
 .admin-actions {display:flex;align-items:center;justify-content:flex-end;gap:.4rem;flex-wrap:wrap}
+
 .admin-actions .badge {margin-right:.25rem}
+
 .admin-page-heading {margin-bottom:1rem}
+
 .admin-page-heading h1 {margin:0}
 
-@media (max-width:760px) {
-  .admin-layout {grid-template-columns:minmax(0,1fr);gap:1.25rem;padding-block:1rem 3rem}
-  .admin-sidebar {
-    flex-direction:row;
-    overflow-x:auto;
-    padding:0 0 .65rem;
-    border-right:0;
-    border-bottom:1px solid var(--line);
-    white-space:nowrap;
+@media (max-width:1100px) {
+  .admin-page .admin-sidebar {
+    left:0;
+    width:var(--admin-sidebar-width);
+    padding-inline:.75rem;
   }
-  .admin-sidebar a {flex:none}
+}
+
+@media (max-width:760px) {
+  .admin-page {--admin-menu-height:64px}
+
+  .admin-page .admin-sidebar {
+    position:fixed;
+    top:var(--admin-header-height);
+    right:0;
+    bottom:auto;
+    left:0;
+    width:100%;
+    height:var(--admin-menu-height);
+    margin:0;
+    padding:.5rem .75rem;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-start;
+    overflow-x:auto;
+    overflow-y:hidden;
+    background:var(--bg);
+    z-index:9;
+    border-bottom:1px solid var(--line);
+  }
+
+  .admin-page .admin-sidebar a {
+    flex:0 0 auto;
+    padding:.65rem .8rem;
+    white-space:nowrap;
+    overflow-wrap:normal;
+    font-size:.9rem;
+  }
+
+  .admin-page .admin-layout {
+    margin-inline:0;
+    padding:calc(var(--admin-header-height) + var(--admin-menu-height) + 1rem) .75rem 2rem;
+  }
+
+  .admin-page .admin-section {
+    scroll-margin-top:calc(var(--admin-header-height) + var(--admin-menu-height) + 1rem);
+  }
+
+  .admin-page .admin-content .app {grid-template-columns:1fr}
+
+  .admin-page .admin-toolbar .admin-control {min-width:0;width:100%}
+
+  .admin-page .admin-control input,
+  .admin-page .admin-control select {min-width:0}
 }
 
 @media (max-width:640px) {
@@ -632,10 +580,18 @@ dialog textarea{min-height:120px;resize:vertical}
 
 @media (max-width:560px) {
   .admin-page .admin-stats {grid-template-columns:repeat(2,minmax(0,1fr))}
+
   .admin-stat:nth-child(odd) {border-left:0;padding-left:0}
+
   .admin-actions {justify-content:flex-start}
+
   .admin-toolbar {width:100%;align-items:stretch}
+
   .admin-toolbar .admin-control {flex:1 1 12rem}
+
   .admin-toolbar .admin-control input {min-width:0}
 }
-/* ===== FIN AJOUT ADMIN ===== */
+
+@media (prefers-reduced-motion:reduce) {
+  html:has(.admin-page) {scroll-behavior:auto}
+}
