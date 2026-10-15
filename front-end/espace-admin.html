@@ -8,43 +8,37 @@
     href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap"
   >
   <link rel="icon" href="style/logo.png" type="image/png">
-  <link rel="stylesheet" href="style/style_2.css">
+  <link rel="stylesheet" href="style/style.css">
   <title>Administration — Talentis</title>
 </head>
 
 <body class="admin-page">
   <a class="admin-skip-link" href="#admin-main">Aller au contenu</a>
 
-  <header class="site-header admin-header">
-    <div class="container admin-header-inner">
+  <header class="site-header">
+    <div class="container">
       <a class="jobboard" href="#overview">
         <img src="style/logo.png" class="header-logo" alt="">
         <span>Talentis</span>
       </a>
-
-      <details class="menu">
-        <summary
-          class="menu-toggle"
-          aria-label="Menu du compte administrateur"
-        >
-          <span class="avatar" aria-hidden="true">—</span>
-          <span class="menu-name">Mon compte</span>
-        </summary>
-
-        <div class="menu-panel">
-          <div class="menu-profile">
-            <span class="avatar" aria-hidden="true">—</span>
-            <span>
-              <strong>Mon compte</strong>
-              <small></small>
-            </span>
-          </div>
-
-          <hr>
-
-          <a href="login.html" data-admin-logout>Déconnexion</a>
-        </div>
-      </details>
+      <nav class="navbar">
+      <li class="menu" data-role="admin">
+          <details>
+              <summary class="menu-toggle" aria-label="Menu du compte">
+                  <span class="avatar menu-initials"></span><span class="menu-name">Mon compte</span>
+              </summary>
+              <div class="menu-panel">
+                  <a class="menu-profile" href="profile.html">
+                      <span class="avatar menu-initials"></span>
+                      <span><strong class="menu-name">Mon compte</strong><small>Voir mon compte</small></span>
+                  </a>
+                  <hr>
+                  <a href="espace-admin.html">Mon espace</a>
+                  <hr>
+                  <button type="button" data-logout>Déconnexion</button>
+              </div>
+          </details>
+      </li></nav>
     </div>
   </header>
 
@@ -145,7 +139,7 @@
               <input
                 id="search"
                 type="search"
-                placeholder="Nom, adresse e-mail ou ville"
+                placeholder="Nom, prénom ou adresse mail"
               >
             </div>
 
@@ -168,25 +162,11 @@
 
           <!-- PAGINATION -->
           <div class="pagination">
-            <button
-              type="button"
-              id="previous-page"
-              class="btn btn-ghost"
-              disabled
-            >
-              Précédent
-            </button>
+            <button type="button" id="user-previous" class="btn btn-ghost btn-sm" disabled>Précédent</button>
 
-            <span id="page-info">Page 1 sur 1</span>
+            <span id="user-page-info"></span>
 
-            <button
-              type="button"
-              id="next-page"
-              class="btn btn-ghost"
-              disabled
-            >
-              Suivant
-            </button>
+            <button type="button" id="user-next" class="btn btn-ghost btn-sm" disabled>Suivant</button>
           </div>
 
         </div>
@@ -216,6 +196,15 @@
 
           <div class="list" id="companies-list">
             <p class="empty">Données non chargées.</p>
+          </div>
+
+          <!-- PAGINATION -->
+          <div class="pagination">
+            <button type="button" id="company-previous" class="btn btn-ghost btn-sm" disabled>Précédent</button>
+
+            <span id="company-page-info"></span>
+
+            <button type="button" id="company-next" class="btn btn-ghost btn-sm" disabled>Suivant</button>
           </div>
         </div>
       </section>
@@ -254,6 +243,16 @@
           <div class="list" id="ads-list">
             <p class="empty">Données non chargées.</p>
           </div>
+
+          <!-- PAGINATION -->
+          <div class="pagination">
+            <button type="button" id="ad-previous" class="btn btn-ghost btn-sm" disabled>Précédent</button>
+
+            <span id="ad-page-info"></span>
+
+            <button type="button" id="ad-next" class="btn btn-ghost btn-sm" disabled>Suivant</button>
+          </div>
+
         </div>
       </section>
 
@@ -322,6 +321,7 @@
   <!-- SCRIPTS -->
   <script src="js/api.js" defer></script>
   <script src="js/admin-common.js" defer></script>
+  <script src="js/menu.js"></script>
   <script src="js/admin-dashboard.js" defer></script>
   <script src="js/admin-users.js" defer></script>
   <script src="js/admin-companies.js" defer></script>

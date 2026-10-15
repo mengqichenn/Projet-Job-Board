@@ -43,7 +43,10 @@ def make_viewset(model_class):
     return ViewSet
 
 
-CompanyAdminViewSet = make_viewset(Company)
+class CompanyAdminViewSet(make_viewset(Company)):
+    filter_backends = [SearchFilter]
+    search_fields = ["name", "city", "postal_code"]
+
 CategoryAdminViewSet = make_viewset(Category)
 AdAdminViewSet = make_viewset(Ad)
 ApplicationAdminViewSet = make_viewset(Application)

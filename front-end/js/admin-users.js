@@ -13,18 +13,27 @@
   const search = document.getElementById("search");
   const roleFilter = document.getElementById("role-filter");
   const roleNames = { candidate: "Candidat", recruiter: "Recruteur", admin: "Admin" };
-  const previousButton = document.getElementById("previous-page");
-  const nextButton = document.getElementById("next-page");
-  const pageInfo = document.getElementById("page-info");
+  const previousButton = document.getElementById("user-previous");
+  const nextButton = document.getElementById("user-next");
+  const pageInfo = document.getElementById("user-page-info");
+
+  let searchTimeout;
+
+  // debounce : attend 300ms avant l'envoi de requête
+  search.addEventListener("input", () => {
+      clearTimeout(searchTimeout);
+
+      searchTimeout = setTimeout(async () => {
+          currentPage = 1;
+          await reload();
+      }, 300);
+  });
+
 
   function render() {
-    const query = search.value.trim().toLocaleLowerCase("fr");
-    const results = users.filter(user => {
-      const content = `${common.name(user)} ${user.email} ${user.city || ""}`.toLocaleLowerCase("fr");
-      return content.includes(query) && (roleFilter.value === "all" || user.role === roleFilter.value);
-    });
+    const results = users;
     list.innerHTML = results.length ? results.map(user => `
-      <article class="app"><div><h3>${common.escape(common.name(user))}</h3><p class="muted">${common.escape(user.email)}${user.city ? ` · ${common.escape(user.city)}` : ""}</p></div>
+      <article class="app"><div><h3>${common.escape(common.name(user))}</h3><p class="muted">${common.escape(user.email)}</p></div>
       <div class="admin-actions"><span class="badge ${user.role === "recruiter" ? "s-active" : user.role === "admin" ? "s-vue" : "s-attente"}">${common.escape(roleNames[user.role] || user.role)}</span>
       <button class="btn btn-ghost btn-sm" type="button" data-action="edit" data-id="${user.id}">Modifier</button>
       <button class="btn btn-danger btn-sm" type="button" data-action="delete" data-id="${user.id}">Supprimer</button></div></article>`).join("") : common.empty(list, "Aucun utilisateur pour le moment.");
@@ -35,9 +44,18 @@
   }
 
   async function reload() {
-    const data = await api(
-      `/admin/users?page=${currentPage}&page_size=${pageSize}`
-  );
+    const params = new URLSearchParams({
+      page: currentPage,
+      page_size : pageSize
+    });
+    if (roleFilter.value !== "all") {
+      params.append("role", roleFilter.value);
+    }
+    if (search.value.trim()){
+      params.append("search", search.value.trim());
+    }
+    const data = await api(`/admin/users?${params}`);
+
     users = data.results || [];
     totalPages = Math.ceil((data.count || 0) / pageSize);
     render();
@@ -62,21 +80,27 @@
     if (!await common.requireAdmin()) return;
     try {
       await reload();
-      search.addEventListener("input", render);
-      roleFilter.addEventListener("change", render);
+      search.addEventListener("input", async()=>{
+        currentPage = 1;
+        await reload();
+      });
+      roleFilter.addEventListener("change", async() => {
+        currentPage = 1;
+        await reload();
+      });
       previousButton.addEventListener("click", async () => {
-  if (currentPage > 1) {
-    currentPage--;
-    await reload();
-  }
-});
+        if (currentPage > 1) {
+          currentPage--;
+          await reload();
+        }
+      });
 
-nextButton.addEventListener("click", async () => {
-  if (currentPage < totalPages) {
-    currentPage++;
-    await reload();
-  }
-});
+      nextButton.addEventListener("click", async () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          await reload();
+        }
+      });
       list.addEventListener("click", async event => {
         const button = event.target.closest("[data-action]");
         if (!button) return;

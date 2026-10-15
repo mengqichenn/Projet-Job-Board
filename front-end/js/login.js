@@ -21,7 +21,13 @@ form.addEventListener("submit", async (event) => {
         });
 
         localStorage.setItem("token", data.token);
-        location.href = "main.html";
+
+        if (data.user.role === "admin") {
+            location.href = "espace-admin.html";
+        } else {
+            location.href = "main.html";
+        }
+        
 
     } catch (err) {
         loginError.textContent = err.status === 401
