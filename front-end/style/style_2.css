@@ -16,13 +16,12 @@ h3 {font-size: clamp(.8rem,4vw,1.1rem);}
 /* =========================================================================
             HEADER (same for all pages)
 =============================================================================*/
-.site-header {background:var(--surface); border-bottom:1.5px solid var(--line); position:sticky; top:0; z-index:10; width: 100%}
+.site-header {background:var(--surface); border-bottom:1.5px solid var(--line); position:fixed; top:0; z-index:10; width: 100%;}
 
-.site-header .container {display:grid; grid-template-columns: 2fr 3fr; justify-items: center; align-items: center; gap:1rem; min-height:75x; flex-wrap:wrap}
-
-.jobboard {font-weight:800; font-size:1.8rem; color:var(--ink); text-decoration:none; justify-items: center;}
+.site-header .container {display:grid; grid-template-columns: 2fr 3fr; align-items: center; gap:1rem; min-height:70px; flex-wrap:wrap;}
+.header-logo {width: 55px; height: auto;}
+.jobboard {display:inline-flex; align-items:center; gap:.5rem; width:max-content; font-weight:800; font-size:2rem; color:var(--ink); text-decoration:none}
 .jobboard span {color:var(--primary)}
-
 /*nav*/
 .navbar {display:flex; gap:.5rem; align-items:center; flex-wrap:wrap}
 .navbar li {list-style:none}
@@ -541,7 +540,27 @@ dialog textarea{min-height:120px;resize:vertical}
   :is(.candidate-dashboard-page, .recruiter-dashboard-page, .edit-profile-page) #toast {transition:none}
 }
 
+
+
+
+
+
+
 /* ===== AJOUT ADMIN : layout et composants des pages d'administration (ajouté pour dashboard-admin.html) ===== */
+
+html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y proximity;
+}
+
+section:nth-child(n+2) {
+    min-height: 100vh;
+    scroll-margin-top: 200px;
+    scroll-snap-align: start;
+    margin-bottom: 200px;
+}
+
+
 .admin-page .admin-header-inner {
   display:flex;
   justify-content:space-between;
@@ -551,20 +570,26 @@ dialog textarea{min-height:120px;resize:vertical}
 }
 
 .admin-layout {
-  display:grid;
-  grid-template-columns:minmax(12rem,15rem) minmax(0,1fr);
-  gap:2rem;
-  width:min(1280px,100% - 2rem);
-  margin-inline:auto;
-  padding-block:2rem 4rem;
+  margin-left:22%;
+  margin-right:10%;
+  padding:calc(75px + 2rem) 2rem 4rem;
 }
 
 .admin-sidebar {
+  position:fixed;
+  top:75px;
+  bottom:0;
+  left:0;
+  z-index:5;
+  width:20%;
   display:flex;
   flex-direction:column;
+  justify-content:safe center;
   gap:.25rem;
-  align-self:start;
-  padding-right:1rem;
+  padding:1rem clamp(.5rem, 2vw, 2rem) calc(1rem + 10vh);
+  overflow-y:auto;
+  text-align:left;
+  background:var(--surface);
   border-right:1px solid var(--line);
 }
 
@@ -603,16 +628,8 @@ dialog textarea{min-height:120px;resize:vertical}
 .admin-page-heading h1 {margin:0}
 
 @media (max-width:760px) {
-  .admin-layout {grid-template-columns:minmax(0,1fr);gap:1.25rem;padding-block:1rem 3rem}
-  .admin-sidebar {
-    flex-direction:row;
-    overflow-x:auto;
-    padding:0 0 .65rem;
-    border-right:0;
-    border-bottom:1px solid var(--line);
-    white-space:nowrap;
-  }
-  .admin-sidebar a {flex:none}
+  .admin-layout {padding:calc(75px + 1rem) 1rem 3rem}
+  .admin-sidebar a {padding:.65rem .25rem;overflow-wrap:anywhere;font-size:.85rem}
 }
 
 @media (max-width:640px) {
@@ -628,3 +645,6 @@ dialog textarea{min-height:120px;resize:vertical}
   .admin-toolbar .admin-control input {min-width:0}
 }
 /* ===== FIN AJOUT ADMIN ===== */
+
+
+

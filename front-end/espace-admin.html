@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
-  <link rel="icon" href="icon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="style/style_2.css">
   <link rel="icon" href="style/logo.png" type="image/x-icon">
+  <link rel="stylesheet" href="style/style_2.css">
+
   <title>Administrateur - Talentis</title>
 </head>
 
@@ -14,7 +14,7 @@
 <body class="admin-page">
   <header class="site-header admin-header">
     <div class="container admin-header-inner">
-      <a href="dashboard-admin.html" class="jobboard"><span>Talentis</span></a>
+      <a class="jobboard" href="espace-admin.html"><img src="style/logo.png" class="header-logo" alt=""><span>Talentis</span></a>
       <details class="menu">
         <summary class="menu-toggle" aria-label="Menu du compte administrateur">
           <span class="avatar">CM</span><span class="menu-name">Camille Morel</span>
@@ -25,7 +25,7 @@
             <span><strong>Camille Morel</strong><small>camille.morel@exemple.fr</small></span>
           </div>
           <hr>
-          <a href="admin-login.html">Déconnexion</a>
+          <a href="login.html">Déconnexion</a>
         </div>
       </details>
     </div>
@@ -34,12 +34,13 @@
   <div class="admin-layout">
     <nav class="admin-sidebar" aria-label="Navigation administrateur">
       <a href="espace-admin.html" aria-current="page">Tableau de bord</a>
-      <a href="admin-users.html">Utilisateurs</a>
-      <a href="admin-companies.html">Entreprises</a>
-      <a href="admin-ads.html">Offres</a>
-      <a href="admin-applications.html">Candidatures</a>
-      <a href="admin-promos.html">Annonces</a>
-      <a href="admin-messages.html">Messages</a>
+      <a href="#users">Utilisateurs</a>
+      <a href="#companies">Entreprises</a>
+      <a href="#ads">Offres</a>
+      <a href="#applications">Candidatures</a>
+      <a href="#events">Evenement</a>
+      <a href="#messages">Messages</a>
+      
     </nav>
 
     <main class="admin-content dash-page">
@@ -112,7 +113,176 @@
           <p class="empty" id="ads-empty" hidden>Aucune offre pour le moment.</p>
         </div>
       </section>
+
+
+
+
+
+      <!--SECTION UTILISATEURS-->
+
+      <section class="card" aria-labelledby="users-title" id="users">
+        <div class="list-head">
+          <h2 id="users-title">Utilisateurs</h2>
+          <div class="admin-toolbar">
+            <div class="admin-control"><label for="search">Rechercher</label><input id="search" type="search" placeholder="Nom ou adresse mail"></div>
+            <div class="admin-control"><label for="role-filter">Rôle</label><select id="role-filter"><option value="all">Tous les rôles</option><option value="candidate">Candidat</option><option value="recruiter">Recruteur</option><option value="admin">Admin</option></select></div>
+          </div>
+        </div>
+        <div class="list" id="users-list">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <article class="app" data-role="candidate"><div><h3>Inès Valette</h3><p class="muted">ines.valette@exemple.fr · Lyon</p></div><div class="admin-actions"><span class="badge s-vue">Candidat</span><button class="btn btn-ghost btn-sm" id="edit-user-ines">Modifier</button><button class="btn btn-danger btn-sm" id="delete-user-ines">Supprimer</button></div></article>
+          <article class="app" data-role="recruiter"><div><h3>Hugo Perrin</h3><p class="muted">hugo.perrin@exemple.fr · Atelier Boréal · Rennes</p></div><div class="admin-actions"><span class="badge s-active">Recruteur</span><button class="btn btn-ghost btn-sm" id="edit-user-hugo">Modifier</button><button class="btn btn-danger btn-sm" id="delete-user-hugo">Supprimer</button></div></article>
+          <article class="app" data-role="candidate"><div><h3>Lila Garnier</h3><p class="muted">lila.garnier@exemple.fr · Nantes</p></div><div class="admin-actions"><span class="badge s-vue">Candidat</span><button class="btn btn-ghost btn-sm" id="edit-user-lila">Modifier</button><button class="btn btn-danger btn-sm" id="delete-user-lila">Supprimer</button></div></article>
+          <article class="app" data-role="recruiter"><div><h3>Émile Roche</h3><p class="muted">emile.roche@exemple.fr · Maison des Nuages · Lille</p></div><div class="admin-actions"><span class="badge s-active">Recruteur</span><button class="btn btn-ghost btn-sm" id="edit-user-emile">Modifier</button><button class="btn btn-danger btn-sm" id="delete-user-emile">Supprimer</button></div></article>
+          <article class="app" data-role="admin"><div><h3>Camille Morel</h3><p class="muted">camille.morel@exemple.fr · Administrateur</p></div><div class="admin-actions"><span class="badge s-attente">Admin</span><button class="btn btn-ghost btn-sm" id="edit-user-camille">Modifier</button><button class="btn btn-danger btn-sm" id="delete-user-camille">Supprimer</button></div></article>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+          <p class="empty" id="users-empty" hidden>Aucun utilisateur pour le moment.</p>
+        </div>
+      </section>
+
+
+
+
+
+
+
+      <!--SECTION ENTREPRISES-->
+
+
+      <section class="card" aria-labelledby="companies-title" id="companies">
+        <div class="list-head"><h2 id="companies-title">Entreprises inscrites</h2><label class="admin-control" for="company-search">Rechercher<input id="company-search" type="search" placeholder="Nom ou ville"></label></div>
+        <div class="list" id="companies-list">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <article class="app"><div><h3>Atelier Boréal</h3><p class="muted">Rennes · Hugo Perrin, hugo.perrin@exemple.fr</p></div><span class="badge s-active">6 offres</span></article>
+          <article class="app"><div><h3>Maison des Nuages</h3><p class="muted">Lille · Émile Roche, emile.roche@exemple.fr</p></div><span class="badge s-active">3 offres</span></article>
+          <article class="app"><div><h3>Les Jardins d'Opale</h3><p class="muted">Angers · Maëlle Dumas, maelle.dumas@exemple.fr</p></div><span class="badge s-fermee">1 offre fermée</span></article>
+          <article class="app"><div><h3>Pixel &amp; Pollen</h3><p class="muted">Dijon · Sacha Millet, sacha.millet@exemple.fr</p></div><span class="badge s-active">4 offres</span></article>
+          <article class="app"><div><h3>Les Cartographes Heureux</h3><p class="muted">Brest · Noémie Faure, noemie.faure@exemple.fr</p></div><span class="badge s-attente">En attente</span></article>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+          <p class="empty" id="companies-empty" hidden>Aucune entreprise pour le moment.</p>
+        </div>
+      </section>
+
+
+
+
+
+      <!--SECTION OFFRES-->
+
+      <section class="card" aria-labelledby="ads-title" id="ads">
+        <div class="list-head"><h2 id="ads-title">Offres publiées</h2>
+          <div class="admin-toolbar"><div class="admin-control"><label for="ads-search">Rechercher</label><input id="ads-search" type="search" placeholder="Intitulé ou entreprise"></div>
+            <div class="admin-control"><label for="ads-status">Statut</label><select id="ads-status"><option value="all">Tous</option><option value="open">Ouverte</option><option value="closed">Fermée</option></select></div>
+          </div>
+        </div>
+        <div class="list" id="ads-list">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <article class="app"><div><h3>Développeur·euse front-end</h3><p class="muted">Atelier Boréal · Rennes · CDI</p></div><div class="admin-actions"><span class="badge s-active">Active</span><button class="btn btn-ghost btn-sm" id="edit-ad-boreal">Modifier</button><button class="btn btn-ghost btn-sm" id="close-ad-boreal">Fermer</button><button class="btn btn-danger btn-sm" id="delete-ad-boreal">Supprimer</button></div></article>
+          <article class="app"><div><h3>Assistant·e chef de projet</h3><p class="muted">Maison des Nuages · Lille · Alternance</p></div><div class="admin-actions"><span class="badge s-active">Active</span><button class="btn btn-ghost btn-sm" id="edit-ad-nuages">Modifier</button><button class="btn btn-ghost btn-sm" id="close-ad-nuages">Fermer</button><button class="btn btn-danger btn-sm" id="delete-ad-nuages">Supprimer</button></div></article>
+          <article class="app"><div><h3>Chargé·e de communication</h3><p class="muted">Les Jardins d'Opale · Angers · CDD</p></div><div class="admin-actions"><span class="badge s-fermee">Fermée</span><button class="btn btn-ghost btn-sm" id="edit-ad-opale">Modifier</button><button class="btn btn-ghost btn-sm" id="reopen-ad-opale">Rouvrir</button><button class="btn btn-danger btn-sm" id="delete-ad-opale">Supprimer</button></div></article>
+          <article class="app"><div><h3>Technicien·ne qualité</h3><p class="muted">Pixel &amp; Pollen · Dijon · Stage</p></div><div class="admin-actions"><span class="badge s-active">Active</span><button class="btn btn-ghost btn-sm" id="edit-ad-pollen">Modifier</button><button class="btn btn-ghost btn-sm" id="close-ad-pollen">Fermer</button><button class="btn btn-danger btn-sm" id="delete-ad-pollen">Supprimer</button></div></article>
+          <article class="app"><div><h3>Responsable logistique junior</h3><p class="muted">Les Cartographes Heureux · Brest · CDD</p></div><div class="admin-actions"><span class="badge s-fermee">Fermée</span><button class="btn btn-ghost btn-sm" id="edit-ad-cartographes">Modifier</button><button class="btn btn-ghost btn-sm" id="reopen-ad-cartographes">Rouvrir</button><button class="btn btn-danger btn-sm" id="delete-ad-cartographes">Supprimer</button></div></article>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+          <p class="empty" id="ads-empty" hidden>Aucune offre pour le moment.</p>
+        </div>
+      </section>
+
+
+
+
+
+
+      <!--SECTION CANDIDATURE-->
+
+      <section class="card" aria-labelledby="applications-title" id="applications">
+        <div class="list-head"><h2 id="applications-title">Candidatures reçues</h2>
+          <div class="admin-control"><label for="application-status">Statut</label><select id="application-status"><option value="all">Tous les statuts</option><option value="sent">Envoyée</option><option value="seen">Vue</option><option value="interview">Entretien</option><option value="accepted">Acceptée</option><option value="rejected">Refusée</option></select></div>
+        </div>
+        <div class="list" id="applications-list">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <article class="app"><div><h3>Inès Valette · Développeur·euse front-end</h3><p class="muted">Atelier Boréal · Rennes · CDI</p></div><span class="badge s-attente">En attente</span></article>
+          <article class="app"><div><h3>Yanis Leroux · Assistant·e chef de projet</h3><p class="muted">Maison des Nuages · Lille · Alternance</p></div><span class="badge s-vue">Vue</span></article>
+          <article class="app"><div><h3>Salomé Rivière · Chargé·e de communication</h3><p class="muted">Les Jardins d'Opale · Angers · CDD</p></div><span class="badge s-accepte">Acceptée</span></article>
+          <article class="app"><div><h3>Théo Masson · Technicien·ne qualité</h3><p class="muted">Pixel &amp; Pollen · Dijon · Stage</p></div><span class="badge s-refuse">Refusée</span></article>
+          <article class="app"><div><h3>Maëlys Fabre · Responsable logistique junior</h3><p class="muted">Les Cartographes Heureux · Brest · CDD</p></div><span class="badge s-attente">En attente</span></article>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+          <p class="empty" id="applications-empty" hidden>Aucune candidature pour le moment.</p>
+        </div>
+      </section>
+
+
+      
+
+
+
+      <!--SECTION EVENEMENT-->
+
+      <section class="card" aria-labelledby="promos-title" id="events">
+        <div class="list-head"><h2 id="promos-title">Evenement</h2><div class="admin-control"><label for="promo-status">Statut</label><select id="promo-status"><option value="all">Tous</option><option value="active">Active</option><option value="pending">En attente</option><option value="closed">Terminée</option></select></div></div>
+        <div class="list" id="promos-list">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <article class="app"><div><h3>Forum des métiers créatifs</h3><p class="muted">Atelier Boréal · Rennes · Jusqu'au 30 novembre 2026</p></div><div class="admin-actions"><span class="badge s-active">Active</span><button class="btn btn-ghost btn-sm" id="edit-promo-forum">Modifier</button><button class="btn btn-danger btn-sm" id="delete-promo-forum">Supprimer</button></div></article>
+          <article class="app"><div><h3>Rencontres de l'alternance</h3><p class="muted">Maison des Nuages · Lille · Jusqu'au 18 octobre 2026</p></div><div class="admin-actions"><span class="badge s-attente">En attente</span><button class="btn btn-ghost btn-sm" id="edit-promo-alternance">Modifier</button><button class="btn btn-danger btn-sm" id="delete-promo-alternance">Supprimer</button></div></article>
+          <article class="app"><div><h3>Semaine des métiers du paysage</h3><p class="muted">Les Jardins d'Opale · Angers · Terminée le 12 septembre 2026</p></div><div class="admin-actions"><span class="badge s-fermee">Terminée</span><button class="btn btn-ghost btn-sm" id="edit-promo-paysage">Modifier</button><button class="btn btn-danger btn-sm" id="delete-promo-paysage">Supprimer</button></div></article>
+          <article class="app"><div><h3>Portes ouvertes des ateliers numériques</h3><p class="muted">Pixel &amp; Pollen · Dijon · Jusqu'au 5 décembre 2026</p></div><div class="admin-actions"><span class="badge s-active">Active</span><button class="btn btn-ghost btn-sm" id="edit-promo-portes-ouvertes">Modifier</button><button class="btn btn-danger btn-sm" id="delete-promo-portes-ouvertes">Supprimer</button></div></article>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+          <p class="empty" id="promos-empty" hidden>Aucune annonce pour le moment.</p>
+        </div>
+      </section>
+
+
+
+
+
+      <!--SECTION MESSAGE-->
+
+      <section class="card" aria-labelledby="messages-title" id="messages">
+        <div class="list-head">
+          <h2 id="messages-title">Messages de la plateforme</h2>
+          <div class="admin-control"><label for="search">Rechercher</label><input id="search" type="search" placeholder="Expéditeur, destinataire ou contenu"></div>
+        </div>
+        <div class="list" id="messages-list">
+          <!-- ===== FAUSSES DONNÉES : début (à supprimer) ===== -->
+          <article class="app">
+            <div><h3 class="ad-title" style="color:var(--primary-dark)"><span class="ad-new">Annonce</span> Développeur web junior - NovaTech</h3><p><strong>Inès Valette</strong> <span class="muted">→</span> <strong>Hugo Perrin</strong></p><p class="muted">ines.valette@exemple.fr · hugo.perrin@exemple.fr · 12 octobre 2026</p><p class="letter">Bonjour, je vous remercie pour votre retour. Je suis disponible pour un entretien mardi après-midi.</p></div>
+            <div class="admin-actions"><button class="btn btn-danger btn-sm" id="delete-message-001" type="button">Supprimer</button></div>
+          </article>
+          <article class="app">
+            <div><h3 class="ad-title" style="color:var(--primary-dark)"><span class="ad-new">Annonce</span> Développeur web junior - NovaTech</h3><p><strong>Hugo Perrin</strong> <span class="muted">→</span> <strong>Inès Valette</strong></p><p class="muted">hugo.perrin@exemple.fr · ines.valette@exemple.fr · 12 octobre 2026</p><p class="letter">Merci pour votre candidature au poste front-end. Pourriez-vous nous transmettre votre portfolio avant notre échange ?</p></div>
+            <div class="admin-actions"><button class="btn btn-danger btn-sm" id="delete-message-002" type="button">Supprimer</button></div>
+          </article>
+          <article class="app">
+            <div><h3 class="ad-title" style="color:var(--primary-dark)"><span class="ad-new">Annonce</span> Chargé(e) de communication - Atelier Sud</h3><p><strong>Lila Garnier</strong> <span class="muted">→</span> <strong>Émile Roche</strong></p><p class="muted">lila.garnier@exemple.fr · emile.roche@exemple.fr · 11 octobre 2026</p><p class="letter">Bonjour, l'offre d'alternance m'intéresse beaucoup. La date de début peut-elle être adaptée à mon calendrier de formation ?</p></div>
+            <div class="admin-actions"><button class="btn btn-danger btn-sm" id="delete-message-003" type="button">Supprimer</button></div>
+          </article>
+          <article class="app">
+            <div><h3 class="ad-title" style="color:var(--primary-dark)"><span class="ad-new">Annonce</span> UX/UI Designer - Pixelia</h3><p><strong>Émile Roche</strong> <span class="muted">→</span> <strong>Lila Garnier</strong></p><p class="muted">emile.roche@exemple.fr · lila.garnier@exemple.fr · 11 octobre 2026</p><p class="letter">Bonjour Lila, c'est tout à fait possible. Nous pourrons confirmer ensemble la date lors de l'entretien.</p></div>
+            <div class="admin-actions"><button class="btn btn-danger btn-sm" id="delete-message-004" type="button">Supprimer</button></div>
+          </article>
+          <article class="app">
+            <div><h3 class="ad-title" style="color:var(--primary-dark)"><span class="ad-new">Annonce</span> Développeur Python - DataNova</h3><p><strong>Maëlys Fabre</strong> <span class="muted">→</span> <strong>Sacha Millet</strong></p><p class="muted">maelys.fabre@exemple.fr · sacha.millet@exemple.fr · 10 octobre 2026</p><p class="letter">Je vous confirme ma présence à la rencontre de jeudi. Merci de m'indiquer si je dois apporter des documents complémentaires.</p></div>
+            <div class="admin-actions"><button class="btn btn-danger btn-sm" id="delete-message-005" type="button">Supprimer</button></div>
+          </article>
+          <!-- ===== FAUSSES DONNÉES : fin ===== -->
+          <p class="empty" id="messages-empty" hidden>Aucun message pour le moment.</p>
+        </div>
+      </section>
+
+
+
+
+
+
     </main>
   </div>
+    <script src="js/api.js"></script>
+  <script src="js/admin-dashboard.js"></script>
+  <script src="js/admin-common.js"></script>
+  <script src="js/admin-users.js"></script>
+  <script src="js/admin-companies.js"></script>
+  <script src="js/admin-ads.js"></script>
+  <script src="js/admin-applications.js"></script>
+  <script src="js/admin-promos.js"></script>
+  <script src="js/admin-messages.js"></script>
 </body>
 </html>
