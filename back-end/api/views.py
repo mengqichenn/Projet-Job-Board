@@ -5,12 +5,13 @@ from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission                    #(rajouté)
+from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission                    
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import viewsets                                                     #=======rajouté===========
+from rest_framework import viewsets                         
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.decorators import action                               #=======rajouté===========
+from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination      # rajouté
 
 
 from .serializers import (
@@ -33,7 +34,7 @@ def user_payload(user):
         "name": f"{user.first_name} {user.last_name}".strip() or user.email,
     }
 
-# view pour recruteur                                                                  ================rajouté================
+# view pour recruteur                                                                  
 
 class IsRecruiter(BasePermission):
     def has_permission(self, request, view):
@@ -101,6 +102,10 @@ class ChangePasswordView(APIView):
         request.user.save()
         return Response({"message": "Mot de passe modifié."})
 
+
+
+# Views pour retrouver le mot de passe
+
 class ForgotPasswordView(APIView):
     authentication_classes = []
     permission_classes = [AllowAny]
@@ -132,6 +137,9 @@ class ResetPasswordView(APIView):
         Token.objects.filter(user=user).delete()
         return Response({"message": "Votre mot de passe a bien été modifié."})
 
+
+# View pour déconnecter
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -149,7 +157,7 @@ class CategoryListView(APIView):
         return Response(serializer.data)
 
 
-# View pour candidature qui postule                                                             ================rajouté================
+# View pour candidature qui postule                                                        
 class ApplyView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -209,7 +217,7 @@ class ApplyView(APIView):
             raise
         return Response(serializer.data, status=201)
 
-# view pour recruteur qui reçoit des candidatures                                               ================rajouté================
+# view pour recruteur qui reçoit des candidatures 
 class RecruiterApplicationsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -250,6 +258,7 @@ class UpdateApplicationStatusView(APIView):
         application.save(update_fields=["status"])
         return Response(ApplicationSerializer(application).data)
 
+
 #View pour envoyer un message (candidat uniquement)
 
 class MessageCreateView(APIView):
@@ -285,6 +294,8 @@ class MessageCreateView(APIView):
             messages = Message.objects.filter(ad=ad, candidate=request.user)
         serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
+
+
 
 # View pour candidat qui voit ses propres candidatures
 
@@ -364,17 +375,34 @@ class MessageMarkReadView(APIView):
         message.save(update_fields=["status"])
         return Response(MessageSerializer(message).data)
 
-class AdViewSet(viewsets.ModelViewSet):                                                         #================rajouté================
+
+# View pour rajouter la Pagination sur les annonces
+
+class AdPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
+
+# View pour voir les annonces
+
+class AdViewSet(viewsets.ModelViewSet): 
     serializer_class = AdSerializer
  
     def get_permissions(self):
         if self.action in ("list", "retrieve"):
             return [AllowAny()]                              # tout le monde peut voir les annonces
         return [IsRecruiter()]                               # créer, modifier, supprimer : recruteurs
- 
+
+    pagination_class = AdPagination
+    def paginate_queryset(self, queryset):
+        if self.request.query_params.get("mine") in ("1", "true"):
+            return None
+        return super().paginate_queryset(queryset)
 
     def get_queryset(self):
-        qs = Ad.objects.select_related("company", "category")
+        qs = Ad.objects.select_related("company", "category").order_by("-created_at", "-id")        # affiche les nouveaux en première
         if self.action in ("update", "partial_update", "destroy"):
             return qs.filter(recruiter=self.request.user)   # un recruteur ne touche qu'à ses annonces
 
@@ -407,6 +435,9 @@ class AdViewSet(viewsets.ModelViewSet):                                         
             return qs
         return qs.filter(status="open")
 
+
+
+
     def perform_create(self, serializer):
         user = self.request.user
         if user.company is None:
@@ -417,7 +448,7 @@ class AdViewSet(viewsets.ModelViewSet):                                         
         instance.status = "closed"
         instance.save(update_fields=["status", "modified_at"])
 
-# Réouvrir l'annonce => POST /ads/<id>/reopen
+# Réactiver l'annonce => POST /ads/<id>/reopen
     @action(detail=True, methods=["post"])
     def reopen(self, request, pk=None):
         ad = get_object_or_404(Ad, pk=pk, recruiter=request.user)

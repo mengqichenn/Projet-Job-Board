@@ -1,6 +1,19 @@
 // script pour faire appeel à l'API pour retourner les annonces dans la base de donnée + filter annonces
 let timer;
 let currentUser = null;
+let currentPage = 1;
+let totalPages = 1;
+const pageSize = 10;
+
+const previousButton = document.getElementById("main-previous");
+const nextButton = document.getElementById("main-next");
+const pageInfo = document.getElementById("main-page-info");
+
+function updatePagination() {
+    pageInfo.textContent = `Page ${currentPage} sur ${totalPages}`;
+    previousButton.disabled = currentPage <= 1;
+    nextButton.disabled = currentPage >= totalPages;
+}
 
 const labels = {
     full_time: "Temps plein",
@@ -26,7 +39,16 @@ async function loadAds() {
     list.textContent = "Chargement des offres...";
 
     try {
-        const ads = await api("/ads?" + buildParams());
+        const params = buildParams();
+        params.set("page", currentPage);
+        params.set("page_size", pageSize);
+
+        const data = await api("/ads?" + params);
+
+        const ads = data.results || [];
+        totalPages = Math.max(1, Math.ceil(data.count / pageSize));
+        updatePagination();
+        
         const cards = document.createDocumentFragment();
 
         for (const ad of ads) {
@@ -138,11 +160,18 @@ async function start() {
 }
 
 
+function resetPageAndLoad(){
+    currentPage = 1;
+    return loadAds();
+}
+
 // "submit" to search + filtres fonctionnent en direct
 
+document.getElementById('search-form').addEventListener('submit', e => { 
+    e.preventDefault(); resetPageAndLoad(); 
+});
 
-document.getElementById('search-form').addEventListener('submit', e => { e.preventDefault(); loadAds(); });
-document.getElementById('filters-form').addEventListener('change', loadAds);   // cases et radios : en direct
+document.getElementById('filters-form').addEventListener('change', resetPageAndLoad());   // cases et radios : en direct
 
 
 // réinitialiser le filtre
@@ -150,6 +179,18 @@ document.getElementById('filters-form').addEventListener('change', loadAds);   /
 document.getElementById("reset-filter").addEventListener("click", () => {
     document.getElementById("filters-form").reset();
     document.getElementById("search-form").reset();
+    resetPageAndLoad();
+});
+
+previousButton.addEventListener("click", () => {
+    if (currentPage <= 1) return;
+    currentPage --;
+    loadAds();
+});
+
+nextButton.addEventListener("click", () => {
+    if (currentPage >= totalPages) return;
+    currentPage ++;
     loadAds();
 });
 

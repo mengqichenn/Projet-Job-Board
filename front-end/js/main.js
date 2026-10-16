@@ -116,14 +116,14 @@ publishForm.addEventListener('submit', async e => {
     const btn = publishForm.querySelector('[type=submit]');
     btn.disabled = true;
     try {
-    await api('/ads', { method: 'POST', body: data });
-    publishDialog.close();
-    // TODO : recharger la liste des annonces pour afficher la nouvelle
+        await api('/ads', { method: 'POST', body: data });
+        publishDialog.close();
+        await loadAds();
     } catch (ex) {
-    publishError.textContent = (ex.errors ? Object.values(ex.errors).flat() : [ex.message]).join(' ');
-    publishError.hidden = false;
+        publishError.textContent = (ex.errors ? Object.values(ex.errors).flat() : [ex.message]).join(' ');
+        publishError.hidden = false;
     } finally {
-    btn.disabled = false;
+        btn.disabled = false;
     }
 });
 
