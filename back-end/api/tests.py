@@ -156,18 +156,18 @@ class AdSearchTests(APITestCase):
     def test_search_finds_matching_ad(self):
         response = self.client.get("/api/ads?search=python")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["title"], "Dev Python")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["title"], "Dev Python")
 
     def test_search_looks_in_description(self):
         response = self.client.get("/api/ads?search=gestion")
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["title"], "Comptable")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["title"], "Comptable")
 
     def test_search_without_result_returns_empty_list(self):
         response = self.client.get("/api/ads?search=zzzz")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data, [])
+        self.assertEqual(response.data["results"], [])
 
 class AdminApiTests(APITestCase):
     def setUp(self):
@@ -519,7 +519,9 @@ class MyAdsTests(APITestCase):
                           category=category, contract_type="CDI")
 
     def titles(self, response):
-        return {ad["title"] for ad in response.data}
+        # la liste publique est paginée ({"results": [...]}), "mine" renvoie une liste simple
+        data = response.data["results"] if isinstance(response.data, dict) else response.data
+        return {ad["title"] for ad in data}
 
     def test_mine_returns_own_open_and_closed_ads(self):
         self.client.force_authenticate(self.recruiter)
