@@ -4,61 +4,65 @@
   if (!list) return;
 
   let users = [];
-  
+  let me = null;
   let currentPage = 1;
   let totalPages = 1;
+  let timer = null;
 
-  const pageSize = 10; // Number of users per page
+  const pageSize = 10; // nombre d'utilisateurs par page
 
   const search = document.getElementById("search");
   const roleFilter = document.getElementById("role-filter");
   const roleNames = { candidate: "Candidat", recruiter: "Recruteur", admin: "Admin" };
+  const roleChoices = [["candidate", "Candidat"], ["recruiter", "Recruteur"], ["admin", "Admin"]];
   const previousButton = document.getElementById("user-previous");
   const nextButton = document.getElementById("user-next");
   const pageInfo = document.getElementById("user-page-info");
 
-  let searchTimeout;
-
-  // debounce : attend 300ms avant l'envoi de requête
-  search.addEventListener("input", () => {
-      clearTimeout(searchTimeout);
-
-      searchTimeout = setTimeout(async () => {
-          currentPage = 1;
-          await reload();
-      }, 300);
-  });
-
+  function refuse(message) {
+    common.report(message, true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   function render() {
-    const results = users;
-    list.innerHTML = results.length ? results.map(user => `
-      <article class="app"><div><h3>${common.escape(common.name(user))}</h3><p class="muted">${common.escape(user.email)}</p></div>
+    list.innerHTML = users.length ? users.map(user => `
+      <article class="app"><div><h3>${common.escape(common.name(user))}</h3><p class="muted">${common.escape(user.email)}${user.city ? ` · ${common.escape(user.city)}` : ""}</p></div>
       <div class="admin-actions"><span class="badge ${user.role === "recruiter" ? "s-active" : user.role === "admin" ? "s-vue" : "s-attente"}">${common.escape(roleNames[user.role] || user.role)}</span>
       <button class="btn btn-ghost btn-sm" type="button" data-action="edit" data-id="${user.id}">Modifier</button>
       <button class="btn btn-danger btn-sm" type="button" data-action="delete" data-id="${user.id}">Supprimer</button></div></article>`).join("") : common.empty(list, "Aucun utilisateur pour le moment.");
-      pageInfo.textContent = `Page ${currentPage} sur ${Math.max(totalPages, 1)}`;
-
-      previousButton.disabled = currentPage <= 1;
-      nextButton.disabled = currentPage >= totalPages;
+    pageInfo.textContent = `Page ${currentPage} sur ${Math.max(totalPages, 1)}`;
+    previousButton.disabled = currentPage <= 1;
+    nextButton.disabled = currentPage >= totalPages;
   }
 
   async function reload() {
-    const params = new URLSearchParams({
-      page: currentPage,
-      page_size : pageSize
-    });
-    if (roleFilter.value !== "all") {
-      params.append("role", roleFilter.value);
-    }
-    if (search.value.trim()){
-      params.append("search", search.value.trim());
-    }
+    const params = new URLSearchParams({ page: currentPage, page_size: pageSize });
+    const query = search.value.trim();
+    if (query) params.set("search", query);
+    if (roleFilter.value !== "all") params.set("role", roleFilter.value);
     const data = await api(`/admin/users?${params}`);
-
     users = data.results || [];
     totalPages = Math.ceil((data.count || 0) / pageSize);
+    if (!users.length && currentPage > 1) { currentPage = Math.max(totalPages, 1); return reload(); }
     render();
+  }
+
+  function create() {
+    const dialog = common.formDialog("Ajouter un utilisateur", [
+      ["first_name", "Prénom", "", "text"], ["last_name", "Nom", "", "text"],
+      ["email", "Adresse e-mail", "", "email"], ["telephone", "Téléphone", "", "tel", false],
+      ["city", "Ville", "", "text"], ["postal_code", "Code postal", "", "text"],
+      ["password", "Mot de passe (12 caractères minimum, lettres et chiffres)", "", "password", false],
+    ], [["role", "Rôle", "candidate", roleChoices]]);
+    dialog.addEventListener("submit", async event => {
+      event.preventDefault();
+      const data = Object.fromEntries(new FormData(event.target));
+      if (!data.password) delete data.password;
+      try {
+        await api("/admin/users", { method: "POST", body: data });
+        await reload(); common.report("Utilisateur ajouté."); dialog.close(); dialog.remove();
+      } catch (error) { common.report(error.message, true); }
+    });
   }
 
   function edit(user) {
@@ -66,40 +70,42 @@
       ["first_name", "Prénom", user.first_name, "text"], ["last_name", "Nom", user.last_name, "text"],
       ["email", "Adresse e-mail", user.email, "email"], ["telephone", "Téléphone", user.telephone, "tel", false],
       ["city", "Ville", user.city, "text"], ["postal_code", "Code postal", user.postal_code, "text"],
-    ], [["role", "Rôle", user.role, [["candidate", "Candidat"], ["recruiter", "Recruteur"], ["admin", "Admin"]]]]);
+    ], [["role", "Rôle", user.role, roleChoices]]);
     dialog.addEventListener("submit", async event => {
       event.preventDefault();
+      const data = Object.fromEntries(new FormData(event.target));
+      if (user.email === me.email && data.role !== "admin") {
+        dialog.close(); dialog.remove();
+        refuse("Vous ne pouvez pas retirer votre propre rôle administrateur.");
+        return;
+      }
       try {
-        await api(`/admin/users/${user.id}`, { method: "PATCH", body: Object.fromEntries(new FormData(event.target)) });
+        await api(`/admin/users/${user.id}`, { method: "PATCH", body: data });
         await reload(); common.report("Utilisateur modifié."); dialog.close(); dialog.remove();
       } catch (error) { common.report(error.message, true); }
-    }); 
+    });
   }
 
+  function restart() { currentPage = 1; reload().catch(error => common.report(error.message, true)); }
+
   async function init() {
-    if (!await common.requireAdmin()) return;
+    me = await common.requireAdmin();
+    if (!me) return;
     try {
       await reload();
-      search.addEventListener("input", async()=>{
-        currentPage = 1;
-        await reload();
-      });
-      roleFilter.addEventListener("change", async() => {
-        currentPage = 1;
-        await reload();
-      });
+      const addButton = document.createElement("button");
+      addButton.type = "button";
+      addButton.className = "btn btn-sm";
+      addButton.textContent = "Ajouter un utilisateur";
+      addButton.addEventListener("click", create);
+      search.closest(".admin-toolbar")?.append(addButton);
+      search.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(restart, 300); });
+      roleFilter.addEventListener("change", restart);
       previousButton.addEventListener("click", async () => {
-        if (currentPage > 1) {
-          currentPage--;
-          await reload();
-        }
+        if (currentPage > 1) { currentPage--; await reload(); }
       });
-
       nextButton.addEventListener("click", async () => {
-        if (currentPage < totalPages) {
-          currentPage++;
-          await reload();
-        }
+        if (currentPage < totalPages) { currentPage++; await reload(); }
       });
       list.addEventListener("click", async event => {
         const button = event.target.closest("[data-action]");
@@ -107,6 +113,10 @@
         const user = users.find(item => String(item.id) === button.dataset.id);
         if (!user) return;
         if (button.dataset.action === "edit") { edit(user); return; }
+        if (user.email === me.email) {
+          refuse("Vous ne pouvez pas supprimer votre propre compte.");
+          return;
+        }
         if (!confirm(`Supprimer le compte de ${common.name(user)} ?`)) return;
         try {
           await api(`/admin/users/${user.id}`, { method: "DELETE" });
