@@ -81,7 +81,7 @@
 
     currentPage = page;
     companies = data.results || [];
-    totalPages = Math.max(1, Math.ceil(data.count / pageSize));
+    totalPages = Math.max(1, Math.ceil((data.count || 0) / pageSize));
 
     render();
   }
