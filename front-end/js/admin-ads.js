@@ -8,6 +8,8 @@
   let ads = [];
   let companies = [];
 
+  const contractChoices = [["CDI", "CDI"], ["CDD", "CDD"], ["Stage", "Stage"], ["Alternance", "Alternance"], ["Interim", "Intérim"]];
+
   function render() {
     const query = search.value.trim().toLocaleLowerCase("fr");
     const results = ads.filter(ad => `${ad.title} ${common.companyName(companies, ad.company)} ${ad.city}`.toLocaleLowerCase("fr").includes(query)
@@ -25,6 +27,37 @@
     render();
   }
 
+  async function create() {
+    try {
+      const [categories, users] = await Promise.all([common.list("/admin/categories"), common.list("/admin/users")]);
+      const recruiters = users.filter(user => user.role === "recruiter");
+      if (!companies.length || !categories.length || !recruiters.length) {
+        common.report("Impossible de créer une offre : il faut au moins une entreprise, une catégorie et un recruteur.", true);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      const dialog = common.formDialog("Ajouter une offre", [
+        ["title", "Intitulé", "", "text"],
+        ["short_description", "Description courte", "", "text"],
+        ["full_description", "Description complète", "", "textarea"],
+        ["city", "Ville", "", "text", false],
+        ["postal_code", "Code postal", "", "text", false],
+      ], [
+        ["company", "Entreprise", "", companies.map(company => [String(company.id), company.name])],
+        ["recruiter", "Recruteur", "", recruiters.map(user => [String(user.id), common.name(user)])],
+        ["category", "Catégorie", "", categories.map(category => [String(category.id), category.name])],
+        ["contract_type", "Contrat", "CDI", contractChoices],
+      ]);
+      dialog.addEventListener("submit", async event => {
+        event.preventDefault();
+        try {
+          await api("/admin/ads", { method: "POST", body: Object.fromEntries(new FormData(event.target)) });
+          await reload(); common.report("Offre ajoutée."); dialog.close(); dialog.remove();
+        } catch (error) { common.report(error.message, true); }
+      });
+    } catch (error) { common.report(error.message, true); }
+  }
+
   function edit(ad) {
     const dialog = common.formDialog("Modifier une offre", [
       ["title", "Intitulé", ad.title, "text"],
@@ -33,7 +66,7 @@
       ["city", "Ville", ad.city, "text", false],
       ["postal_code", "Code postal", ad.postal_code, "text", false],
     ], [
-      ["contract_type", "Contrat", ad.contract_type, [["CDI", "CDI"], ["CDD", "CDD"], ["Stage", "Stage"], ["Alternance", "Alternance"], ["Interim", "Intérim"]]],
+      ["contract_type", "Contrat", ad.contract_type, contractChoices],
       ["status", "Statut", ad.status, [["open", "Ouverte"], ["closed", "Fermée"]]],
     ]);
     dialog.addEventListener("submit", async event => {
@@ -50,6 +83,12 @@
     try {
       [ads, companies] = await Promise.all([common.list("/admin/ads"), common.list("/admin/companies")]);
       render();
+      const addButton = document.createElement("button");
+      addButton.type = "button";
+      addButton.className = "btn btn-sm";
+      addButton.textContent = "Ajouter une offre";
+      addButton.addEventListener("click", create);
+      search.closest(".admin-toolbar")?.append(addButton);
       search.addEventListener("input", render);
       status.addEventListener("change", render);
       list.addEventListener("click", async event => {
