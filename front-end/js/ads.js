@@ -171,7 +171,7 @@ document.getElementById('search-form').addEventListener('submit', e => {
     e.preventDefault(); resetPageAndLoad(); 
 });
 
-document.getElementById('filters-form').addEventListener('change', resetPageAndLoad());   // cases et radios : en direct
+document.getElementById('filters-form').addEventListener('change', resetPageAndLoad);   // cases et radios : en direct
 
 
 // réinitialiser le filtre
