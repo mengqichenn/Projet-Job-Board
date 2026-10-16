@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="style/style.css">
     <link rel="icon" href="style/logo.png" type="image/x-icon">
 
+    <style>
+          /* Cible uniquement les champs qui ont l'attribut readonly */
+        input[readonly] {
+            background-color: #e9ecef;  /* Couleur de fond gris clair */
+            color: #6c757d;             /* Couleur du texte gris foncé */
+            cursor:auto;
+            border-color: #ced4da;     /* Adoucit la bordure */
+        }
+    </style>
+
     <title>Modifier mon profil - Talentis</title>
 </head>
 
@@ -81,7 +91,7 @@
             <h2>Informations personnelles</h2>
             <div class="form-row">
                 <div class="field"><label for="email">Adresse mail*</label>
-                    <input id="email" name="email" type="email" autocomplete="email" required>
+                    <input id="email" name="email" type="email" autocomplete="email" required readonly>
                     <p class="error" id="err-email"></p></div>
                 <div class="form-row two">
                     <div class="field"><label for="first_name">Prénom*</label>
