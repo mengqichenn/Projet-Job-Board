@@ -20,7 +20,9 @@ Prérequis : Docker et Docker Compose installés.
 4. Remplir la base (une seule fois) : `docker compose exec backend python manage.py seed`
    Cette commande crée les 16 catégories, des entreprises, des offres et des comptes de démo.
    Elle peut être relancée sans créer de doublons.
-   Pour tout recréer : `docker compose exec backend python manage.py seed_demo --reset`.
+   Pour remettre les données de démonstration à neuf (statuts, candidatures, noms d'origine) :
+   `docker compose exec backend python manage.py seed_demo --reset`.
+   Cette commande ne supprime que les données de démonstration, pas les autres comptes.
 
 Adresses :
 - API : http://localhost:8000/api/
@@ -142,29 +144,45 @@ Toutes les pages sont dans `front-end/` et utilisent `js/api.js`
 
 | Page | Rôle |
 |---|---|
-| `main.html` | Liste des offres, filtres, « Learn more » (détail chargé depuis l'API sans rechargement) et formulaire « Postuler » |
+| `main.html` | Liste des offres, filtres, « En savoir plus » (détail affiché sans rechargement) et formulaire « Postuler » |
 | `login.html` | Connexion, et demande de lien « mot de passe oublié » |
 | `account.html` | Création de compte (candidat ou recruteur) |
 | `profile.html` | Modifier son profil, son CV, son mot de passe |
 | `reset-password.html` | Choisir un nouveau mot de passe avec le lien reçu |
 | `espace-candidate.html` | Espace candidat : mes candidatures et mes messages |
 | `espace-recruiter.html` | Espace recruteur : mes offres, candidatures reçues et messages |
-| `espace-admin.html` | Tableau de bord administrateur : chiffres réels et derniers enregistrements |
-| `admin-users.html` | Admin : utilisateurs |
-| `admin-companies.html` | Admin : entreprises |
-| `admin-ads.html` | Admin : offres |
-| `admin-applications.html` | Admin : candidatures |
-| `admin-messages.html` | Admin : messages |
-| `admin-promos.html` | Admin : annonces promotionnelles (démonstration, stockées dans le navigateur, pas en base) |
+| `espace-admin.html` | Espace administrateur : une seule page avec 6 sections (menu à gauche) : tableau de bord, utilisateurs, entreprises, offres, candidatures, messages |
 
-Les pages `admin-*` et `espace-admin.html` ne s'affichent que pour un compte administrateur.
-Les autres sont renvoyées vers la page de connexion.
+`espace-admin.html` ne s'affiche que pour un compte administrateur.
+Les autres sont renvoyés vers la page de connexion. Le détail de l'administration est dans la section suivante.
+
+## Interface d'administration
+
+`espace-admin.html` appelle les routes `admin/...` de l'API. Chaque section a son fichier JavaScript
+(`js/admin-*.js`) et le fichier `js/admin-common.js` contient les éléments partagés
+(fenêtres de formulaire, messages de confirmation ou d'erreur, chargement des listes).
+
+| Section | Ce que l'administrateur peut faire |
+|---|---|
+| Tableau de bord | Voir les chiffres réels (utilisateurs, entreprises, offres ouvertes, candidatures) et les derniers enregistrements |
+| Utilisateurs | Rechercher (nom, prénom, e-mail), filtrer par rôle, pagination, **ajouter**, **modifier**, **supprimer** |
+| Entreprises | Rechercher, pagination, **ajouter**, **modifier**, **supprimer** |
+| Offres | Rechercher, filtrer par statut, **ajouter** (en choisissant l'entreprise, le recruteur et la catégorie), **modifier**, fermer ou rouvrir, **supprimer** |
+| Candidatures | Filtrer par statut, changer le statut, **supprimer** |
+| Messages | Rechercher, **supprimer** |
+
+Protections :
+- Un administrateur ne peut pas supprimer son propre compte, ni retirer son propre rôle administrateur.
+- Supprimer une entreprise qui a encore des offres est refusé par l'API (erreur 409) : un message explique pourquoi.
+- Supprimer une offre supprime aussi ses candidatures (après confirmation).
 
 ## Lancer les tests
 
 ```
 docker compose exec backend python manage.py test
 ```
+
+La suite contient 60 tests (comptes, offres, candidatures, administration, droits d'accès).
 
 Au premier lancement, MySQL peut refuser la création de la base de test
 (`Access denied ... test_jobboard_db`). Il faut alors donner le droit à
