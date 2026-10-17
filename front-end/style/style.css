@@ -230,7 +230,11 @@ body:has(dialog[open]){overflow:hidden}                      /* la page derrièr
 .alert{padding:.7rem 1rem;border-radius:var(--r);margin-bottom:1rem;background:#fde8e6;color:var(--danger)}
 
 
+/* FOOTER - Identique dans chaque page */
 
+.site-footer {margin-top: 5rem;  padding: 1.5rem 1rem; background: transparent; color: var(--muted); border-top: 1px solid var(--line); text-align: center; font-size: .9rem; font-weight: 600; letter-spacing: .5px;}
+
+.site-footer p { margin: 0;}
 /*==========================================================================
     login page :  BODY
 ============================================================================*/
