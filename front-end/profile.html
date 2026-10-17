@@ -29,7 +29,7 @@
 
                 <!--header avec différents data-role-->
 
-                <li><a class="btn-nav-outline" href="main.html">Offres</a></li>
+                <li data-role="candidate recruiter"><a class="btn-nav-outline" href="main.html">Offres</a></li>
 
                 <li data-role="visitor" hidden><a class="btn btn-sm" href="login.html">Se connecter</a></li>
                 <li data-role="visitor" hidden><a class="btn btn-sm" href="account.html">S'inscrire</a></li>
@@ -69,6 +69,31 @@
                             </a>
                             <hr>
                             <a href="espace-recruiter.html">Mon espace</a>
+                            <hr>
+                            <button type="button" data-logout>Déconnexion</button>
+                        </div>
+                    </details>
+                </li>
+
+                <!--Menu déroulant pour admin-->
+
+                <li class="menu" data-role="admin" hidden>
+                    <details>
+                        <summary class="menu-toggle" aria-label="Menu du compte">
+                            <span class="avatar menu-initials"></span>
+                            <span class="menu-name">Mon compte</span>
+                        </summary>
+
+                        <div class="menu-panel">
+                            <a class="menu-profile" href="profile.html">
+                                <span class="avatar menu-initials"></span>
+                                <span>
+                                    <strong class="menu-name">Mon compte</strong>
+                                    <small>Voir mon compte</small>
+                                </span>
+                            </a>
+                            <hr>
+                            <a href="espace-admin.html">Mon espace</a>
                             <hr>
                             <button type="button" data-logout>Déconnexion</button>
                         </div>

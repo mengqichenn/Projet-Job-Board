@@ -97,7 +97,12 @@ function fillForm() {
     $("cv-current").textContent = profile.cv ? "CV actuel : " + profile.cv : "Aucun CV enregistré.";
     applyRole(profile.role);
     initMenu(profile);
-    $("back-link").href = profile.role === "recruiter" ? "espace-recruiter.html" : "espace-candidate.html";
+    const spaces = {
+        candidate: "espace-candidate.html",
+        recruiter: "espace-recruiter.html",
+        admin: "espace-admin.html",
+    };
+    $("back-link").href = spaces[profile.role];
 }
 
 infoForm.addEventListener("submit", async event => {
@@ -186,7 +191,7 @@ if (!localStorage.getItem("token")) {
 } else {
     try {
         profile = await api("/auth/me", { redirectOn401: false });
-        if (!profile || !["candidate", "recruiter"].includes(profile.role)) throw new Error("Profil invalide");
+        if (!profile || !["candidate", "recruiter", "admin"].includes(profile.role)) throw new Error("Profil invalide");
         fillForm();
         lock(false);
     } catch (err) { profile = null; serverError(err, infoForm, "err-form"); }

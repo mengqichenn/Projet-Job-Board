@@ -169,11 +169,45 @@ textarea::placeholder {
 .cv-load {width: 60%;  margin-left: 3rem;}
 .newcv {width : 50%; margin-bottom: 1.5rem; margin-top: 0; margin-left: 3rem;}
 
-@media (max-width:639px){
+@media (max-width:640px){
   .ad-row{grid-template-areas:"content heart"
                               "side side"
                               "actions actions"}
   .ad-row > .ad-side{flex-direction:row;flex-wrap:wrap;justify-content:space-between;align-items:baseline;text-align:left}
+}
+
+@media (max-width: 720px) {
+  body:not(.admin-page) {padding-top: 0;}
+
+  body:not(.admin-page) .site-header {position: sticky; top: 0;}
+
+  body:not(.admin-page) .site-header .container {display: flex; flex-direction: row; justify-content: space-between; align-items: center; width: calc(100% - 1rem); gap: .5rem; padding-block: .5rem;}
+
+  body:not(.admin-page) .jobboard { flex-shrink: 0; gap: .25rem; font-size: 1.1rem;}
+
+  body:not(.admin-page) .header-logo {width: 30px;}
+
+  body:not(.admin-page) .navbar {width: auto; flex-wrap: nowrap; gap: 1rem;}
+
+  body:not(.admin-page) .navbar > li > a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .4rem; font-size: .75rem; white-space: nowrap;}
+
+  .register-page .accountcontainer { width: calc(100% - 1.5rem); margin: 1.5rem auto;}
+
+  .register-page .role-choice { min-width: 0; margin: 0; padding: 1rem; gap: .75rem; grid-template-columns: repeat(2, minmax(0, 1fr));}
+
+  .register-page .role-box {padding: .75rem;}
+
+  .register-page .accountform { margin-top: 1rem; padding: 1rem;}
+
+  .register-page .field {min-width: 0; gap: .4rem; margin-bottom: .75rem;}
+
+  .register-page .field label { margin-top: 0; text-indent: 0; font-size: .9rem;}
+  .register-page .field.has-notice { margin-bottom: .75rem;}
+
+  .register-page .notice2 {position: static; margin: 0; padding: 0; text-indent: 0; font-size: .8rem;}
+  .register-page .accountform input,
+  .register-page .accountform select,
+  .register-page .accountform textarea { width: 100%; margin: 0; text-indent: 0;}
 }
 
 
@@ -471,6 +505,12 @@ html:has(.admin-page) {scroll-behavior:smooth}
   text-decoration:none;
 }
 
+.overview {display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 4fr); gap: 1.5rem;}
+
+.overview > .card {min-width: 0; overflow-wrap: anywhere;}
+
+.overview .app {grid-template-columns: minmax(0, 1fr) auto;}
+
 .admin-sidebar a:hover,
 .admin-sidebar a[aria-current] {background:var(--line)}
 
@@ -519,6 +559,7 @@ html:has(.admin-page) {scroll-behavior:smooth}
     width:var(--admin-sidebar-width);
     padding-inline:.75rem;
   }
+  .overview {display:flex; flex-direction: column;}
 }
 
 @media (max-width:760px) {
