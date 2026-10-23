@@ -12,12 +12,15 @@ Projet Epitech T-WEB-501 : un site d'offres d'emploi (marque « Talentis »).
 Prérequis : Docker et Docker Compose installés.
 
 1. Copier le modèle de réglages : `cp .env.example .env`
-2. Ouvrir `.env` et remplacer les `change-me` par ses propres valeurs
-   (`DB_NAME`, `DB_USER`, `DB_PASSWORD`, `SECRET_KEY`, `MYSQL_ROOT_PASSWORD`).
-   Le fichier `.env` n'est jamais envoyé sur GitHub.
-3. Lancer : `docker compose up -d --build`
-   (les tables sont créées automatiquement au démarrage du back-end)
-4. Remplir la base (une seule fois) : `docker compose exec backend python manage.py seed`
+2. Générer une clé secrète Django dans un terminal avec Python :
+   python3 -c "import secrets; print(secrets.token_urlsafe(50))"
+   Copier la valeur affichée dans .env, après SECRET_KEY=.
+   Si la commande python3 n’existe pas, essayer avec python.
+3. Ouvrir .env et remplacer les valeurs d’exemple par vos propres valeurs (DB_NAME, DB_USER, DB_PASSWORD et MYSQL_ROOT_PASSWORD). 
+   Garder ce fichier privé : il ne doit pas être envoyé sur GitHub.
+4. Lancer : `docker compose up -d --build`
+   MySQL crée automatiquement la base indiquée par DB_NAME au premier démarrage. Chaque PC possède sa propre base locale.
+5. Remplir la base (une seule fois) : `docker compose exec backend python manage.py seed`
    Cette commande crée les 16 catégories, des entreprises, des offres et des comptes de démo.
    Elle peut être relancée sans créer de doublons.
    Pour remettre les données de démonstration à neuf (statuts, candidatures, noms d'origine) :
