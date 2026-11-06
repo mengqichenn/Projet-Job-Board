@@ -1,4 +1,4 @@
-const const API_URL = "https://projet-job-board.onrender.com/api";
+const API_URL = "https://projet-job-board.onrender.com/api";
 
 // fonction API 
 async function api(path, { method = "GET", body, redirectOn401 = true} = {}) {      
